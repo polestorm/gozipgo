@@ -192,7 +192,8 @@ func main() {
 		fatal(err)
 	}
 	commit := firstLine("git", "-C", abs, "rev-parse", "--short", "HEAD")
-	if firstLine("git", "-C", abs, "status", "--porcelain") != "" {
+	// Changes under docs/ do not count: the tools themselves rewrite files there.
+	if firstLine("git", "-C", abs, "status", "--porcelain", "--", ".", ":!docs") != "" {
 		commit += " with uncommitted changes"
 	}
 	machine := runtime.GOOS + "/" + runtime.GOARCH
