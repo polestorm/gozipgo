@@ -24,10 +24,16 @@ func open(data []byte, opts Options) (*Reader, error) {
 	return New(bytes.NewReader(data), int64(len(data)), opts)
 }
 
+// openDir czyta koniec katalogu i katalog centralny, bez nagłówków lokalnych: testy etapu 1 budują archiwa,
+// w których zmieniony jest tylko katalog. Pełne New sprawdzają testy układu, korpusy i fuzzer.
+func openDir(data []byte, opts Options) (*Reader, error) {
+	return newReader(bytes.NewReader(data), int64(len(data)), opts, false)
+}
+
 // wantCode sprawdza, że archiwum daje podany kod (pusty: jest przyjmowane), i zwraca czytnik oraz błąd.
 func wantCode(t *testing.T, label string, data []byte, opts Options, code string) (*Reader, *Error) {
 	t.Helper()
-	r, err := open(data, opts)
+	r, err := openDir(data, opts)
 	if got := codeOf(err); got != code {
 		t.Errorf("%s: got %q (%v), want %q", label, got, err, code)
 	}
@@ -928,7 +934,7 @@ func TestReaderErrors(t *testing.T) {
 	}
 	for label, valid := range map[string][]byte{"zip64": data, "plain": testkit.Zip(files("a", "b/", "b/c")...).Bytes()} {
 		for n := 0; n < len(valid); n++ {
-			if _, err := open(valid[:n], Options{}); err == nil {
+			if _, err := openDir(valid[:n], Options{}); err == nil {
 				t.Errorf("%s cut to %d of %d bytes was accepted", label, n, len(valid))
 			} else if _, ok := err.(*Error); !ok {
 				t.Errorf("%s cut to %d bytes: %v is not an *Error", label, n, err)
@@ -938,7 +944,7 @@ func TestReaderErrors(t *testing.T) {
 			for _, x := range []byte{0x01, 0x80, 0xFF} {
 				mutated := append([]byte(nil), valid...)
 				mutated[i] ^= x
-				if _, err := open(mutated, Options{}); err != nil {
+				if _, err := openDir(mutated, Options{}); err != nil {
 					if _, ok := err.(*Error); !ok {
 						t.Errorf("%s with byte %d changed: %v is not an *Error", label, i, err)
 					}
@@ -963,7 +969,7 @@ func TestPathological(t *testing.T) {
 		best := time.Duration(1 << 62)
 		for i := 0; i < 7; i++ {
 			start := time.Now()
-			if _, err := open(data, Options{MaxEntries: -1, MaxNameLength: -1, MaxDirectorySize: -1}); err != nil {
+			if _, err := openDir(data, Options{MaxEntries: -1, MaxNameLength: -1, MaxDirectorySize: -1}); err != nil {
 				t.Fatal(err)
 			}
 			best = min(best, time.Since(start))

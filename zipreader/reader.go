@@ -5,14 +5,17 @@
 // *Error that carries a fixed code. Limits are on by default: the zero Options is the strict, safe setting.
 // The package reads from an io.ReaderAt and never touches the file system or the network.
 //
-// Status: this version reads the end of central directory records (with ZIP64) and the central directory and
-// gives the list of entries. It does not yet read local file headers or the contents of entries, so it does not
-// yet verify that the local headers agree with the directory; that comes with Open in the next version.
+// New reads the end of central directory records (with ZIP64), the central directory and every local file
+// header and data descriptor, and checks that they describe one layout of the file: the entries follow each other
+// from the first byte to the central directory with no overlap and no bytes that belong to nothing. Open then
+// gives the content of an entry (Stored or Deflate, decoded by the package's own decoder) and checks its size and
+// CRC-32 while it is read.
 package zipreader
 
 import (
 	"encoding/binary"
 	"io"
+	"sync/atomic"
 
 	"github.com/polestorm/gozipgo/internal/format"
 )
@@ -24,7 +27,14 @@ const (
 	DefaultMaxNameLength    = 4096
 	DefaultMaxCommentLength = 65535
 	DefaultMaxExtraLength   = 65535
+	DefaultMaxEntrySize     = 1 << 30
+	DefaultMaxTotalSize     = 4 << 30
+	DefaultMaxRatio         = 1000
 )
+
+// ratioFloor is the size of content below which the compression ratio of an entry is not limited: small entries
+// cannot do harm, and DEFLATE reaches high ratios on short runs of one byte.
+const ratioFloor = 1 << 20
 
 // Options configures a Reader. The zero value is strict and has every limit at its default. For each limit,
 // zero means the default and a negative value means no limit.
@@ -39,6 +49,19 @@ type Options struct {
 	MaxCommentLength int
 	// MaxExtraLength limits the length in bytes of the extra field of an entry.
 	MaxExtraLength int
+	// MaxEntrySize limits the size in bytes of the content of one entry. Open refuses a larger entry.
+	MaxEntrySize int64
+	// MaxTotalSize limits the number of bytes of content read from all entries of the Reader together. An
+	// entry opened twice counts twice.
+	MaxTotalSize int64
+	// MaxRatio limits the ratio of the size of the content of an entry to the size of its compressed data, for
+	// entries with more than 1 MiB of content. Open refuses an entry above it.
+	MaxRatio int64
+
+	// AllowPrefix accepts bytes before the first entry, as in a self-extracting archive. The offsets in the
+	// archive may count from the start of the file or from the end of the prefix; which one follows from the
+	// position of the central directory. Its use is reported by Reader.Relaxed with entry -1.
+	AllowPrefix bool
 
 	// UnflaggedNames says how to read a name that has bytes outside ASCII in an entry without the UTF-8 flag
 	// (bit 11). The default, ASCIIOnly, rejects such a name with name-encoding. Each entry another setting was
@@ -123,14 +146,20 @@ type Entry struct {
 	VersionNeeded uint16
 	InternalAttrs uint16
 	ExternalAttrs uint32
-	// LocalHeaderOffset is the position of the local file header the directory declares, with ZIP64 resolved.
+	// LocalHeaderOffset is the position in the file of the local file header of the entry, with ZIP64
+	// resolved. With Options.AllowPrefix it includes the prefix when the archive counts offsets from its end.
 	LocalHeaderOffset uint64
+	// DataOffset is the position in the file of the first byte of the data of the entry.
+	DataOffset uint64
 	// DirectoryOffset is the position in the file of the central directory header of the entry.
 	DirectoryOffset int64
 	// Unsupported is empty when the entry uses only features in scope. Otherwise it is the code of the error
 	// that opening the entry gives: unsupported-encryption, unsupported-patch, unsupported-method or
 	// unsupported-version (the first that applies, in this order).
 	Unsupported string
+
+	// rawName to nazwa tak, jak ją zapisano, gdy różni się od Name (nazwy dekodowane ze strony kodowej).
+	rawName string
 }
 
 // Reader gives access to one archive.
@@ -140,6 +169,9 @@ type Reader struct {
 	entries []Entry
 	comment string
 	relaxed []Relaxation
+
+	maxEntrySize, maxTotalSize, maxRatio int64
+	total                                atomic.Int64 // bajty treści wydane przez wszystkie Open
 }
 
 // New reads the end of central directory records and the central directory of the archive in the first size
@@ -150,14 +182,25 @@ type Reader struct {
 // When an archive has more than one fault, the one found first in this fixed order is reported: the end of
 // central directory record, the ZIP64 records, multi-volume fields, the bounds of the directory, the declared
 // count against the declared size, limits, the directory headers in order (within a header: fixed fields, name,
-// extra field, comment), duplicate names.
+// extra field, comment), duplicate names, the local headers in the order of their position in the file (within
+// an entry: signature, fixed fields, name, extra field, ZIP64, CRC-32 and sizes, Unicode Path, overlap with the
+// next entry, data descriptor or unreferenced bytes, size of a Stored entry).
 func New(ra io.ReaderAt, size int64, opts Options) (*Reader, error) {
-	r := &Reader{ra: ra, size: size}
+	return newReader(ra, size, opts, true)
+}
+
+// newReader to New; layout false pomija nagłówki lokalne i układ pliku, co pozwala testom katalogu budować
+// archiwa, w których zmieniony jest tylko katalog.
+func newReader(ra io.ReaderAt, size int64, opts Options, layout bool) (*Reader, error) {
+	r := &Reader{ra: ra, size: size,
+		maxEntrySize: limitOf(opts.MaxEntrySize, DefaultMaxEntrySize),
+		maxTotalSize: limitOf(opts.MaxTotalSize, DefaultMaxTotalSize),
+		maxRatio:     limitOf(opts.MaxRatio, DefaultMaxRatio)}
 	end, err := findEnd(ra, size)
 	if err != nil {
 		return nil, err
 	}
-	dir, err := resolveDirectory(ra, end)
+	dir, err := resolveDirectory(ra, end, opts.AllowPrefix)
 	if err != nil {
 		return nil, err
 	}
@@ -176,6 +219,11 @@ func New(ra io.ReaderAt, size int64, opts Options) (*Reader, error) {
 	}
 	if err := checkDuplicates(r.entries, opts.FoldCase); err != nil {
 		return nil, err
+	}
+	if layout {
+		if err := r.checkLayout(dir, opts); err != nil {
+			return nil, err
+		}
 	}
 	return r, nil
 }
@@ -292,9 +340,10 @@ func findEnd(ra io.ReaderAt, size int64) (*endRecord, error) {
 
 // directory to położenie i rozmiar katalogu centralnego po rozstrzygnięciu ZIP64.
 type directory struct {
-	offset  uint64
+	offset  uint64 // położenie w pliku
 	size    uint64
 	entries uint64
+	base    uint64 // liczba dodawana do przesunięć zapisanych w archiwum (dane wstępne, AllowPrefix)
 }
 
 // resolveDirectory rozstrzyga ZIP64 (DIR-005), sprawdza pola wieloczęściowe (DIR-003), granice katalogu (DIR-004)
@@ -303,7 +352,11 @@ type directory struct {
 // Lokalizator ZIP64 jest rozpoznawany po sygnaturze 20 bajtów przed końcem katalogu, niezależnie od tego, czy
 // zwykły rekord ma wartości graniczne: czytnik, który woli rekordy ZIP64, zobaczyłby go, więc albo jest w pełni
 // spójny ze zwykłym rekordem, albo archiwum ma dwie interpretacje i jest odrzucane.
-func resolveDirectory(ra io.ReaderAt, end *endRecord) (directory, error) {
+//
+// Z allowPrefix archiwum może liczyć przesunięcia od końca danych wstępnych zamiast od początku pliku. Nie ma tu
+// zgadywania: katalog musi kończyć się tam, gdzie zaczynają się rekordy końca, a rekord ZIP64 tam, gdzie zaczyna
+// się lokalizator, więc różnica jest wyznaczona jednoznacznie.
+func resolveDirectory(ra io.ReaderAt, end *endRecord, allowPrefix bool) (directory, error) {
 	sentinel := end.disk == format.Sentinel16 || end.dirDisk == format.Sentinel16 ||
 		end.entriesOnDisk == format.Sentinel16 || end.entries == format.Sentinel16 ||
 		end.dirSize == format.Sentinel32 || end.dirOffset == format.Sentinel32
@@ -312,6 +365,7 @@ func resolveDirectory(ra io.ReaderAt, end *endRecord) (directory, error) {
 	onDisk := uint64(end.entriesOnDisk)
 	dir := directory{offset: uint64(end.dirOffset), size: uint64(end.dirSize), entries: uint64(end.entries)}
 
+	base, hasBase := uint64(0), false
 	var loc [format.Zip64LocatorSize]byte
 	hasLocator := false
 	if end.offset >= format.Zip64LocatorSize {
@@ -337,6 +391,14 @@ func resolveDirectory(ra io.ReaderAt, end *endRecord) (directory, error) {
 		var rec [format.Zip64EndSize]byte
 		if err := readFull(ra, rec[:], int64(q)); err != nil {
 			return dir, err
+		}
+		if alt := uint64(locOffset) - format.Zip64EndSize; allowPrefix && alt > q &&
+			binary.LittleEndian.Uint32(rec[:]) != format.SigZip64End {
+			// Lokalizator liczy od końca danych wstępnych: rekord bez sektora rozszerzalnego leży tuż przed nim.
+			if err := readFull(ra, rec[:], int64(alt)); err != nil {
+				return dir, err
+			}
+			base, hasBase, q = alt-q, true, alt
 		}
 		if binary.LittleEndian.Uint32(rec[:]) != format.SigZip64End {
 			return dir, archiveError(CodeZip64Inconsistent, int64(q), "no ZIP64 end of central directory record where the locator points")
@@ -376,7 +438,21 @@ func resolveDirectory(ra io.ReaderAt, end *endRecord) (directory, error) {
 	if disk != 0 || dirDisk != 0 || onDisk != dir.entries {
 		return dir, archiveError(CodeUnsupportedMultiVolume, end.offset, "the archive is split or spanned")
 	}
-	if dir.offset > dirEnd || dirEnd-dir.offset != dir.size {
+	outOfBounds := dir.size > dirEnd
+	if !outOfBounds {
+		start := dirEnd - dir.size
+		switch {
+		case hasBase:
+			outOfBounds = dir.offset > start || start-dir.offset != base
+		case dir.offset == start:
+		case allowPrefix && dir.offset < start:
+			base = start - dir.offset
+		default:
+			outOfBounds = true
+		}
+		dir.offset, dir.base = start, base
+	}
+	if outOfBounds {
 		return dir, archiveError(CodeDirectoryOutOfBounds, end.offset,
 			"the central directory does not end where the end of central directory records begin")
 	}

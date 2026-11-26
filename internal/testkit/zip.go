@@ -21,6 +21,7 @@ import (
 type File struct {
 	Name    string
 	Data    []byte // treść po rozpakowaniu
+	Raw     []byte // jeśli niepuste: obszar danych wpisu zapisany dosłownie (CRC i rozmiar nadal z Data)
 	Method  uint16 // 0: Stored; 8: Deflate (bloki niezakodowane); inna wartość: Data zapisane bez zmian
 	Flags   uint16 // bity dodawane do flag; bit 3 dopisuje deskryptor danych, bit 11 jest ustawiany dla nazw spoza ASCII
 	Comment string
@@ -178,6 +179,9 @@ func Build(mode Zip64Mode, files ...File) *Archive {
 		if f.Method == format.MethodDeflate {
 			data = StoredDeflate(f.Data)
 		}
+		if f.Raw != nil {
+			data = f.Raw
+		}
 		crc := crc32.ChecksumIEEE(f.Data)
 		csize, usize := uint64(len(data)), uint64(len(f.Data))
 		version := uint16(10)
@@ -291,6 +295,20 @@ func (a *Archive) FixDirectory() {
 	if a.Zip64Locator != nil {
 		a.Zip64Locator.Offset = offset + size + uint64(len(a.AfterCentral))
 	}
+}
+
+// Relayout wpisuje do katalogu rzeczywiste przesunięcia nagłówków lokalnych (wpis i katalogu odpowiada obszarowi
+// i) i poprawia rekordy końca katalogu. Wołane po zmianie długości obszaru wpisu albo danych wstępnych; nagłówki
+// katalogu z wartością graniczną przesunięcia zostają bez zmian.
+func (a *Archive) Relayout() {
+	offset := uint64(len(a.Prefix))
+	for i := range a.Members {
+		if i < len(a.Central) && a.Central[i].LocalOffset != format.Sentinel32 {
+			a.Central[i].LocalOffset = uint32(offset)
+		}
+		offset += uint64(len(a.Members[i].Bytes()))
+	}
+	a.FixDirectory()
 }
 
 // Bytes zapisuje archiwum.

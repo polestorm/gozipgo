@@ -1,6 +1,10 @@
 package zipreader
 
 import (
+	"archive/zip"
+	"bytes"
+	"hash/crc32"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -37,7 +41,11 @@ func FuzzReader(f *testing.F) {
 	}
 	codes := knownCodes(f)
 	f.Fuzz(func(t *testing.T, data []byte) {
-		for _, opts := range []Options{{}, {UnflaggedNames: UTF8, FoldCase: true}, {UnflaggedNames: CP437, MaxEntries: 3}} {
+		// Limity treści trzymają czas jednego wykonania w ryzach; są częścią każdego zestawu opcji.
+		const entryLimit, totalLimit = 1 << 20, 4 << 20
+		for _, opts := range []Options{{MaxEntrySize: entryLimit, MaxTotalSize: totalLimit},
+			{UnflaggedNames: UTF8, FoldCase: true, AllowPrefix: true, MaxEntrySize: entryLimit, MaxTotalSize: totalLimit},
+			{UnflaggedNames: CP437, MaxEntries: 3, MaxEntrySize: entryLimit, MaxTotalSize: totalLimit}} {
 			r, err := open(data, opts)
 			if err != nil {
 				e, ok := err.(*Error)
@@ -49,7 +57,55 @@ func FuzzReader(f *testing.F) {
 				}
 				continue
 			}
-			if opts.UnflaggedNames == ASCIIOnly && len(r.Relaxed()) != 0 {
+			strict := opts.UnflaggedNames == ASCIIOnly && !opts.AllowPrefix
+			// Treść: każdy wpis czytamy do końca; błąd ma znany kod, a wydanych bajtów nie jest więcej, niż
+			// deklaruje katalog. W trybie ścisłym archive/zip (czarna skrzynka) musi przyjąć archiwum z tą samą
+			// listą nazw i dać te same bajty dla każdego wpisu, który przeczytaliśmy bez błędu (K5).
+			var oracle *zip.Reader
+			if strict {
+				zr, zerr := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+				if zerr != nil || len(zr.File) != len(r.Entries()) {
+					t.Fatalf("accepted strictly, archive/zip does not agree: %v", zerr)
+				}
+				oracle = zr
+			}
+			for i, e := range r.Entries() {
+				if e.DataOffset < e.LocalHeaderOffset+30 || e.DataOffset+e.CompressedSize > uint64(len(data)) {
+					t.Fatalf("entry %d: data outside the file: %+v", i, e)
+				}
+				if oracle != nil && oracle.File[i].Name != e.Name {
+					t.Fatalf("entry %d: name %q, archive/zip has %q", i, e.Name, oracle.File[i].Name)
+				}
+				rc, err := r.Open(e)
+				var body []byte
+				if err == nil {
+					body, err = io.ReadAll(rc)
+				}
+				if err != nil {
+					x, ok := err.(*Error)
+					if !ok || !codes[x.Code] || x.Entry != i {
+						t.Fatalf("entry %d: bad content error %v", i, err)
+					}
+					if uint64(len(body)) > e.UncompressedSize {
+						t.Fatalf("entry %d: %d bytes before the error, %d declared", i, len(body), e.UncompressedSize)
+					}
+					continue
+				}
+				if uint64(len(body)) != e.UncompressedSize || crc32.ChecksumIEEE(body) != e.CRC32 {
+					t.Fatalf("entry %d: content accepted with another size or CRC-32", i)
+				}
+				if oracle != nil {
+					zc, zerr := oracle.File[i].Open()
+					var theirs []byte
+					if zerr == nil {
+						theirs, zerr = io.ReadAll(zc)
+					}
+					if zerr != nil || !bytes.Equal(theirs, body) {
+						t.Fatalf("entry %d: content differs from archive/zip (%v)", i, zerr)
+					}
+				}
+			}
+			if opts.UnflaggedNames == ASCIIOnly && len(r.Relaxed()) != 0 && !opts.AllowPrefix {
 				t.Fatalf("strict reading reports relaxations %v", r.Relaxed())
 			}
 			if opts.MaxEntries > 0 && len(r.Entries()) > opts.MaxEntries {

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -44,7 +45,7 @@ func fetchedArchives(t testing.TB) map[string][]byte {
 // TestFetchedArchives przepuszcza przez czytnik archiwa z zestawów pobranych: zbiory testowe innych programów
 // (yauzl, libzip, rc-zip, Go, CPython), archiwa-ciekawostki, bombę o nakładających się wpisach i dokumenty
 // Worda. Sprawdza, że nic nie powoduje paniki, każdy błąd ma stały kod, a archiwum przyjęte ściśle ma w archive/zip
-// (czarna skrzynka) tę samą listę nazw. Werdykt każdego pliku (kod w trybie ścisłym, kod z UnflaggedNames: UTF8
+// (czarna skrzynka) tę samą listę nazw. Werdykt każdego pliku (kod w trybie ścisłym, kod z UnflaggedNames: UTF8 i AllowPrefix
 // i wynik archive/zip) jest zapisany we wzorcu testdata/verdicts/fetched.tsv: zmiana werdyktu wymaga -update
 // i przeglądu różnicy (API-007). Zestawy służą rozwojowi; liczby do publikacji bierzemy tylko z zestawów, których
 // źródło i sumę podaje testdata/sources.json. Test jest pomijany, gdy zestawów nie pobrano.
@@ -78,6 +79,24 @@ func TestFetchedArchives(t *testing.T) {
 					v += ", entries with " + code
 				}
 			}
+			// Treść: każdy wpis w zakresie czytamy do końca; pierwszy kod błędu trafia do werdyktu.
+			buf := make([]byte, 32<<10)
+			for _, e := range r.Entries() {
+				if e.Unsupported != "" {
+					continue
+				}
+				rc, err := r.Open(e)
+				for err == nil {
+					_, err = rc.Read(buf)
+				}
+				if err != io.EOF {
+					if codeOf(err) == "" {
+						return r, "ERROR: " + err.Error()
+					}
+					v += ", content: " + codeOf(err)
+					break
+				}
+			}
 			return r, v
 		}
 		if e, ok := err.(*Error); ok {
@@ -90,7 +109,7 @@ func TestFetchedArchives(t *testing.T) {
 	for _, p := range paths {
 		data := archives[p]
 		r, strict := verdict(data, Options{})
-		_, relaxed := verdict(data, Options{UnflaggedNames: UTF8})
+		_, relaxed := verdict(data, Options{UnflaggedNames: UTF8, AllowPrefix: true})
 		for _, v := range []string{strict, relaxed} {
 			if strings.HasPrefix(v, "PANIC") || strings.HasPrefix(v, "ERROR") {
 				t.Errorf("%s: %s", p, v)
@@ -108,13 +127,30 @@ func TestFetchedArchives(t *testing.T) {
 					oracle = "accepts, other names"
 					t.Errorf("%s: accepted strictly, but archive/zip lists other names", p)
 				}
+				// Treść, którą obie strony czytają bez błędu, musi być ta sama.
+				for i := 0; same && strict == "ok" && i < len(zr.File); i++ {
+					e := r.Entries()[i]
+					if e.Unsupported != "" {
+						continue
+					}
+					ours, err1 := readEntry(r, e)
+					var theirs []byte
+					rc, err2 := zr.File[i].Open()
+					if err2 == nil {
+						theirs, err2 = io.ReadAll(rc)
+					}
+					if err1 != nil || err2 != nil || !bytes.Equal(ours, theirs) {
+						oracle = "accepts, other content"
+						t.Errorf("%s: entry %d: content differs from archive/zip (%v, %v)", p, i, err1, err2)
+					}
+				}
 			}
 		}
 		counts[strict]++
 		lines = append(lines, p+"\t"+strict+"\t"+relaxed+"\t"+oracle)
 	}
 	golden := filepath.Join("..", "testdata", "verdicts", "fetched.tsv")
-	text := "# path under testdata/fetched\tstrict\twith UnflaggedNames: UTF8\tarchive/zip of the Go that wrote this file\n" +
+	text := "# path under testdata/fetched\tstrict\twith UnflaggedNames: UTF8 and AllowPrefix\tarchive/zip of the Go that wrote this file\n" +
 		strings.Join(lines, "\n") + "\n"
 	if *updateVerdicts {
 		if err := os.MkdirAll(filepath.Dir(golden), 0o755); err != nil {
@@ -156,4 +192,14 @@ func TestFetchedArchives(t *testing.T) {
 	}
 	sort.Strings(summary)
 	t.Logf("fetched archives: %d files; strict verdicts: %s", len(paths), strings.Join(summary, ", "))
+}
+
+// readEntry czyta treść wpisu do końca.
+func readEntry(r *Reader, e Entry) ([]byte, error) {
+	rc, err := r.Open(e)
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+	return io.ReadAll(rc)
 }

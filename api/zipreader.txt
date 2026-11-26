@@ -22,6 +22,19 @@ const (
 	CodeDirectoryEntrySize     = "zip-directory-entry-size"
 	CodeCommentEncoding        = "zip-comment-encoding"
 	CodeZip64Inconsistent      = "zip64-inconsistent"
+	CodeLocalHeaderMismatch    = "zip-local-header-mismatch"
+	CodeDescriptorMismatch     = "zip-descriptor-mismatch"
+	CodeEntriesOverlap         = "zip-entries-overlap"
+	CodeUnreferencedData       = "zip-unreferenced-data"
+	CodeSizeMismatch           = "zip-size-mismatch"
+	CodeChecksum               = "zip-checksum"
+
+	CodeInflateBlockType    = "inflate-block-type"
+	CodeInflateStoredLength = "inflate-stored-length"
+	CodeInflateCodeLengths  = "inflate-code-lengths"
+	CodeInflateDistance     = "inflate-distance"
+	CodeInflateTruncated    = "inflate-truncated"
+	CodeInflateTrailingData = "inflate-trailing-data"
 
 	CodeNameEmpty       = "name-empty"
 	CodeNameNUL         = "name-nul"
@@ -39,6 +52,10 @@ const (
 	CodeLimitCommentLength = "limit-comment-length"
 	CodeLimitExtraLength   = "limit-extra-length"
 
+	CodeLimitEntrySize = "limit-entry-size"
+	CodeLimitTotalSize = "limit-total-size"
+	CodeLimitRatio     = "limit-ratio"
+
 	CodeUnsupportedEncryption       = "unsupported-encryption"
 	CodeUnsupportedMethod           = "unsupported-method"
 	CodeUnsupportedMultiVolume      = "unsupported-multi-volume"
@@ -55,7 +72,14 @@ const (
 	DefaultMaxNameLength    = 4096
 	DefaultMaxCommentLength = 65535
 	DefaultMaxExtraLength   = 65535
+	DefaultMaxEntrySize     = 1 << 30
+	DefaultMaxTotalSize     = 4 << 30
+	DefaultMaxRatio         = 1000
 )
+
+var ErrClosed = errors.New("zipreader: read after Close")
+
+var ErrNoEntry = errors.New("zipreader: not an entry of this reader")
 
 type Entry struct {
 	Index int
@@ -86,9 +110,12 @@ type Entry struct {
 
 	LocalHeaderOffset uint64
 
+	DataOffset uint64
+
 	DirectoryOffset int64
 
 	Unsupported string
+	// contains filtered or unexported fields
 }
 
 type Error struct {
@@ -117,6 +144,14 @@ type Options struct {
 	MaxCommentLength int
 
 	MaxExtraLength int
+
+	MaxEntrySize int64
+
+	MaxTotalSize int64
+
+	MaxRatio int64
+
+	AllowPrefix bool
 
 	UnflaggedNames NameEncoding
 
@@ -150,4 +185,14 @@ func (r *Reader) Comment() string
 
 func (r *Reader) Entries() []Entry
 
+func (r *Reader) Open(e Entry) (io.ReadCloser, error)
+
+func (r *Reader) OpenRaw(e Entry) (io.Reader, error)
+
 func (r *Reader) Relaxed() []Relaxation
+
+func (c *contentReader) Close() error
+
+func (c *contentReader) Read(p []byte) (int, error)
+
+func (s *rawReader) Read(p []byte) (int, error)

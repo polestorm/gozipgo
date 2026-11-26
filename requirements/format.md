@@ -3,7 +3,8 @@
 Status: przyjęte
 
 Źródło: APPNOTE.TXT 6.3.10 (wersja i suma przypięte w `../docs/provenance.md`). Numery w kolumnie „APPNOTE” to
-rozdziały tego tekstu. Przegląd z tekstem specyfikacji: 2026-11-26 (etap 0); decyzje o werdyktach: ADR 0002.
+rozdziały tego tekstu. Przegląd z tekstem specyfikacji: 2026-11-26 (etap 0); decyzje o werdyktach: ADR 0002 (katalog) i ADR 0003
+(nagłówek lokalny, deskryptor, dane; etap 2, 2026-11-27).
 
 | Id | Wymaganie |
 |---|---|
@@ -59,7 +60,7 @@ Czytane w etapie 2. Każde pole jest porównywane z katalogiem centralnym (ENT-0
 | Klucz | APPNOTE | Opis | Werdykt | Etap |
 |---|---|---|---|---|
 | `lfh.signature` | 4.3.7 | sygnatura inna niż 0x04034b50 pod przesunięciem z katalogu | `reject zip-local-header-mismatch` | 2 |
-| `lfh.version-needed` | 4.4.3 | wersja wymagana inna niż w katalogu | `reject zip-local-header-mismatch` | 2 |
+| `lfh.version-needed` | 4.4.3 | wersja wymagana inna niż w katalogu: nie jest porównywana, bo nie wpływa na odczyt (Info-ZIP z `-fz` zapisuje w nagłówku lokalnym 4.5, a w katalogu 1.0 albo 2.0); o zakresie decyduje wartość z katalogu | `accept` | 2 |
 | `lfh.flags` | 4.4.4 | flagi istotne dla odczytu inne niż w katalogu | `reject zip-local-header-mismatch` | 2 |
 | `lfh.method` | 4.4.5 | metoda inna niż w katalogu | `reject zip-local-header-mismatch` | 2 |
 | `lfh.mod-time` | 4.4.6 | czas inny niż w katalogu (bez wpływu na treść; decyzja w etapie 2) | `accept` | 2 |
@@ -70,7 +71,10 @@ Czytane w etapie 2. Każde pole jest porównywane z katalogiem centralnym (ENT-0
 | `lfh.name-length` | 4.4.10 | długość nazwy inna niż w katalogu | `reject zip-local-header-mismatch` | 2 |
 | `lfh.extra-length` | 4.4.11 | pola dodatkowe wychodzące poza obszar wpisu | `reject zip-local-header-mismatch` | 2 |
 | `lfh.name` | 4.4.17 | nazwa inna niż w katalogu | `reject zip-local-header-mismatch` | 2 |
-| `lfh.extra` | 4.4.28, 4.5.3 | pola dodatkowe o złej strukturze; pole ZIP64 bez obu rozmiarów | `reject zip-extra-field` | 2 |
+| `lfh.extra` | 4.4.28, 4.5.1 | pola dodatkowe nagłówka lokalnego o złej strukturze | `reject zip-extra-field` | 2 |
+| `lfh.extra.0x0001` | 4.5.3 | pole ZIP64 nagłówka lokalnego: brak przy wartości granicznej rozmiaru, długość inna niż dwa rozmiary, powtórzenie albo wartość inna niż pole rozmiaru bez wartości granicznej | `reject zip64-inconsistent` | 2 |
+| `lfh.extra.0x7075` | 4.6.9 | pole Unicode Path nagłówka lokalnego, które nie daje nazwy wpisu (7-Zip na Windows zapisuje je tylko w nagłówku lokalnym) | `reject name-unicode-path` | 2 |
+| `lfh.extra.encryption` | 4.5.12, dodatek E | pole silnego szyfrowania, AE-x albo opisu łatki w nagłówku lokalnym wpisu, którego katalog nie oznacza jako zaszyfrowany ani łatany | `reject zip-local-header-mismatch` | 2 |
 | `dd.signature` | 4.3.9.3 | deskryptor z sygnaturą 0x08074b50 i bez niej | `accept` | 2 |
 | `dd.crc32` | 4.3.9 | CRC-32 inne niż w katalogu | `reject zip-descriptor-mismatch` | 2 |
 | `dd.sizes-32` | 4.3.9 | rozmiary 4-bajtowe inne niż w katalogu | `reject zip-descriptor-mismatch` | 2 |

@@ -1,7 +1,8 @@
 # Pytania otwarte
 
 Kolejność według etapu, w którym pytanie blokuje pracę. Rozstrzygnięte w etapie 1 (ADR 0002, do potwierdzenia przez
-właściciela): 4, 5, 8, 11 i część 9 dotycząca katalogu. **Nowe z etapu 1:** czy domyślne `UnflaggedNames` ma zostać
+właściciela): 4, 5, 8, 11 i część 9 dotycząca katalogu. Rozstrzygnięte w etapie 2: 1 (decyzja właściciela
+z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, do potwierdzenia przez właściciela). **Nowe z etapu 1:** czy domyślne `UnflaggedNames` ma zostać
 `ASCIIOnly`, skoro `zip` i `ditto` z macOS zapisują nazwy UTF-8 bez bitu 11 (ADR 0002 pkt 6; rekomendacja: tak).
 
 1. **Dekompresja DEFLATE: własna czy `compress/flate` (przed etapem 2).** Właściciel zdecydował o własnym

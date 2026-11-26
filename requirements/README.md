@@ -5,13 +5,13 @@ Każde wymaganie ma identyfikator `PREFIKS-nnn`. Testy odwołują się do nich p
 
 | Prefiks | Plik | Zakres | Etap | Status |
 |---|---|---|---|---|
-| `FMT` | `format.md` | inwentarz formatu: rekordy, pola, bity flag, metody, pola dodatkowe; werdykt dla każdego | 0, 1 | przyjęte (wiersze nagłówka lokalnego i deskryptora: etap 2) |
+| `FMT` | `format.md` | inwentarz formatu: rekordy, pola, bity flag, metody, pola dodatkowe; werdykt dla każdego | 0, 1 | przyjęte |
 | `DIR` | `directory.md` | koniec katalogu, ZIP64, katalog centralny, lista wpisów | 1 | przyjęte |
-| `NAME` | `names.md` | nazwy wpisów: kodowanie, reguły, powtórzenia | 1 | przyjęte; NAME-006 szkic (etap 2) |
-| `ENT` | `entries.md` | nagłówki lokalne, deskryptory, układ pliku, treść wpisu, CRC | 2 | szkic |
-| `INF` | `inflate.md` | dekompresja DEFLATE | 2 | szkic |
-| `SAFE` | `safety.md` | limity, wrogie archiwa, brak wejścia i wyjścia, czas liniowy | 1, 2, 3 | SAFE-001, 002, 007 przyjęte; reszta szkic |
-| `DET` | `determinism.md` | powtarzalność, niezależność od systemu i wersji Go, pamięć | 1, 3 | DET-001, 003, 004, 005 przyjęte; reszta szkic |
+| `NAME` | `names.md` | nazwy wpisów: kodowanie, reguły, powtórzenia | 1, 2 | przyjęte |
+| `ENT` | `entries.md` | nagłówki lokalne, deskryptory, układ pliku, treść wpisu, CRC | 2 | przyjęte |
+| `INF` | `inflate.md` | dekompresja DEFLATE | 2 | przyjęte |
+| `SAFE` | `safety.md` | limity, wrogie archiwa, brak wejścia i wyjścia, czas liniowy | 1, 2, 3 | SAFE-001, 002, 004, 007 przyjęte; reszta szkic (etap 3) |
+| `DET` | `determinism.md` | powtarzalność, niezależność od systemu i wersji Go, pamięć | 1, 3 | DET-001, 003–006 przyjęte; reszta szkic (etap 3) |
 | `ZW` | `writer.md` | pisarz i kompresja | 4 | szkic |
 | `API` | `api.md` | stabilność API, wzorce, kody błędów | 0, 1 | API-001, 003–006 przyjęte; 002 i 007 szkic |
 | `EVD` | `evidence.md` | pakiet dowodów (K9) | 5 | szkic |

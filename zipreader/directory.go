@@ -179,6 +179,14 @@ func (r *Reader) readDirectory(dir directory, opts Options) error {
 		if disk != 0 {
 			return entryError(CodeUnsupportedMultiVolume, i, name, at, "the entry starts on another volume")
 		}
+		if e.LocalHeaderOffset > ^uint64(0)-dir.base {
+			e.LocalHeaderOffset = ^uint64(0) // poza plikiem: odrzuci to sprawdzenie nagłówków lokalnych
+		} else {
+			e.LocalHeaderOffset += dir.base
+		}
+		if name != string(rawName) {
+			e.rawName = string(rawName)
+		}
 		// Unicode Path (NAME-008): jeśli jest, musi dawać tę samą nazwę co pole nazwy.
 		if x.unicodePathCount > 0 {
 			p := x.unicodePath

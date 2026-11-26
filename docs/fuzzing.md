@@ -38,9 +38,8 @@ sprawdzenie lokalne uruchamiamy z `-fuzzminimizetime 1s`.
 
 | Fuzzer | Pakiet | Niezmiennik | Od etapu |
 |---|---|---|---|
-| `FuzzReader` | `zipreader` | bez paniki; czas i pamięć ograniczone limitami; archiwum przyjęte ma wpisy rozłączne, bez luk, z poprawnymi i niepowtarzalnymi nazwami; każdy `Open` daje dokładnie zadeklarowaną liczbę bajtów z zadeklarowanym CRC albo błąd ze stałym kodem | 1 (lista), 2 (treść) |
-| `FuzzReaderOracle` | `zipreader` (test) | archiwum przyjęte w trybie ścisłym: `archive/zip` daje tę samą listę nazw i te same bajty treści | 2 |
-| `FuzzInflate` | `internal/inflate` | bez paniki; pamięć stała; dla każdego wejścia: te same bajty wyjścia co `compress/flate` albo błąd po obu stronach; liczba zużytych bajtów wejścia zgodna | 2 |
+| `FuzzReader` | `zipreader` | bez paniki; błąd to `*Error` ze znanym kodem i przesunięciem w pliku; archiwum przyjęte ma poprawne i niekolidujące nazwy, a dane każdego wpisu leżą w pliku; każdy `Open` daje dokładnie zadeklarowaną liczbę bajtów z zadeklarowanym CRC-32 albo błąd ze znanym kodem, nigdy więcej bajtów, niż zadeklarowano; archiwum przyjęte w trybie ścisłym `archive/zip` przyjmuje z tą samą listą nazw i tymi samymi bajtami treści; wynik nie zależy od podziału odczytów. Limity treści 1 MiB na wpis i 4 MiB łącznie trzymają czas wykonania | 1 (katalog), 2 (treść i wyrocznia) |
+| `FuzzInflate` | `internal/inflate` | bez paniki; błąd to `*inflate.Error`; strumień przyjęty przez nas przyjmuje też `compress/flate` z tymi samymi bajtami; bajty wydane przed naszym błędem są początkiem tego, co daje `compress/flate` | 2 |
 | `FuzzRoundTrip` | `zipwriter` | dowolne wpisy zapisane pisarzem: czytnik w trybie ścisłym oddaje te same nazwy i treść; drugi zapis daje te same bajty | 4 |
 | `FuzzDeflate` | `internal/deflate` | dowolne dane: własna dekompresja i `compress/flate` oddają dane wejściowe | 4 |
 
@@ -51,4 +50,4 @@ pola rekordów, nie tylko bajty).
 
 | Data | Commit | Host i sprzęt | Fuzzer | Czas zegarowy | Wykonania | Wynik |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | kampanii jeszcze nie było; krótkie sprawdzenia lokalne z etapu 1 są w tabeli pomiarów w `testing.md` |
+| — | — | — | — | — | — | kampanii jeszcze nie było; krótkie sprawdzenia lokalne z etapów 1 i 2 są w tabeli pomiarów w `testing.md` |

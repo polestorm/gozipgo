@@ -14,7 +14,7 @@ import (
 )
 
 // inventoryStage to ostatni wykonany etap planu: wiersze inwentarza z wyższym etapem są liczone jako oczekujące.
-const inventoryStage = 1
+const inventoryStage = 2
 
 // inventoryCase to archiwa pokazujące jedną cechę z inwentarza i sprawdzenie tego, czego sam werdykt nie mówi.
 type inventoryCase struct {
@@ -362,6 +362,9 @@ func inventoryCases() map[string]inventoryCase {
 		extra(testkit.Extra(format.ExtraUnicodePath, []byte{1, 0})),                                                 // za krótkie
 		extra(append(testkit.UnicodePath("a.txt", []byte("a.txt")), testkit.UnicodePath("a.txt", []byte("a.txt"))...)),
 	}}
+	for k, v := range layoutCases() {
+		c[k] = v
+	}
 	return c
 }
 
@@ -419,7 +422,8 @@ func TestFormatInventory(t *testing.T) {
 		}
 		good := true
 		for i, data := range cs.archives {
-			r, err := New(bytes.NewReader(data), int64(len(data)), Options{})
+			// Wiersze etapu 1 dotyczą katalogu: ich archiwa mają zmieniony tylko katalog (openDir).
+			r, err := newReader(bytes.NewReader(data), int64(len(data)), Options{}, stage == "2")
 			got := codeOf(err)
 			switch kind {
 			case "reject":
@@ -470,7 +474,7 @@ func TestFormatInventory(t *testing.T) {
 	if rows < 150 {
 		t.Errorf("only %d inventory rows found: the tables of requirements/format.md were not read", rows)
 	}
-	t.Logf("format inventory: %d rows, %d verified, %d pending (stage 2)", rows, verified, pending)
+	t.Logf("format inventory: %d rows, %d verified, %d pending", rows, verified, pending)
 }
 
 func entriesOf(r *Reader) []Entry {

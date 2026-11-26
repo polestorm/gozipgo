@@ -26,6 +26,7 @@ type interopManifest struct {
 			Method   uint16 `json:"method"`
 			Size     uint64 `json:"size"`
 			CRC32    string `json:"crc32"`
+			SHA256   string `json:"sha256"`
 		} `json:"entries"`
 		Expect *struct {
 			Code    string   `json:"code"`
@@ -49,12 +50,12 @@ func loadInterop(t testing.TB) (interopManifest, string) {
 	return m, dir
 }
 
-// TestInteropCorpus mierzy kryterium K2 w zakresie etapu 1: każde archiwum korpusu zgodności jest przyjmowane
+// TestInteropCorpus mierzy kryterium K2: każde archiwum korpusu zgodności jest przyjmowane
 // w trybie ścisłym, a lista wpisów (kolejność, nazwy, rozmiary, CRC-32, metody) i komentarz równają się
 // manifestowi, który tools/corpus zapisał na podstawie archive/zip i plików źródłowych. Wyjątek musi być zapisany
 // w manifeście (expect) z kodem i powodem z docs/differences.md; wtedy archiwum musi dać ten kod w trybie ścisłym
-// i zgodną listę z wymienionymi opcjami. Treść wpisów (SHA-256) dochodzi w etapie 2.
-// REQ: DIR-009
+// i zgodną listę z wymienionymi opcjami. Treść każdego wpisu ma SHA-256 z manifestu.
+// REQ: DIR-009 ENT-006 ENT-007 ENT-009
 func TestInteropCorpus(t *testing.T) {
 	m, dir := loadInterop(t)
 	if len(m.Archives) == 0 {
@@ -113,6 +114,13 @@ func TestInteropCorpus(t *testing.T) {
 				e.Unsupported != "" || e.Index != i {
 				t.Errorf("%s: entry %d is %q method %d size %d crc %08x, the manifest has %q method %d size %d crc %s",
 					a.File, i, e.Name, e.Method, e.UncompressedSize, e.CRC32, w.Name, w.Method, w.Size, w.CRC32)
+				good = false
+				continue
+			}
+			// Treść: SHA-256 z manifestu, policzone przy budowie korpusu z plików źródłowych.
+			body, err := readEntry(r, e)
+			if sum := sha256.Sum256(body); err != nil || hex.EncodeToString(sum[:]) != w.SHA256 {
+				t.Errorf("%s: entry %d (%q): content differs from the manifest (%d bytes, %v)", a.File, i, e.Name, len(body), err)
 				good = false
 			}
 		}

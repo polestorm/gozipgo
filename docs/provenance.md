@@ -9,7 +9,12 @@
   build on. On 2026-11-26 we could not confirm that ISO offers its text free of charge, so it is only cited: no
   requirement of stages 0 and 1 is taken from it. It refers to APPNOTE 6.3.3 and narrows it, so the pinned
   APPNOTE covers the format;
-- RFC 1951, DEFLATE Compressed Data Format Specification version 1.3;
+- RFC 1951, DEFLATE Compressed Data Format Specification version 1.3 (P. Deutsch, May 1996), fetched from
+  `https://www.rfc-editor.org/rfc/rfc1951.txt` on 2026-11-26: 36,944 bytes, SHA-256
+  `5ebf4b5b7fe1c3a0c0ab9aa3ac8c0f3853a7dc484905e76e03b0b0f301350009`. The decoder in `internal/inflate` is written
+  from this text; section numbers in its comments, in `requirements/inflate.md` and in `docs/errors.md` refer to it.
+  The tables of base lengths, base distances and extra bits (3.2.5), the order of the code length codes (3.2.7)
+  and the fixed codes (3.2.6) are data of the format, taken from the RFC;
 - the definition of CRC-32 given in APPNOTE;
 - published descriptions of attacks on ZIP readers (overlapping entries, disagreeing headers, concatenated
   archives), as the source of test cases, cited where used.

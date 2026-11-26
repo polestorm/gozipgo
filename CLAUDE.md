@@ -49,10 +49,13 @@ kolumnę „Stan” w `docs/roadmap.md`.
 ## Jak pracujemy
 
 - etapy w kolejności z `docs/roadmap.md`; **etapy 0 i 1 wykonane 2026-11-26** (narzędzia, budowniczy, korpus,
-  inwentarz formatu, czytnik katalogu: ADR 0002); **następny: etap 2**, a przed nim decyzja w pytaniu 1;
+  inwentarz formatu, czytnik katalogu: ADR 0002), **etap 2 wykonany 2026-11-27** (nagłówki lokalne, układ pliku,
+  własny dekoder DEFLATE, `Open`: ADR 0003); **następny: etap 3** (korpus wrogi, `tools/compare`, `tools/bench`,
+  kampania fuzzingu);
 - **v0.1.0 po etapie 2** (czytnik kompletny) odblokowuje `godocxgo`; pisarz (etap 4) powstaje po utwardzeniu;
-- pytania otwarte (`docs/adr/open-questions.md`) rozstrzygamy w etapach, z rekomendacją; przed etapem 2 potrzebna
-  decyzja w pytaniu 1 (własna dekompresja DEFLATE czy `compress/flate`);
+- pytania otwarte (`docs/adr/open-questions.md`) rozstrzygamy w etapach, z rekomendacją; pytanie 1 rozstrzygnięte
+  2026-11-26 (własna dekompresja DEFLATE, `compress/flate` tylko w testach); przed etapem 4 potrzebna decyzja
+  w pytaniu 2 (kompresja w pisarzu);
 - wymagania w `requirements/` są szkicami do czasu rozpoczęcia ich etapu (`requirements/README.md`); etap zaczyna
   się od potwierdzenia swoich wymagań;
 - najpierw test (archiwum zbudowane w teście albo plik korpusu), potem kod;
@@ -66,7 +69,7 @@ Zasady:
   konkurentem i wyrocznią, więc nie może być wzorem), Info-ZIP, zlib, miniz, 7-Zip, libzip, libarchive,
   `zipfile` Pythona, `java.util.zip`, klauspost/compress i podobnych. Wolno je uruchamiać jako czarną skrzynkę;
 - **zero zależności i zero cgo**: `go.mod` w katalogu głównym nie ma sekcji `require`. Pakiety biblioteki nie
-  importują `archive/zip` ani (zależnie od pytania 1) `compress/flate`; z biblioteki standardowej wolno `io`,
+  importują `archive/zip` ani `compress/flate`; z biblioteki standardowej wolno `io`,
   `errors`, `hash/crc32`, `encoding/binary`, `unicode/utf8`, `sort`, `strconv` i podobne pakiety bez wejścia
   i wyjścia. Test importów pilnuje listy;
 - **biblioteka nie dotyka systemu plików ani sieci**: wejściem jest `io.ReaderAt` z rozmiarem, wyjściem `io.Reader`

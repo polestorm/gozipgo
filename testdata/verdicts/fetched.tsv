@@ -1,4 +1,4 @@
-# path under testdata/fetched	strict	with UnflaggedNames: UTF8	archive/zip of the Go that wrote this file
+# path under testdata/fetched	strict	with UnflaggedNames: UTF8 and AllowPrefix	archive/zip of the Go that wrote this file
 corkami-zip/zip/NT.zip	ok	ok	accepts
 corkami-zip/zip/NTFS.zip	ok	ok	accepts
 corkami-zip/zip/PPMd.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
@@ -20,7 +20,7 @@ corkami-zip/zip/reduced1.zip	ok, entries with unsupported-method	ok, entries wit
 corkami-zip/zip/reduced2.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
 corkami-zip/zip/reduced3.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
 corkami-zip/zip/reduced4.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
-corkami-zip/zip/shrunk.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
+corkami-zip/zip/shrunk.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 corkami-zip/zip/simple.zip	ok	ok	accepts
 corkami-zip/zip/store.zip	ok	ok	accepts
 corkami-zip/zip/unicode.zip	name-unicode-path	name-unicode-path	accepts
@@ -34,12 +34,12 @@ corkami-zip/zip/wavpack.zip	ok, entries with unsupported-method	ok, entries with
 corkami-zip/zip/zip64.zip	ok	ok	accepts
 corkami-zip/zip/zipcrypto.zip	ok, entries with unsupported-encryption	ok, entries with unsupported-encryption	accepts
 corkami-zip/zip/zopfli.zip	ok	ok	accepts
-cpython-zip/exe_with_z64	zip64-inconsistent	zip64-inconsistent	rejects
-cpython-zip/exe_with_zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
+cpython-zip/exe_with_z64	zip64-inconsistent	ok	rejects
+cpython-zip/exe_with_zip	zip-directory-out-of-bounds	ok	accepts
 cpython-zip/zip_cp437_header.zip	name-encoding	name-encoding	accepts
 cpython-zip/zipdir.zip	ok	ok	accepts
 cpython-zip/zipdir_backslash.zip	name-backslash	name-backslash	accepts
-fifield-zipbomb/zbsm.zip	ok	ok	accepts
+fifield-zipbomb/zbsm.zip	zip-entries-overlap	zip-entries-overlap	accepts
 go-archive-zip/comment-truncated.zip	zip-trailing-data	zip-trailing-data	rejects
 go-archive-zip/crc32-not-streamed.zip	ok	ok	accepts
 go-archive-zip/dd.zip	ok	ok	accepts
@@ -48,8 +48,8 @@ go-archive-zip/go-with-datadesc-sig.zip	ok	ok	accepts
 go-archive-zip/readme.zip	zip-trailing-data	zip-trailing-data	accepts
 go-archive-zip/subdir.zip	ok	ok	accepts
 go-archive-zip/symlink.zip	ok	ok	accepts
-go-archive-zip/test-badbase.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
-go-archive-zip/test-baddirsz.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
+go-archive-zip/test-badbase.zip	zip-directory-out-of-bounds	zip-directory-count-mismatch	accepts
+go-archive-zip/test-baddirsz.zip	zip-directory-out-of-bounds	zip-directory-signature	accepts
 go-archive-zip/test-prefix.zip	zip-trailing-data	zip-trailing-data	accepts
 go-archive-zip/test-trailing-junk.zip	zip-trailing-data	zip-trailing-data	accepts
 go-archive-zip/test.zip	ok	ok	accepts
@@ -73,7 +73,7 @@ go-archive-zip/zip64.zip	ok	ok	accepts
 libzip-regress/regress/data/aaaaaaaa-stored.zip	ok	ok	accepts
 libzip-regress/regress/data/bigstored.zh	zip-trailing-data	zip-trailing-data	rejects
 libzip-regress/regress/data/bigzero-zip.zip	ok	ok	accepts
-libzip-regress/regress/data/broken.zip	ok, entries with unsupported-encryption	ok, entries with unsupported-encryption	accepts
+libzip-regress/regress/data/broken.zip	ok, entries with unsupported-encryption, content: zip-checksum	ok, entries with unsupported-encryption, content: zip-checksum	accepts
 libzip-regress/regress/data/changing-size-muchl.zip	ok	ok	accepts
 libzip-regress/regress/data/changing-size-muchlo.zip	ok	ok	accepts
 libzip-regress/regress/data/changing-size-muchlonger.zip	ok	ok	accepts
@@ -122,40 +122,40 @@ libzip-regress/regress/data/firstsecond-split-deflated.zip	ok	ok	accepts
 libzip-regress/regress/data/firstsecond-split-stored.zip	ok	ok	accepts
 libzip-regress/regress/data/firstsecond.zip	ok	ok	accepts
 libzip-regress/regress/data/foo-stored.zip	ok	ok	accepts
-libzip-regress/regress/data/gap-add.zip	ok	ok	accepts
-libzip-regress/regress/data/gap-delete.zip	ok	ok	accepts
-libzip-regress/regress/data/gap-replace.zip	ok	ok	accepts
-libzip-regress/regress/data/gap.zip	ok	ok	accepts
+libzip-regress/regress/data/gap-add.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
+libzip-regress/regress/data/gap-delete.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
+libzip-regress/regress/data/gap-replace.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
+libzip-regress/regress/data/gap.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
 libzip-regress/regress/data/hmac-error.zip	ok, entries with unsupported-encryption	ok, entries with unsupported-encryption	accepts
 libzip-regress/regress/data/incons-archive-comment-longer.zip	zip-no-directory-end	zip-no-directory-end	rejects
 libzip-regress/regress/data/incons-archive-comment-shorter.zip	zip-trailing-data	zip-trailing-data	accepts
 libzip-regress/regress/data/incons-cdoffset.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
 libzip-regress/regress/data/incons-cdsize-large.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	rejects
-libzip-regress/regress/data/incons-cdsize-small.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
-libzip-regress/regress/data/incons-central-compression-method.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-central-compsize-larger-toolarge.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-central-compsize-larger.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-central-compsize-smaller.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-central-crc.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-cdsize-small.zip	zip-directory-out-of-bounds	zip-directory-signature	accepts
+libzip-regress/regress/data/incons-central-compression-method.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-central-compsize-larger-toolarge.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-central-compsize-larger.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-central-compsize-smaller.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-central-crc.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 libzip-regress/regress/data/incons-central-date.zip	ok	ok	accepts
 libzip-regress/regress/data/incons-central-file-comment-longer.zip	zip-directory-truncated	zip-directory-truncated	rejects
 libzip-regress/regress/data/incons-central-file-comment-shorter.zip	zip-directory-count-mismatch	zip-directory-count-mismatch	accepts
 libzip-regress/regress/data/incons-central-file-comment-utf8-ascii.zip	ok	ok	accepts
 libzip-regress/regress/data/incons-central-magic-bad.zip	zip-directory-signature	zip-directory-signature	rejects
 libzip-regress/regress/data/incons-central-magic-bad2.zip	zip-directory-signature	zip-directory-signature	rejects
-libzip-regress/regress/data/incons-central-size-larger.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-data.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-descriptor-overlap.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-central-size-larger.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-data.zip	ok, content: zip-checksum	ok, content: zip-checksum	accepts
+libzip-regress/regress/data/incons-descriptor-overlap.zip	zip-descriptor-mismatch	zip-descriptor-mismatch	accepts
 libzip-regress/regress/data/incons-ef-central-size-wrong.zip	zip-extra-field	zip-extra-field	accepts
 libzip-regress/regress/data/incons-ef-local-dupe-utf8comment.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-ef-local-dupe-utf8name.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-ef-local-dupe-zip64-v1.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-ef-local-dupe-zip64-v2.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-ef-local-id-size.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-ef-local-dupe-utf8name.zip	name-unicode-path	name-unicode-path	accepts
+libzip-regress/regress/data/incons-ef-local-dupe-zip64-v1.zip	zip64-inconsistent	zip64-inconsistent	accepts
+libzip-regress/regress/data/incons-ef-local-dupe-zip64-v2.zip	zip64-inconsistent	zip64-inconsistent	accepts
+libzip-regress/regress/data/incons-ef-local-id-size.zip	zip-extra-field	zip-extra-field	accepts
 libzip-regress/regress/data/incons-ef-local-id.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-ef-local-size.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-ef-local-utf8name-ascii.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-entry-overlaps-cd.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-ef-local-size.zip	zip-extra-field	zip-extra-field	accepts
+libzip-regress/regress/data/incons-ef-local-utf8name-ascii.zip	name-unicode-path	name-unicode-path	accepts
+libzip-regress/regress/data/incons-entry-overlaps-cd.zip	zip-entries-overlap	zip-entries-overlap	accepts
 libzip-regress/regress/data/incons-eocd-magic-bad.zip	zip-no-directory-end	zip-no-directory-end	rejects
 libzip-regress/regress/data/incons-eocd64-gap.zip	zip64-inconsistent	zip64-inconsistent	accepts
 libzip-regress/regress/data/incons-eocd64.zip	zip64-inconsistent	zip64-inconsistent	accepts
@@ -163,37 +163,37 @@ libzip-regress/regress/data/incons-file-count-high.zip	zip-directory-count-misma
 libzip-regress/regress/data/incons-file-count-low.zip	zip-directory-count-mismatch	zip-directory-count-mismatch	rejects
 libzip-regress/regress/data/incons-file-count-overflow.zip	zip64-inconsistent	zip64-inconsistent	accepts
 libzip-regress/regress/data/incons-filename-nul-byte.zip	name-nul	name-nul	accepts
-libzip-regress/regress/data/incons-gap-before-cd.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-gap-before-eocd-after-eocd64loc.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
-libzip-regress/regress/data/incons-gap-before-eocd.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
-libzip-regress/regress/data/incons-gap-before-eocd64.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
+libzip-regress/regress/data/incons-gap-before-cd.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
+libzip-regress/regress/data/incons-gap-before-eocd-after-eocd64loc.zip	zip-directory-out-of-bounds	zip-directory-signature	accepts
+libzip-regress/regress/data/incons-gap-before-eocd.zip	zip-directory-out-of-bounds	zip-directory-signature	accepts
+libzip-regress/regress/data/incons-gap-before-eocd64.zip	zip-directory-out-of-bounds	zip-directory-signature	accepts
 libzip-regress/regress/data/incons-gap-before-eocd64loc.zip	zip64-inconsistent	zip64-inconsistent	accepts
-libzip-regress/regress/data/incons-gap-before-local.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-gap-entries.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-gap-start.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-compression-method.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-compsize-larger.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-compsize-smaller.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-crc.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-filename-long.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-filename-missing.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-filename-short.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-filename.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-magic-bad.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-local-size-larger.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-gap-before-local.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
+libzip-regress/regress/data/incons-gap-entries.zip	zip-unreferenced-data	zip-unreferenced-data	accepts
+libzip-regress/regress/data/incons-gap-start.zip	zip-unreferenced-data	ok	accepts
+libzip-regress/regress/data/incons-local-compression-method.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-compsize-larger.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-compsize-smaller.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-crc.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-filename-long.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-filename-missing.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-filename-short.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-filename.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-magic-bad.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+libzip-regress/regress/data/incons-local-size-larger.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 libzip-regress/regress/data/incons-nonzero-disk.zip	unsupported-multi-volume	unsupported-multi-volume	accepts
-libzip-regress/regress/data/incons-overlap-shared-data.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-overlap.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-stored-data-shorter.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-stored-size.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-streamed-2.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-streamed.zip	ok	ok	accepts
-libzip-regress/regress/data/incons-trailing-garbage.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-overlap-shared-data.zip	zip-unreferenced-data	zip-entries-overlap	accepts
+libzip-regress/regress/data/incons-overlap.zip	zip-entries-overlap	zip-entries-overlap	accepts
+libzip-regress/regress/data/incons-stored-data-shorter.zip	zip-size-mismatch	zip-size-mismatch	accepts
+libzip-regress/regress/data/incons-stored-size.zip	zip-size-mismatch	zip-size-mismatch	accepts
+libzip-regress/regress/data/incons-streamed-2.zip	zip-descriptor-mismatch	zip-descriptor-mismatch	accepts
+libzip-regress/regress/data/incons-streamed.zip	zip-descriptor-mismatch	zip-descriptor-mismatch	accepts
+libzip-regress/regress/data/incons-trailing-garbage.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 libzip-regress/regress/data/incons-utf8-name-surrogate.zip	name-encoding	name-encoding	accepts
 libzip-regress/regress/data/incons-utf8-nul-in-name.zip	name-unicode-path	name-unicode-path	accepts
-libzip-regress/regress/data/incons-zip64-checkcons-overflow.zip	ok	ok	accepts
+libzip-regress/regress/data/incons-zip64-checkcons-overflow.zip	zip-entries-overlap	zip-entries-overlap	accepts
 libzip-regress/regress/data/junk-at-end.zip	zip-trailing-data	zip-trailing-data	accepts
-libzip-regress/regress/data/junk-at-start.zip	zip-directory-out-of-bounds	zip-directory-out-of-bounds	accepts
+libzip-regress/regress/data/junk-at-start.zip	zip-directory-out-of-bounds	ok	accepts
 libzip-regress/regress/data/lzma-no-eos.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
 libzip-regress/regress/data/manyfiles-zip.zip	ok	ok	accepts
 libzip-regress/regress/data/mtime-default.zip	ok	ok	accepts
@@ -255,7 +255,7 @@ libzip-regress/regress/data/utf-8-standardization-output.zip	ok	ok	accepts
 libzip-regress/regress/data/zip-in-archive-comment.zip	zip-multiple-directory-ends	zip-multiple-directory-ends	accepts
 libzip-regress/regress/data/zip64-3mf.zip	ok	ok	accepts
 libzip-regress/regress/data/zip64-in-archive-comment.zip	zip-multiple-directory-ends	zip-multiple-directory-ends	rejects
-libzip-regress/regress/data/zip64-local-both-sizes.zip	ok	ok	accepts
+libzip-regress/regress/data/zip64-local-both-sizes.zip	ok, content: limit-entry-size	ok, content: limit-entry-size	accepts
 libzip-regress/regress/data/zip64.zip	ok	ok	accepts
 libzip-regress/regress/data/zipcmp_zip_dir.zip	ok	ok	accepts
 poi-opc/test-data/document/45690.docm	ok	ok	accepts
@@ -400,8 +400,8 @@ poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-55648050
 poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-5569740188549120.docx	zip-no-directory-end	zip-no-directory-end	rejects
 poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6061520554164224.docx	zip-no-directory-end	zip-no-directory-end	rejects
 poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6120975439364096.docx	zip-directory-out-of-bounds	zip-directory-out-of-bounds	rejects
-poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6442791109263360.docx	zip-directory-out-of-bounds	zip-directory-out-of-bounds	rejects
-poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6733884933668864.docx	ok	ok	accepts
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6442791109263360.docx	zip-directory-out-of-bounds	zip-directory-signature	rejects
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6733884933668864.docx	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 poi-opc/test-data/document/comment.docx	ok	ok	accepts
 poi-opc/test-data/document/crash-517626e815e0afa9decd0ebb6d1dee63fb9907dd.docx	zip-no-directory-end	zip-no-directory-end	rejects
 poi-opc/test-data/document/deep-table-cell.docx	ok	ok	accepts
@@ -454,9 +454,9 @@ poi-opc/test-data/openxml4j/51444.xlsx	ok	ok	accepts
 poi-opc/test-data/openxml4j/53282.xlsx	ok	ok	accepts
 poi-opc/test-data/openxml4j/62592.thmx	ok	ok	accepts
 poi-opc/test-data/openxml4j/64473.xlsx	ok	ok	accepts
-poi-opc/test-data/openxml4j/ContentTypeHasEntities.ooxml	ok	ok	accepts
+poi-opc/test-data/openxml4j/ContentTypeHasEntities.ooxml	zip-extra-field	zip-extra-field	accepts
 poi-opc/test-data/openxml4j/ContentTypeHasParameters.ooxml	ok	ok	accepts
-poi-opc/test-data/openxml4j/CorePropertiesHasEntities.ooxml	ok	ok	accepts
+poi-opc/test-data/openxml4j/CorePropertiesHasEntities.ooxml	zip-extra-field	zip-extra-field	accepts
 poi-opc/test-data/openxml4j/ExcelWithHyperlinks.xlsx	ok	ok	accepts
 poi-opc/test-data/openxml4j/MultipleCoreProperties.docx	ok	ok	accepts
 poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_AlternateTimezones.docx	ok	ok	accepts
@@ -470,7 +470,7 @@ poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_SUCCESS.docx	ok	ok	acce
 poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_UnauthorizedXMLLangAttributeFAIL.docx	ok	ok	accepts
 poi-opc/test-data/openxml4j/OPCCompliance_DerivedPartNameFAIL.docx	name-duplicate	name-duplicate	accepts
 poi-opc/test-data/openxml4j/OPCCompliance_NoCoreProperties.xlsx	ok	ok	accepts
-poi-opc/test-data/openxml4j/PackageRelsHasEntities.ooxml	ok	ok	accepts
+poi-opc/test-data/openxml4j/PackageRelsHasEntities.ooxml	zip-extra-field	zip-extra-field	accepts
 poi-opc/test-data/openxml4j/TestCreatePackageOUTPUT.docx	ok	ok	accepts
 poi-opc/test-data/openxml4j/TestOpenPackageINPUT.docx	ok	ok	accepts
 poi-opc/test-data/openxml4j/TestOpenPackageOUTPUT.docx	ok	ok	accepts
@@ -523,22 +523,22 @@ yauzl/test/failure/End of central directory record signature not found Either no
 yauzl/test/failure/Invalid comment length Expected 1 Found 0 Are there extra bytes at the end of the file Or is the end of central dir signature PK in the com.zip	zip-trailing-data	zip-trailing-data	accepts
 yauzl/test/failure/absolute path C xt.zip	name-absolute	name-absolute	accepts
 yauzl/test/failure/absolute path atxt.zip	name-absolute	name-absolute	accepts
-yauzl/test/failure/compressed uncompressed size mismatch for stored file 2147483647 5.zip	ok	ok	accepts
+yauzl/test/failure/compressed uncompressed size mismatch for stored file 2147483647 5.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 yauzl/test/failure/extra field length exceeds extra field buffer size.zip	zip-extra-field	zip-extra-field	accepts
-yauzl/test/failure/file data overflows file bounds 63 2147483647 308.zip	ok	ok	accepts
+yauzl/test/failure/file data overflows file bounds 63 2147483647 308.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 yauzl/test/failure/invalid central directory file header signature 0x1014b50.zip	zip-directory-signature	zip-directory-signature	rejects
 yauzl/test/failure/invalid characters in fileName a txt.zip	name-backslash	name-backslash	accepts
-yauzl/test/failure/invalid code lengths set.zip	ok	ok	accepts
-yauzl/test/failure/invalid local file header signature 0x3034b50.zip	ok	ok	accepts
+yauzl/test/failure/invalid code lengths set.zip	ok, content: inflate-code-lengths	ok, content: inflate-code-lengths	accepts
+yauzl/test/failure/invalid local file header signature 0x3034b50.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 yauzl/test/failure/invalid relative path xt.zip	name-traversal	name-traversal	accepts
 yauzl/test/failure/invalid zip64 end of central directory record signature.zip	zip64-inconsistent	zip64-inconsistent	rejects
 yauzl/test/failure/multi-disk zip files are not supported found disk number 1.zip	unsupported-multi-volume	unsupported-multi-volume	accepts
-yauzl/test/failure/not enough bytes in the stream expected 2048576 got only 1000000.zip	ok	ok	accepts
-yauzl/test/failure/strong encryption is not supported.zip	ok, entries with unsupported-encryption	ok, entries with unsupported-encryption	accepts
-yauzl/test/failure/too many bytes in the stream expected 82496 got at least 98304.zip	ok	ok	accepts
-yauzl/test/failure/too many length or distance symbols.zip	ok	ok	accepts
+yauzl/test/failure/not enough bytes in the stream expected 2048576 got only 1000000.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+yauzl/test/failure/strong encryption is not supported.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+yauzl/test/failure/too many bytes in the stream expected 82496 got at least 98304.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
+yauzl/test/failure/too many length or distance symbols.zip	ok, content: inflate-code-lengths	ok, content: inflate-code-lengths	accepts
 yauzl/test/failure/unexpected EOF.zip	zip64-inconsistent	zip64-inconsistent	rejects
-yauzl/test/failure/unsupported compression method 1.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
+yauzl/test/failure/unsupported compression method 1.zip	zip-local-header-mismatch	zip-local-header-mismatch	accepts
 yauzl/test/failure/zip64 extended information extra field does not include compressed size.zip	zip-extra-field	zip-extra-field	rejects
 yauzl/test/failure/zip64 extended information extra field does not include relative header offset.zip	zip-extra-field	zip-extra-field	rejects
 yauzl/test/failure/zip64 extended information extra field does not include uncompressed size.zip	zip-extra-field	zip-extra-field	rejects

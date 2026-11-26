@@ -7,8 +7,9 @@ import "strconv"
 // docs/errors.md.
 //
 // "zip-*" and "zip64-*" are violations of the format or structures of the archive that contradict each other;
-// "name-*" are entry names the reader does not accept; "limit-*" are the limits of the reader (Options);
-// "unsupported-*" are valid features outside the scope of the library.
+// "inflate-*" are faults of the DEFLATE stream of an entry; "name-*" are entry names the reader does not accept;
+// "limit-*" are the limits of the reader (Options); "unsupported-*" are valid features outside the scope of the
+// library.
 const (
 	CodeNoDirectoryEnd         = "zip-no-directory-end"         // no end of central directory record that ends with the file
 	CodeMultipleDirectoryEnds  = "zip-multiple-directory-ends"  // more than one record could be the end of central directory
@@ -21,6 +22,19 @@ const (
 	CodeDirectoryEntrySize     = "zip-directory-entry-size"     // an entry whose name ends with "/" has a non-zero size
 	CodeCommentEncoding        = "zip-comment-encoding"         // the comment of an entry with the UTF-8 flag is not UTF-8
 	CodeZip64Inconsistent      = "zip64-inconsistent"           // ZIP64 records missing, misplaced or contradicting the 32-bit ones
+	CodeLocalHeaderMismatch    = "zip-local-header-mismatch"    // no local header where the directory says, or one that contradicts it
+	CodeDescriptorMismatch     = "zip-descriptor-mismatch"      // the data descriptor is missing, malformed or contradicts the directory
+	CodeEntriesOverlap         = "zip-entries-overlap"          // two entries, or an entry and the directory, share bytes of the file
+	CodeUnreferencedData       = "zip-unreferenced-data"        // bytes before the directory that belong to no entry
+	CodeSizeMismatch           = "zip-size-mismatch"            // the content is longer or shorter than the declared size
+	CodeChecksum               = "zip-checksum"                 // the CRC-32 of the content differs from the declared one
+
+	CodeInflateBlockType    = "inflate-block-type"    // a DEFLATE block of the reserved type
+	CodeInflateStoredLength = "inflate-stored-length" // the length of a stored block does not match its complement
+	CodeInflateCodeLengths  = "inflate-code-lengths"  // the code lengths of a block do not describe a Huffman code
+	CodeInflateDistance     = "inflate-distance"      // an invalid length or distance, or a distance before the start of the output
+	CodeInflateTruncated    = "inflate-truncated"     // the compressed data end before the DEFLATE stream does
+	CodeInflateTrailingData = "inflate-trailing-data" // the DEFLATE stream ends before the compressed data do
 
 	CodeNameEmpty       = "name-empty"             // an entry without a name
 	CodeNameNUL         = "name-nul"               // a zero byte in a name
@@ -37,6 +51,10 @@ const (
 	CodeLimitNameLength    = "limit-name-length"
 	CodeLimitCommentLength = "limit-comment-length"
 	CodeLimitExtraLength   = "limit-extra-length"
+
+	CodeLimitEntrySize = "limit-entry-size" // the content of an entry is larger than the limit
+	CodeLimitTotalSize = "limit-total-size" // the content read from the archive is larger than the limit
+	CodeLimitRatio     = "limit-ratio"      // the compression ratio of an entry is above the limit
 
 	CodeUnsupportedEncryption       = "unsupported-encryption"        // traditional, strong or AE-x encryption; encrypted directory
 	CodeUnsupportedMethod           = "unsupported-method"            // a compression method other than Stored (0) and Deflate (8)

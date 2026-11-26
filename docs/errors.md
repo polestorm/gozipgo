@@ -6,15 +6,20 @@ the offset, so a caller can translate or classify errors by code. A code, once r
 not removed. `TestErrorCatalog` checks that this file lists exactly the codes the source defines and that a test
 raises each of them.
 
-Errors of the `io.ReaderAt` the caller supplied are not wrapped: `New` returns them unchanged. A source that ends
-before the size the caller gave yields `io.ErrUnexpectedEOF`; a source that returns no bytes and no error yields
-`io.ErrNoProgress`.
+Errors of the `io.ReaderAt` the caller supplied are not wrapped: `New` and the readers of `Open` and `OpenRaw`
+return them unchanged. A source that ends before the size the caller gave yields `io.ErrUnexpectedEOF`; a source
+that returns no bytes and no error yields `io.ErrNoProgress`. Two more errors are not about an archive and have no
+code: `zipreader.ErrNoEntry` (an `Entry` that does not belong to the reader) and `zipreader.ErrClosed` (a read
+after `Close`).
 
-"APPNOTE" is APPNOTE.TXT 6.3.10, the .ZIP File Format Specification ([provenance.md](provenance.md)). Rules that
-go beyond the specification are decisions of this project: ADR 0001 (one reading or none) and ADR 0002.
+"APPNOTE" is APPNOTE.TXT 6.3.10, the .ZIP File Format Specification, and "RFC 1951" is the DEFLATE specification
+([provenance.md](provenance.md)). Rules that go beyond the specifications are decisions of this project: ADR 0001
+(one reading or none), ADR 0002 (the directory) and ADR 0003 (local headers, layout and content).
 
-The catalogue grows with the library: this is the state after stage 1 (the central directory). Stage 2 adds the
-codes of local headers, data descriptors, entry contents and DEFLATE.
+Errors come from two places. `New` reports everything that can be known without decompressing: the directory,
+the local headers, the data descriptors and the layout of the file. `Open` and the reader it returns report what
+is about the content of one entry: `unsupported-*` for the entry, `limit-entry-size`, `limit-ratio`,
+`limit-total-size`, `zip-size-mismatch` (content), `zip-checksum` and `inflate-*`.
 
 ## When an archive has more than one fault
 
@@ -29,7 +34,19 @@ codes of local headers, data descriptors, entry contents and DEFLATE.
 6. limits on the archive comment, the number of entries and the size of the directory;
 7. the directory headers in order; within one header: signature, truncation, flags, limits on lengths, name,
    structure of the extra field, ZIP64 extra field, disk number, Unicode Path, comment, size of a directory entry;
-8. conflicting names.
+8. conflicting names;
+9. local header offsets, in the order of the directory: each must leave room for a header before the directory;
+10. the entries in the order of their position in the file; within one entry: signature of the local header,
+    flags, method, name, room for the header, structure of its extra field, its ZIP64 extra field, CRC-32 and
+    sizes, Unicode Path, encryption or patch extra fields, overlap with the next entry or the directory, data
+    descriptor or unreferenced bytes after the data, sizes of a Stored entry.
+
+Bytes before the first entry are reported between steps 9 and 10.
+
+Reading the content of an entry reports the first fault of the stream; at its end, in this order: bytes of
+compressed data after the DEFLATE stream, content shorter than declared, CRC-32. Content longer than declared is
+reported as soon as the declared size has been delivered. The bytes delivered before an error do not depend on
+the size of the buffers the caller reads with.
 
 ## Format and consistency (`zip-*`, `zip64-*`)
 
@@ -45,7 +62,27 @@ codes of local headers, data descriptors, entry contents and DEFLATE.
 | `zip-extra-field` | `CodeExtraField` | APPNOTE 4.5.1 | The extra field is not a sequence of (header ID, data size, data) blocks that fills its declared length exactly. |
 | `zip-directory-entry-size` | `CodeDirectoryEntrySize` | APPNOTE 4.3.8 | An entry whose name ends with `/` declares a non-zero compressed or uncompressed size. |
 | `zip-comment-encoding` | `CodeCommentEncoding` | APPNOTE 4.4.4 bit 11, appendix D.2 | The comment of an entry with the UTF-8 flag is not valid UTF-8. |
-| `zip64-inconsistent` | `CodeZip64Inconsistent` | APPNOTE 4.3.14, 4.3.15, 4.4.1.4, 4.5.3 | The ZIP64 structures are missing, misplaced or contradict the 32-bit ones: a field holds 0xFFFF or 0xFFFFFFFF and there is no ZIP64 locator or extra field; the locator does not point at a ZIP64 record that ends where the locator begins; a field of the ordinary record that is not 0xFFFF/0xFFFFFFFF differs from the ZIP64 record; the ZIP64 extra field does not hold exactly the fields the header refers to, or appears twice, or appears when no field refers to it. |
+| `zip64-inconsistent` | `CodeZip64Inconsistent` | APPNOTE 4.3.14, 4.3.15, 4.4.1.4, 4.5.3 | The ZIP64 structures are missing, misplaced or contradict the 32-bit ones: a field holds 0xFFFF or 0xFFFFFFFF and there is no ZIP64 locator or extra field; the locator does not point at a ZIP64 record that ends where the locator begins; a field of the ordinary record that is not 0xFFFF/0xFFFFFFFF differs from the ZIP64 record; the ZIP64 extra field does not hold exactly the fields the header refers to, or appears twice, or appears when no field refers to it. In a local header: a size is 0xFFFFFFFF and there is no ZIP64 extra field, the field does not hold exactly the two sizes, appears twice, or differs from a size field that is not 0xFFFFFFFF. |
+| `zip-local-header-mismatch` | `CodeLocalHeaderMismatch` | APPNOTE 4.3.7, 4.4.4, 4.4.16; ADR 0003 | The offset in the directory does not leave room for a local header before the directory, there is no local header signature there, or the local header contradicts the directory: flags, compression method, name; CRC-32 or a size (with bit 3 of the flags they may be zero instead); a header that runs into the directory; an encryption or patch extra field the directory does not have. The version needed and the date and time are not compared. |
+| `zip-descriptor-mismatch` | `CodeDescriptorMismatch` | APPNOTE 4.3.9, 4.4.4 bit 3; ADR 0003 | An entry with bit 3 of the flags is not followed, up to the next entry or the directory, by exactly one data descriptor of 12, 16, 20 or 24 bytes (without or with the signature, 4-byte or 8-byte sizes), the 16-byte or 24-byte form has no signature, or the descriptor differs from the directory. `Offset` is the end of the data. |
+| `zip-entries-overlap` | `CodeEntriesOverlap` | ADR 0001, ADR 0003 | The local header and data of an entry reach into the next entry or into the central directory; two directory entries with the same local header offset included. `Entry` is the later entry of the pair in the directory and `Other` the earlier one, or -1 when the entry reaches into the directory. |
+| `zip-unreferenced-data` | `CodeUnreferencedData` | APPNOTE 4.3.6; ADR 0001, ADR 0003 | Bytes before the central directory that belong to no entry: before the first entry (`Offset` 0; `Options.AllowPrefix` accepts them), after the data of an entry without bit 3, or before the directory of an archive with no entries. A spanning marker before the first entry gives this code too. |
+| `zip-size-mismatch` | `CodeSizeMismatch` | APPNOTE 4.4.8, 4.4.9 | From `New`: a Stored entry whose compressed and uncompressed sizes differ. From reading: the content is longer or shorter than the uncompressed size the directory declares. |
+| `zip-checksum` | `CodeChecksum` | APPNOTE 4.4.7 | The CRC-32 of the content differs from the one the directory declares. Returned by the read that would otherwise return `io.EOF`. |
+
+## DEFLATE (`inflate-*`)
+
+Returned while the content of a Deflate entry is read. `Offset` is the position in the file where the fault was
+found (for `inflate-trailing-data`, the start of the data).
+
+| Code | Constant | Rule | Meaning |
+|---|---|---|---|
+| `inflate-block-type` | `CodeInflateBlockType` | RFC 1951, 3.2.3 | A block of the reserved type (BTYPE 11). |
+| `inflate-stored-length` | `CodeInflateStoredLength` | RFC 1951, 3.2.4 | In a stored block NLEN is not the one's complement of LEN. |
+| `inflate-code-lengths` | `CodeInflateCodeLengths` | RFC 1951, 3.2.2, 3.2.7; ADR 0003 | The description of the dynamic codes does not give Huffman codes: more than 286 literal/length codes or more than 30 distance codes; a code length code or literal/length code that is not complete (over-subscribed or with unused codes); a distance code that is neither complete, nor empty, nor a single code of one bit; a repeat with no previous length or past the end of the lengths; no code for the end of the block. |
+| `inflate-distance` | `CodeInflateDistance` | RFC 1951, 3.2.3, 3.2.5, 3.2.6 | A distance that reaches before the start of the output, a length symbol 286 or 287, a distance symbol 30 or 31, a length in a block with no distance codes, or bits that are no code of an incomplete distance code. |
+| `inflate-truncated` | `CodeInflateTruncated` | RFC 1951, 3.2.3; APPNOTE 4.4.8 | The compressed data of the entry end before the last block of the stream does. |
+| `inflate-trailing-data` | `CodeInflateTrailingData` | APPNOTE 4.4.8; ADR 0003 | The stream ends before the compressed data of the entry do: the entry holds bytes that are not part of its content. |
 
 ## Entry names (`name-*`)
 
@@ -74,12 +111,15 @@ Each limit is a field of `zipreader.Options`; zero means the default and a negat
 | `limit-name-length` | `CodeLimitNameLength` | `Options.MaxNameLength`, default 4,096 bytes | The name of an entry, as stored, is longer. |
 | `limit-comment-length` | `CodeLimitCommentLength` | `Options.MaxCommentLength`, default 65,535 bytes | The archive comment or the comment of an entry is longer. |
 | `limit-extra-length` | `CodeLimitExtraLength` | `Options.MaxExtraLength`, default 65,535 bytes | The extra field of an entry is longer. |
+| `limit-entry-size` | `CodeLimitEntrySize` | `Options.MaxEntrySize`, default 1 GiB | From `Open`: the directory declares more content for the entry. Reading never delivers more than the declared size, so the limit holds for the real content. |
+| `limit-ratio` | `CodeLimitRatio` | `Options.MaxRatio`, default 1,000 | From `Open`: the entry declares more than 1 MiB of content and more than `MaxRatio` bytes of content for each byte of compressed data. |
+| `limit-total-size` | `CodeLimitTotalSize` | `Options.MaxTotalSize`, default 4 GiB | From reading: the content delivered by all readers of the `Reader` together reached the limit. The bytes up to the limit are delivered; an entry opened twice counts twice. |
 
 ## Out of scope (`unsupported-*`)
 
 Valid features the library does not implement. Four of the codes describe one entry rather than the archive:
-the entry is listed, `Entry.Unsupported` holds the code, and opening the entry will return it (stage 2). When
-several apply, the first in the order encryption, patch, method, version is given.
+the entry is listed, `Entry.Unsupported` holds the code, `Open` returns it and `OpenRaw` still gives the stored
+bytes. When several apply, the first in the order encryption, patch, method, version is given.
 
 | Code | Constant | Rule | Meaning |
 |---|---|---|---|

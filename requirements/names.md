@@ -15,9 +15,9 @@ Przegląd z tekstem APPNOTE 6.3.10: 2026-11-26 (etap 1). Decyzje: ADR 0001 pkt 5
 | NAME-008 | Pole dodatkowe Unicode Path (0x7075, APPNOTE 4.6.9), jeśli występuje, musi mieć wersję 1, CRC-32 pola nazwy i dawać tę samą nazwę co pole nazwy po zdekodowaniu; inaczej `name-unicode-path`. |
 | NAME-009 | Wykrywanie powtórzeń i sprawdzanie nazw jest liniowo-logarytmiczne względem liczby wpisów, liniowe względem długości nazw i nie zależy od kolejności iteracji po mapie. |
 
-Status: szkic
+Status: przyjęte
 
-Etap 2 (nagłówki lokalne).
+Przyjęte w etapie 2 (2026-11-27).
 
 | Id | Wymaganie |
 |---|---|

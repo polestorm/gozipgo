@@ -27,6 +27,8 @@ r.Relaxed() []Relaxation       // które poluzowania zadziałały (puste w trybi
 // etap 1 (ADR 0002): Options.UnflaggedNames (ASCIIOnly, CP437, UTF8, CodePage z tablicą
 // Options.CodePage) zamiast AllowCP437; Options.FoldCase;
 // Entry.Unsupported: kod, który zwróci Open dla wpisu z cechą spoza zakresu
+// etap 2 (ADR 0003): Options.MaxEntrySize, MaxTotalSize, MaxRatio, AllowPrefix; Entry.DataOffset;
+// ErrNoEntry dla wpisu spoza czytnika, ErrClosed dla odczytu po Close
 rc, err := r.Open(e)           // io.ReadCloser treści wpisu
 raw, err := r.OpenRaw(e)       // dane skompresowane, bez dekompresji (kopiowanie wpisu do innego archiwum)
 ```
@@ -55,9 +57,8 @@ jako surowe bajty, przesunięcia obszaru wpisu w pliku, indeks w katalogu.
    rozłączne, przylegać do siebie bez luk, zaczynać się na początku pliku i kończyć na początku katalogu
    (albo rekordów ZIP64).
 
-Krok 6 kosztuje jeden mały odczyt na wpis. Dla archiwów o bardzo wielu wpisach opcja `LazyLocalHeaders` przenosi
-porównanie nagłówka lokalnego do `Open`, ale sprawdzenie rozłączności i luk na podstawie katalogu zostaje
-w `New` (do decyzji w etapie 2, czy opcja jest potrzebna; domyślnie wszystko w `New`).
+Krok 6 kosztuje jeden mały odczyt na wpis (przez bufor, w kolejności położenia). Opcji odraczającej porównanie
+nagłówków do `Open` nie ma (ADR 0003 pkt 1 i 9): po `New` układ pliku jest sprawdzony w całości.
 
 ### Treść wpisu (`Open`)
 
