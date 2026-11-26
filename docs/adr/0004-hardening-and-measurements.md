@@ -38,7 +38,7 @@ i wymusiły kilka decyzji o tym, co i jak liczymy.
    początek bez liczenia rang.
 6. **Nowy import w kodzie biblioteki: `sync`** (pula dekoderów). Bez wejścia i wyjścia; lista w `api_test.go`.
 7. **Otwarcie archiwum jest wolniejsze niż w `archive/zip` i tak zostaje.** `New` czyta każdy nagłówek lokalny
-   (ADR 0003 pkt 1); przy 100 000 wpisów to około 0,45 µs na wpis wobec 0,09 µs. K7 mówi o rozpakowaniu; koszt
+   (ADR 0003 pkt 1); przy 100 000 wpisów to około 0,55 µs na wpis wobec 0,12 µs. K7 mówi o rozpakowaniu; koszt
    otwarcia podajemy w tabeli osobno.
 8. **Wyniki pomiarów mają testy.** `TestCompareRecorded` i `TestBenchRecorded` czytają surowe pliki
    z `docs/results/` i sprawdzają na nich K3 (dla gozipgo) i próg K7. Test nie mierzy sam, więc nie zależy od

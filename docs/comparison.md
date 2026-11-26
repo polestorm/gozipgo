@@ -12,7 +12,7 @@ go -C tools/bench run . -root ../..       # speed and memory; raw: docs/results/
 ## Behaviour
 
 <!-- compare:begin -->
-Measured on 2026-11-27 at commit `4a0326b with uncommitted changes` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
+Measured on 2026-11-27 at commit `d84f0ab` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
 
 - gozipgo: this commit
 - archive/zip: go1.26.6
@@ -114,17 +114,17 @@ rejects although others read them are listed, with the reason, in [differences.m
 ## Speed and memory
 
 <!-- bench:begin -->
-Measured on 2026-11-27 at commit `4a0326b with uncommitted changes` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
+Measured on 2026-11-27 at commit `d84f0ab` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
 gozipgo is faster. Reading includes opening the archive and, for both readers, checking the CRC-32.
-The largest ratio for reading content is 1.30; criterion K7 allows 1.5.
+The largest ratio for reading content is 1.33; criterion K7 allows 1.5.
 
 | Case | gozipgo | archive/zip | time, gozipgo / archive/zip | allocated, gozipgo | allocated, archive/zip |
 |---|---|---|---|---|---|
-| Deflate, xml, 32 MiB (7266999 bytes compressed) | 528 MB/s | 397 MB/s | 0.75 | 82 KiB | 120 KiB |
-| Deflate, table, 32 MiB (13028297 bytes compressed) | 271 MB/s | 237 MB/s | 0.87 | 82 KiB | 118 KiB |
-| Deflate, random, 32 MiB (33564807 bytes compressed) | 7666 MB/s | 8170 MB/s | 1.07 | 130 KiB | 51 KiB |
-| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3834 MB/s | 4998 MB/s | 1.30 | 42 KiB | 51 KiB |
-| Stored, 32 MiB | 9079 MB/s | 9196 MB/s | 1.01 | 80 KiB | 6 KiB |
-| open an archive of 100000 entries (81 MiB) | 44.7 ms (447 ns per entry) | 9.2 ms (92 ns per entry) | 4.86 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) |
-| open and read all 100000 entries | 749.1 ms (7491 ns per entry) | 801.6 ms (8016 ns per entry) | 0.93 | 36.3 MiB (380 bytes per entry) | 53.5 MiB (561 bytes per entry) |
+| Deflate, xml, 32 MiB (7266999 bytes compressed) | 395 MB/s | 321 MB/s | 0.81 | 130 KiB | 120 KiB |
+| Deflate, table, 32 MiB (13028297 bytes compressed) | 203 MB/s | 191 MB/s | 0.94 | 130 KiB | 118 KiB |
+| Deflate, random, 32 MiB (33564807 bytes compressed) | 6223 MB/s | 6948 MB/s | 1.12 | 82 KiB | 51 KiB |
+| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3138 MB/s | 4188 MB/s | 1.33 | 42 KiB | 51 KiB |
+| Stored, 32 MiB | 7479 MB/s | 7575 MB/s | 1.01 | 80 KiB | 6 KiB |
+| open an archive of 100000 entries (81 MiB) | 54.6 ms (546 ns per entry) | 11.5 ms (115 ns per entry) | 4.77 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) |
+| open and read all 100000 entries | 848.9 ms (8489 ns per entry) | 821.2 ms (8212 ns per entry) | 1.03 | 36.3 MiB (381 bytes per entry) | 53.5 MiB (561 bytes per entry) |
 <!-- bench:end -->
