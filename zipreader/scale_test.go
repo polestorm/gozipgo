@@ -58,6 +58,8 @@ var drainBuffer = make([]byte, 32<<10)
 
 // TestLinearTime: podwojenie rozmiaru danych albo liczby wpisów zwiększa czas odczytu treści i pełnego New
 // (z nagłówkami lokalnymi) najwyżej 2,5 raza; próg testu to 3,5, z zapasem na szum pomiaru.
+// Wpis Stored nie jest tu mierzony: jego odczyt to kopiowanie i CRC-32, trwa około milisekundy na 16 MiB, czyli
+// mniej niż rozdzielczość zegara na Windows, i zależy od pamięci podręcznej procesora bardziej niż od kodu.
 // REQ: SAFE-005
 func TestLinearTime(t *testing.T) {
 	if testing.Short() {
@@ -94,7 +96,6 @@ func TestLinearTime(t *testing.T) {
 	}{
 		{"content, highest ratio", read(zeros(32 << 20)), read(zeros(64 << 20))},
 		{"content, text", read(text(4 << 20)), read(text(8 << 20))},
-		{"content, stored", read(testkit.File{Name: "s", Data: pattern(16 << 20)}), read(testkit.File{Name: "s", Data: pattern(32 << 20)})},
 		{"New with local headers", layout(20000), layout(40000)},
 	} {
 		small, large := bestOf(5, c.small), bestOf(5, c.large)
