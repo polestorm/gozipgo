@@ -1,0 +1,2234 @@
+{
+  "note": "Conformance corpus of gozipgo: archives with invented content made by real programs. Written by tools/corpus; the expect blocks are written by hand. See testdata/README.md.",
+  "sources": [
+    {
+      "name": "data.bin",
+      "size": 4096,
+      "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+    },
+    {
+      "name": "empty.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hello.txt",
+      "size": 16,
+      "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+    },
+    {
+      "name": "lorem.txt",
+      "size": 10538,
+      "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+    },
+    {
+      "name": "sub/deep/leaf.txt",
+      "size": 24,
+      "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+    },
+    {
+      "name": "sub/inner.txt",
+      "size": 26,
+      "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+    },
+    {
+      "name": "with space.txt",
+      "size": 21,
+      "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+    },
+    {
+      "name": "zażółć gęślą jaźń.txt",
+      "size": 28,
+      "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+    }
+  ],
+  "archives": [
+    {
+      "id": "7zip-default",
+      "file": "7zip-default.zip",
+      "program": "7-Zip",
+      "version": "7-Zip (z) 26.01 (arm64) : Copyright (c) 1999-2026 Igor Pavlov : 2026-04-27",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 7zz a -tzip 7zip-default.zip .",
+      "made": "2026-11-26",
+      "sha256": "9d419558ef798a24990d16d5503424da44f8189d97d15253b6abeab5d0e911f8",
+      "size": 6534,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "7zip-fastest",
+      "file": "7zip-fastest.zip",
+      "program": "7-Zip",
+      "version": "7-Zip (z) 26.01 (arm64) : Copyright (c) 1999-2026 Igor Pavlov : 2026-04-27",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 7zz a -tzip -mx=1 7zip-fastest.zip .",
+      "made": "2026-11-26",
+      "sha256": "dfbf71619fd03b9478b65aff39f064d52f813f3c4e7b4ce9d3b27211daa75041",
+      "size": 6554,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "7zip-stored",
+      "file": "7zip-stored.zip",
+      "program": "7-Zip",
+      "version": "7-Zip (z) 26.01 (arm64) : Copyright (c) 1999-2026 Igor Pavlov : 2026-04-27",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 7zz a -tzip -mx=0 7zip-stored.zip .",
+      "made": "2026-11-26",
+      "sha256": "2e3ff6027a9c78dbe530a454ba0e8b305add2bf7964d25f4f6a9cde6eaa80194",
+      "size": 16265,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "7zip-ultra",
+      "file": "7zip-ultra.zip",
+      "program": "7-Zip",
+      "version": "7-Zip (z) 26.01 (arm64) : Copyright (c) 1999-2026 Igor Pavlov : 2026-04-27",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 7zz a -tzip -mx=9 7zip-ultra.zip .",
+      "made": "2026-11-26",
+      "sha256": "e197bd7e44a0cda873a03fd59eb2e86a3b50ed8028c65d8b2273b42b4b68251a",
+      "size": 6450,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "go-deflate",
+      "file": "go-deflate.zip",
+      "program": "Go archive/zip",
+      "version": "go1.26.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "zip.Writer.CreateHeader, Method Deflate; names sorted; see goArchive in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "128f99c86f5cccb2b6b247b2f431f73d083df945cc117c417561445c50dc1018",
+      "size": 6298,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "go-raw",
+      "file": "go-raw.zip",
+      "program": "Go archive/zip",
+      "version": "go1.26.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "zip.Writer.CreateRaw, Method Store (no data descriptor); names sorted; see goArchive in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "c6b6cdf589223bda265915da286fd1b0bc9a51e75e847465238fbc9bc5d84869",
+      "size": 15691,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "go-stored",
+      "file": "go-stored.zip",
+      "program": "Go archive/zip",
+      "version": "go1.26.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "zip.Writer.CreateHeader, Method Store; names sorted; see goArchive in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "f15e102c581e51c77130ccaa24d6d338a215d2496f86f483f2a837789ec46bf3",
+      "size": 15981,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "infozip-best",
+      "file": "infozip-best.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 zip -9 -r infozip-best.zip .",
+      "made": "2026-11-26",
+      "sha256": "e738457b7d67d8000656a24509b53f44a9c47ade30bf470a1ff0d9f0c328af04",
+      "size": 6701,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "infozip-comment",
+      "file": "infozip-comment.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 printf 'An archive comment.\\n' | zip -z -r infozip-comment.zip .",
+      "made": "2026-11-26",
+      "sha256": "0d59ecd78498f6967928fc82560b972e3b6ae90ba29a8a060b6df5bdd25e8af7",
+      "size": 6736,
+      "comment": "An archive comment.",
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "infozip-default",
+      "file": "infozip-default.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 zip -r infozip-default.zip .",
+      "made": "2026-11-26",
+      "sha256": "968da7f446dda41e5171cae3d27122aac8243034cc8a7e50a676689047b090ab",
+      "size": 6717,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "infozip-noextra",
+      "file": "infozip-noextra.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 zip -X -r infozip-noextra.zip .",
+      "made": "2026-11-26",
+      "sha256": "a178b6d6c9c271ff5096404579afe52c1b3dcb6c7689aef72e58f3b579237609",
+      "size": 6145,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "infozip-stored",
+      "file": "infozip-stored.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 zip -0 -r infozip-stored.zip .",
+      "made": "2026-11-26",
+      "sha256": "a25d74770a5a35b9f5ab3b3b1701641e33bf1130757e910b5def18ad1aebf049",
+      "size": 16441,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "infozip-stream",
+      "file": "infozip-stream.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 zip -r - . | cat > infozip-stream.zip",
+      "made": "2026-11-26",
+      "sha256": "b19412ea2ee97cecbebed029558f1044fd07e55f41ebbb83f26146c594b5a5e3",
+      "size": 6861,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "infozip-zip64",
+      "file": "infozip-zip64.zip",
+      "program": "Info-ZIP zip",
+      "version": "This is Zip 3.0 (July 5th 2008), by Info-ZIP, with modifications by Apple Inc.",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 zip -fz -r infozip-zip64.zip .",
+      "made": "2026-11-26",
+      "sha256": "d72e42b71e36d919fd4862b5999d5f89a82a8759fd586bfacf20c9db1b77373f",
+      "size": 7145,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "macos-ditto",
+      "file": "macos-ditto.zip",
+      "program": "macOS ditto",
+      "version": "ditto of macOS 27.0.1",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 ditto -c -k . macos-ditto.zip",
+      "made": "2026-11-26",
+      "sha256": "0bbc0b715f1557da3c3be76056c5b56c55c1ad3f10bfc139e6693d2a21a1da99",
+      "size": 6581,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "macos-ditto-rsrc",
+      "file": "macos-ditto-rsrc.zip",
+      "program": "macOS ditto",
+      "version": "ditto of macOS 27.0.1",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 ditto -c -k --sequesterRsrc . macos-ditto-rsrc.zip   # after: xattr -w com.example.note invented hello.txt",
+      "made": "2026-11-26",
+      "sha256": "b80ff43a77319a84892afe6c6448383a3ce750028a7d5e5dd2dacbd02879ec9f",
+      "size": 6942,
+      "entries": [
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        },
+        {
+          "name": "sub/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "sub/deep/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "__MACOSX/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "__MACOSX/._hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 156,
+          "crc32": "5e077d93",
+          "sha256": "b9c630612aa36d7c207c09035b7fc91e5ff38d8f0dce7cbcf97f884b93a9aa2f"
+        },
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=UTF8"
+        ],
+        "reason": "docs/differences.md: the program stores a UTF-8 name without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "python-deflated",
+      "file": "python-deflated.zip",
+      "program": "Python zipfile",
+      "version": "Python 3.9.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 python3 -I -c \"$PYTHON_SCRIPT\" deflated python-deflated.zip   # the script is pythonScript in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "329cdc4bd08e5d08a49cfa54aacc48f2ed22cc0b590eb8847d087c3759e78d4b",
+      "size": 5985,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "python-stored",
+      "file": "python-stored.zip",
+      "program": "Python zipfile",
+      "version": "Python 3.9.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 python3 -I -c \"$PYTHON_SCRIPT\" stored python-stored.zip   # the script is pythonScript in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "65441a0baf53552ac46cabd618d629d7660663812d69ed29e9e32c1c6b24ed8d",
+      "size": 15691,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "python-stream",
+      "file": "python-stream.zip",
+      "program": "Python zipfile",
+      "version": "Python 3.9.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 python3 -I -c \"$PYTHON_SCRIPT\" stream python-stream.zip   # the script is pythonScript in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "f4f196f26e2c31dca9819898fedcc10b97b63036c69e3bfc8672a220781454e5",
+      "size": 6113,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "python-zip64",
+      "file": "python-zip64.zip",
+      "program": "Python zipfile",
+      "version": "Python 3.9.6",
+      "system": "macOS 27.0.1 arm64",
+      "command": "TZ=UTC LC_ALL=en_US.UTF-8 python3 -I -c \"$PYTHON_SCRIPT\" zip64 python-zip64.zip   # the script is pythonScript in tools/corpus/main.go",
+      "made": "2026-11-26",
+      "sha256": "2a92009a5d2b3fbbeef04422d9b93daea44269c42269dd96941b96e7c7da8302",
+      "size": 6145,
+      "entries": [
+        {
+          "name": "data.bin",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 4096,
+          "crc32": "65bce193",
+          "sha256": "cf30f7c910993c0d40506f95fa818645a86ca3fe1cecaa0a187f2f3cedb579e0"
+        },
+        {
+          "name": "empty.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "emptydir/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hello.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 16,
+          "crc32": "4ddb9988",
+          "sha256": "34fcf1829466cb9f554631bf9590bb8ff03a69720355ac5cf40e6904f165d4a7"
+        },
+        {
+          "name": "lorem.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 10538,
+          "crc32": "0ef08a9d",
+          "sha256": "63936751b5e264f7d81cea05d8506d1266e594b3f526225b6ecc2d57efc82aba"
+        },
+        {
+          "name": "sub/deep/leaf.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 24,
+          "crc32": "70dfafd2",
+          "sha256": "d35fd3b39259bed85bb471ca7e0d85349eb48855da4fc46f5d28497069290f59"
+        },
+        {
+          "name": "sub/inner.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 26,
+          "crc32": "df22ab0d",
+          "sha256": "d04e976dc6f858094dce5ee123454a25505896dcaec0c92c3cab79c7839283fb"
+        },
+        {
+          "name": "with space.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 21,
+          "crc32": "a52cebdd",
+          "sha256": "a90f72a1f7c2c7feeca5dbc15e70c76cfbabfe62b37b1f0676c5748e19ba6828"
+        },
+        {
+          "name": "zażółć gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 28,
+          "crc32": "30839c45",
+          "sha256": "443b48687f4f6a1f0c3e5e9c977cdd5a0fe4db52620ed5ed6c96d0c134c4a798"
+        }
+      ]
+    },
+    {
+      "id": "windows11-7zip",
+      "file": "windows11-7zip.zip",
+      "program": "7-Zip",
+      "version": "7-Zip for Windows; version not recorded",
+      "system": "Windows 11 (Polish)",
+      "command": "7-Zip File Manager or context menu: Add to archive, format zip",
+      "made": "2026-11-26",
+      "sha256": "0c161d2bb5f4d2af99c38fb049aabf9f1a97186b88ce1900bdde6265367d5ab8",
+      "size": 3223,
+      "entries": [
+        {
+          "name": "liryki/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/aforyzmy agusi.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 382,
+          "crc32": "e27d7a43",
+          "sha256": "62b6eda60fc2892e6d463c25a98bfa43edca59c363396fce8dba2bf9bdfe1a9f"
+        },
+        {
+          "name": "liryki/Agres�aw.txt",
+          "name_hex": "6c6972796b692f41677265738861772e747874",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 729,
+          "crc32": "f3bbe4d8",
+          "sha256": "45da95a3803b45ea436d19422db66a71df4687bec38b27bc439828a0b27767fd"
+        },
+        {
+          "name": "liryki/buziak z pentelk�",
+          "name_hex": "6c6972796b692f62757a69616b207a2070656e74656c6ba5",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/kariera nieo�wietlonego kolarza.txt",
+          "name_hex": "6c6972796b692f6b617269657261206e69656f98776965746c6f6e65676f206b6f6c61727a612e747874",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 146,
+          "crc32": "ee2029cc",
+          "sha256": "37b7a756caddb0d6c9768d8d8e7ff4f99bc77a8c89009a4a213489dfd90a82ac"
+        },
+        {
+          "name": "liryki/monochromatyczne kanary",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/s�ni�cie �l� �m�/",
+          "name_hex": "6c6972796b692f73a5be6e699863696520986ca920866da92f",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/s�ni�cie �l� �m�/z�z�.docx",
+          "name_hex": "6c6972796b692f73a5be6e699863696520986ca920866da92f7aa97aa9982e646f6378",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/wiersze.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 291,
+          "crc32": "457ae720",
+          "sha256": "8d99769ad07312a6ce8b436f70502f9c5aa58591e4a4f62dc5a9eb24592b6301"
+        },
+        {
+          "name": "liryki/za�ci� g�l� ja�.txt",
+          "name_hex": "6c6972796b692f7a61bea2886369862067a9986ca5206a61abe42e747874",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "expect": {
+        "code": "name-encoding",
+        "options": [
+          "UnflaggedNames=CodePage:CP852"
+        ],
+        "reason": "docs/differences.md: the program stores names in the OEM code page of the system (852 on a Polish Windows) without the UTF-8 flag (bit 11)"
+      }
+    },
+    {
+      "id": "windows11-explorer",
+      "file": "windows11-explorer.zip",
+      "program": "Windows File Explorer",
+      "version": "Windows 11 (Polish); exact build not recorded",
+      "system": "Windows 11",
+      "command": "File Explorer: select the folder, context menu, Compress to > ZIP file",
+      "made": "2026-11-26",
+      "sha256": "692ca65e0619024b482d300ad7631246830b20c3578b0d2657e9baa7f920bd67",
+      "size": 3105,
+      "entries": [
+        {
+          "name": "liryki/",
+          "utf8_flag": false,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/buziak z pentelką",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/aforyzmy agusi.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 382,
+          "crc32": "e27d7a43",
+          "sha256": "62b6eda60fc2892e6d463c25a98bfa43edca59c363396fce8dba2bf9bdfe1a9f"
+        },
+        {
+          "name": "liryki/zażółcić gęślą jaźń.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/monochromatyczne kanary",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/sążniście ślę ćmę/",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/sążniście ślę ćmę/zęzęś.docx",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "liryki/wiersze.txt",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 291,
+          "crc32": "457ae720",
+          "sha256": "8d99769ad07312a6ce8b436f70502f9c5aa58591e4a4f62dc5a9eb24592b6301"
+        },
+        {
+          "name": "liryki/Agresław.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 729,
+          "crc32": "f3bbe4d8",
+          "sha256": "45da95a3803b45ea436d19422db66a71df4687bec38b27bc439828a0b27767fd"
+        },
+        {
+          "name": "liryki/kariera nieoświetlonego kolarza.txt",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 146,
+          "crc32": "ee2029cc",
+          "sha256": "37b7a756caddb0d6c9768d8d8e7ff4f99bc77a8c89009a4a213489dfd90a82ac"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+gozipgo
+Copyright 2026 Michał Głębowski
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Test data by other authors is fetched, not committed, and is not covered by the licence of gozipgo. Sources,
+licences and checksums are in testdata/README.md and testdata/sources.json.

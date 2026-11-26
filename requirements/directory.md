@@ -1,0 +1,19 @@
+# Wymagania: katalog archiwum
+
+Status: przyjęte
+
+Przegląd z tekstem APPNOTE 6.3.10: 2026-11-26 (etap 1). Decyzje: ADR 0001, ADR 0002. Kody: `docs/errors.md`.
+
+| Id | Wymaganie |
+|---|---|
+| DIR-001 | Koniec katalogu centralnego (APPNOTE 4.3.16) jest szukany w ostatnich 22 + 65 535 bajtach pliku. Plik krótszy niż 22 bajty albo bez rekordu kończącego się równo z plikiem daje `zip-no-directory-end`. |
+| DIR-002 | Musi istnieć dokładnie jeden rekord końca katalogu, którego komentarz kończy się równo z końcem pliku (APPNOTE 4.3.1). Dwa takie rekordy dają `zip-multiple-directory-ends`. Gdy nie ma żadnego, a jakiś rekord kończy się przed końcem pliku, wynikiem jest `zip-trailing-data` z przesunięciem pierwszego bajtu po komentarzu. Sygnatura w komentarzu albo w danych, po której rekord nie kończy się równo z plikiem, nie jest błędem (ADR 0002 pkt 3). |
+| DIR-003 | Numer dysku, numer dysku z katalogiem i liczba wpisów „na tym dysku” muszą opisywać archiwum jednoczęściowe (APPNOTE 4.4.19–4.4.21, 4.4.13, 4.3.15); inaczej `unsupported-multi-volume`. |
+| DIR-004 | Przesunięcie i rozmiar katalogu (APPNOTE 4.4.23, 4.4.24) muszą dawać obszar, który kończy się dokładnie tam, gdzie zaczyna się koniec katalogu albo rekord ZIP64; inaczej `zip-directory-out-of-bounds`. Arytmetyka nie może się przepełnić. |
+| DIR-005 | ZIP64 (APPNOTE 4.3.14, 4.3.15, 4.4.1.4): gdy którekolwiek pole końca katalogu ma wartość graniczną, lokalizator ZIP64 musi stać bezpośrednio przed końcem katalogu. Lokalizator rozpoznany po sygnaturze, także bez wartości granicznych, musi wskazywać rekord końca katalogu ZIP64, który ma poprawną sygnaturę i kończy się dokładnie na początku lokalizatora. Pola rekordu zwykłego bez wartości granicznej muszą się równać polom ZIP64. Niespójność daje `zip64-inconsistent`; sektor danych rozszerzalnych `unsupported-zip64-data`; wersja wymagana powyżej 4.5 `unsupported-version`. |
+| DIR-006 | Limity liczby wpisów i rozmiaru katalogu są sprawdzane przed alokacją pamięci zależnej od tych wartości; liczba wpisów większa niż rozmiar katalogu podzielony przez 46 daje `zip-directory-count-mismatch` bez czytania katalogu. |
+| DIR-007 | Każdy nagłówek katalogu centralnego (APPNOTE 4.3.12) ma poprawną sygnaturę (`zip-directory-signature`), a jego części zmienne mieszczą się w katalogu (`zip-directory-truncated`). Liczba nagłówków i ich łączny rozmiar równają się wartościom z końca katalogu; inaczej `zip-directory-count-mismatch`. |
+| DIR-008 | Pole dodatkowe ZIP64 w nagłówku katalogu (APPNOTE 4.5.3) zawiera dokładnie te pola (rozmiar po rozpakowaniu, rozmiar skompresowany, przesunięcie nagłówka lokalnego, numer dysku), których odpowiedniki w nagłówku mają wartość graniczną, w tej kolejności. Dłuższe pole jest przyjmowane tylko jako postać pełna (pola po kolei od pierwszego), gdy czytanie według wartości granicznych i czytanie pozycyjne dają te same wartości, a pola nadmiarowe równają się nagłówkowi. Inna długość, powtórzone pole ZIP64, pole ZIP64 bez wartości granicznych albo wartość graniczna bez pola daje `zip64-inconsistent`. |
+| DIR-009 | Lista wpisów jest w kolejności katalogu centralnego (APPNOTE 4.4.1.3); każdy wpis ma indeks. Kolejność nie zależy od niczego poza treścią archiwum. |
+| DIR-010 | Data i czas wpisu (APPNOTE 4.4.6) są wydawane jako wartości zapisane w archiwum (rok, miesiąc, dzień, godzina, minuta, sekunda z pól MS-DOS), bez strefy czasowej i bez zależności od ustawień systemu; wartości poza zakresem kalendarza są wydawane bez poprawiania, ze znacznikiem niepoprawności. |
+| DIR-011 | Wpis katalogu (nazwa zakończona `/`) musi mieć oba rozmiary równe zero (APPNOTE 4.3.8); inaczej `zip-directory-entry-size`. |

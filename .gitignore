@@ -1,0 +1,10 @@
+.DS_Store
+/.claude/*
+!/.claude/CLAUDE.md
+# dane pobierane narzędziem tools/fetch (testdata/sources.json) nie trafiają do repozytorium
+/testdata/fetched/
+/testdata/**/.fetch-*/
+__pycache__/
+# wyniki robocze narzędzi; liczby publikowane trafiają do docs/results/
+/out/
+/ref/

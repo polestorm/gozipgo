@@ -1,0 +1,53 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # jedna wersja: bieżące wydanie Go (decyzja właściciela z 2026-11-26, ADR 0002 pkt 13)
+        go: ["stable"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - uses: actions/cache@v4
+        with:
+          path: testdata/fetched
+          key: fetched-${{ hashFiles('testdata/sources.json') }}
+      - name: fetch test data
+        run: go -C tools/fetch run . -root ../..
+      - name: gofmt
+        if: matrix.os == 'ubuntu-latest'
+        run: test -z "$(gofmt -l .)"
+      - name: no dependencies in the library module
+        if: matrix.os == 'ubuntu-latest'
+        run: "! grep -q '^require' go.mod"
+      - name: no cgo in the library
+        if: matrix.os == 'ubuntu-latest'
+        run: CGO_ENABLED=0 go build ./...
+      - run: go vet ./...
+      - run: go test ./...
+      - name: tools
+        shell: bash
+        run: |
+          for tool in fetch fuzz evidence corpus; do
+            test -z "$(gofmt -l tools/$tool)"
+            go -C tools/$tool vet ./...
+            go -C tools/$tool test ./...
+          done
+      - name: conformance corpus matches its manifest
+        run: go -C tools/corpus run . -check
+      - name: race detector
+        if: matrix.os == 'ubuntu-latest' && matrix.go == 'stable'
+        run: go test -race ./...

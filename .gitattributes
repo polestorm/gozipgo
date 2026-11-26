@@ -1,0 +1,6 @@
+# Dane testowe są porównywane co do bajta: git ich nie przekształca.
+/testdata/** -text
+/**/testdata/** -text
+/api/** text eol=lf
+*.go text eol=lf
+*.md text eol=lf

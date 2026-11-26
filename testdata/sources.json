@@ -1,0 +1,390 @@
+{
+  "note": "Źródła danych testowych pobieranych narzędziem tools/fetch. Pobrane pliki nie trafiają do repozytorium (.gitignore). Opis i zasady użycia: testdata/README.md. Każdy zestaw ma adres z przypiętym commitem i sumę; z cudzych repozytoriów bierzemy tylko katalogi z danymi (pole include), nie kod.",
+  "sets": [
+    {
+      "name": "yauzl",
+      "kind": "archive",
+      "dest": "testdata/fetched/yauzl",
+      "note": "Test archives of yauzl (MIT): test/success, test/failure, test/wrong-entry-sizes. Only these data directories are extracted; the code of the library and of its tests is not.",
+      "url": "https://codeload.github.com/thejoshwolfe/yauzl/tar.gz/f5798e15204ffbb9a428b00217e4659684a41b0f",
+      "strip": 1,
+      "include": [
+        "test/success/",
+        "test/failure/",
+        "test/wrong-entry-sizes/"
+      ],
+      "tree_sha256": "3272b8f498b237b12b35b0f234921291144aedfb66c50a3a782469ec5bf5b008",
+      "file_count": 84
+    },
+    {
+      "name": "libzip-regress",
+      "kind": "archive",
+      "dest": "testdata/fetched/libzip-regress",
+      "note": "Regression data of libzip (BSD-3-Clause, see LICENSE in the source repository). Only regress/data/ is extracted; the code of the library and of its tests is not.",
+      "url": "https://codeload.github.com/nih-at/libzip/tar.gz/280272fb83b819e27ad8a69ef0bbfd19f1e8a7bb",
+      "strip": 1,
+      "include": [
+        "regress/data/"
+      ],
+      "tree_sha256": "17bd61f369f435615b7aa8786b0ddc4edb534132e7e5dfc4872b5b828b0fdc8a",
+      "file_count": 192
+    },
+    {
+      "name": "rc-zip",
+      "kind": "archive",
+      "dest": "testdata/fetched/rc-zip",
+      "note": "Test archives of rc-zip (Apache-2.0 or MIT). Only testdata/ is extracted.",
+      "url": "https://codeload.github.com/bearcove/rc-zip/tar.gz/0ace5a7fafae196a0203e9d7d38703b4fcacfc4c",
+      "strip": 1,
+      "include": [
+        "testdata/"
+      ],
+      "tree_sha256": "ae077b4c5f8987389af71fd9b14720cc22b5a775f71a65f6789fac3f12aae712",
+      "file_count": 40
+    },
+    {
+      "name": "corkami-zip",
+      "kind": "archive",
+      "dest": "testdata/fetched/corkami-zip",
+      "note": "ZIP proofs of concept by Ange Albertini (corkami/pocs). The repository has no licence file: development use only, never copied into this repository or into published results other than by reference.",
+      "url": "https://codeload.github.com/corkami/pocs/tar.gz/6d277c83efdceb6916ee8c6efe6ff0639cc6193f",
+      "strip": 1,
+      "include": [
+        "zip/"
+      ],
+      "tree_sha256": "52b472c22a540502cd2122b7827f4dd115e6d14ed030f57d2bb4e94d178f3889",
+      "file_count": 36
+    },
+    {
+      "name": "zip-slip",
+      "kind": "archive",
+      "dest": "testdata/fetched/zip-slip",
+      "note": "Zip Slip sample archives (snyk). No licence file: development use only, by reference.",
+      "url": "https://codeload.github.com/snyk/zip-slip-vulnerability/tar.gz/b7d57e47f7da846253e2a9098affd2cf1743ddc1",
+      "strip": 1,
+      "include": [
+        "archives/"
+      ],
+      "tree_sha256": "a87b71658e580c2e7609be4b2530724522dfb943abcb3fab3f362996b8b69206",
+      "file_count": 5
+    },
+    {
+      "name": "poi-opc",
+      "kind": "archive",
+      "dest": "testdata/fetched/poi-opc",
+      "note": "Apache POI test data (Apache-2.0): OPC packages, also damaged ones, and Word documents. Only two directories of test-data/ are extracted.",
+      "url": "https://codeload.github.com/apache/poi/tar.gz/f63b77bb7497d950073969f9d418f2270dd87edd",
+      "strip": 1,
+      "include": [
+        "test-data/openxml4j/",
+        "test-data/document/"
+      ],
+      "tree_sha256": "a887c449c2d0f86753161685917aea3b27cec777cc8d2181efae529df7e03ad5",
+      "file_count": 353
+    },
+    {
+      "name": "go-archive-zip",
+      "kind": "files",
+      "dest": "testdata/fetched/go-archive-zip",
+      "note": "Test data of Go archive/zip (BSD-3-Clause). Data files only; the code of the package is not fetched. Commit 880f3ba4028fbe81523ce4935c29c225972fff02.",
+      "files": [
+        {
+          "path": "comment-truncated.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/comment-truncated.zip"
+          ],
+          "sha256": "898b98f14b279d1a79c9e9d3e15d92f7ec630bb6990226ecb693a80c4bf0696c"
+        },
+        {
+          "path": "crc32-not-streamed.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/crc32-not-streamed.zip"
+          ],
+          "sha256": "bbf109e827cd301e67ef3b08082db8e0bacd9d7fe7e517278bf41821d3207898"
+        },
+        {
+          "path": "dd.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/dd.zip"
+          ],
+          "sha256": "dcec917ea7852418f21c2b8fe67c8355fd6ff0e875c5bc3718e1b8684a064171"
+        },
+        {
+          "path": "dupdir.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/dupdir.zip"
+          ],
+          "sha256": "80a6fbb7eb70527702bb1312d0ecf41c282b5c6910e47abe93858ce296cfbc93"
+        },
+        {
+          "path": "go-no-datadesc-sig.zip.base64",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/go-no-datadesc-sig.zip.base64"
+          ],
+          "sha256": "d33fbc6fe8e2b2d853197e2cb72ecf31d3daf2fef68238958a5396003b9d166b"
+        },
+        {
+          "path": "go-with-datadesc-sig.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/go-with-datadesc-sig.zip"
+          ],
+          "sha256": "6be41a66578438afdda77edfaec1857ca553fa091dc31a2bd7db0d8a3a3e9a30"
+        },
+        {
+          "path": "gophercolor16x16.png",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/gophercolor16x16.png"
+          ],
+          "sha256": "f29bb9177d08fb50027e74a37eb00a69906a5994dc55a041670703efe4ecfdc9"
+        },
+        {
+          "path": "readme.notzip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/readme.notzip"
+          ],
+          "sha256": "0121fd4afcf9b100043bc597bd41fa63e93fef253ae058bf706a7f76bf44820a"
+        },
+        {
+          "path": "readme.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/readme.zip"
+          ],
+          "sha256": "9ee76aa8a1c2ce04924b43424bf9d1b3138f812a80d6239f06f1133876f50d40"
+        },
+        {
+          "path": "subdir.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/subdir.zip"
+          ],
+          "sha256": "d57eff008fa79aab7d863c5e003d2bc35a5f734a9eac8b62289b9c6c395bb71f"
+        },
+        {
+          "path": "symlink.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/symlink.zip"
+          ],
+          "sha256": "c871234a8d0c8787eacb357e53245d6663803fef1750518204a1aa97ec321f62"
+        },
+        {
+          "path": "test-badbase.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/test-badbase.zip"
+          ],
+          "sha256": "d11fa637a1153619ed3443401942d242238519feb24233bc1965a693b5f0d326"
+        },
+        {
+          "path": "test-baddirsz.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/test-baddirsz.zip"
+          ],
+          "sha256": "60452121e8533c13ae22ce41a2539278049ffb63a08e1fea3d7239b7e627e55a"
+        },
+        {
+          "path": "test-prefix.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/test-prefix.zip"
+          ],
+          "sha256": "d88728cfbbc295b8e146bde1e21fd4514ea60cc9909eb9ddb7537b0d448bfcea"
+        },
+        {
+          "path": "test-trailing-junk.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/test-trailing-junk.zip"
+          ],
+          "sha256": "acb77caa34accd11067629705ceb3d7cb01868134ae56fca3f9c6348dbd585d4"
+        },
+        {
+          "path": "test.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/test.zip"
+          ],
+          "sha256": "e36d2ee9fbc41f7fe0b2717dc4b1fdc1978c9396dd28f3398b1f3a1a29dc146c"
+        },
+        {
+          "path": "time-22738.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-22738.zip"
+          ],
+          "sha256": "ffecd2607b24eb31a12d3d94b8cf951c48b2e17c66b19d71150fb98da0a727e3"
+        },
+        {
+          "path": "time-7zip.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-7zip.zip"
+          ],
+          "sha256": "12e1b7b71a0943547acca38516aef5d89d2466c79dae5279a915389b7beace4d"
+        },
+        {
+          "path": "time-go.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-go.zip"
+          ],
+          "sha256": "45c2b43fd74e27b3a511a2f3f31de08651689366e4344ff5e4a644b3be35f4b9"
+        },
+        {
+          "path": "time-infozip.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-infozip.zip"
+          ],
+          "sha256": "0e129eb30eeda61f7bec57f7708047750e4cf6add713a289d4b879b394459846"
+        },
+        {
+          "path": "time-osx.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-osx.zip"
+          ],
+          "sha256": "c374ae7910a6b6b8499c0bb7757474456450c994bf39dbe4d9a1ab8361f50856"
+        },
+        {
+          "path": "time-win7.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-win7.zip"
+          ],
+          "sha256": "28774f00d29804f65a6af708a125d9b56ea20a98b1681ae4ab0e001474710e2a"
+        },
+        {
+          "path": "time-winrar.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-winrar.zip"
+          ],
+          "sha256": "058b9c059e88fcd17d8e8bee4239f31073969c8affa4993498dbb7e5c1508518"
+        },
+        {
+          "path": "time-winzip.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/time-winzip.zip"
+          ],
+          "sha256": "b1ae5e20dc1608e8fda463f6d19c667f1dd2ce290981565528a1e11ac7452bfa"
+        },
+        {
+          "path": "unix.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/unix.zip"
+          ],
+          "sha256": "ae84fe91799e805724d20949195c4476aa4e7c124a9229c79987a4f7e0cdb178"
+        },
+        {
+          "path": "utf8-7zip.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/utf8-7zip.zip"
+          ],
+          "sha256": "fda31b416bcacec89be0a8e1a9fe8f16b07b1761b34285a073f3cdde25209c4e"
+        },
+        {
+          "path": "utf8-infozip.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/utf8-infozip.zip"
+          ],
+          "sha256": "d73791c790a2e4593a207d5e9ef7a5fdcb937db571be85747421b951655c98f6"
+        },
+        {
+          "path": "utf8-osx.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/utf8-osx.zip"
+          ],
+          "sha256": "5da98564f0188c6ea25c5a681adac2bcf402a22b7e16bfdf087034be9e8b17a5"
+        },
+        {
+          "path": "utf8-winrar.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/utf8-winrar.zip"
+          ],
+          "sha256": "f41036f0d011ae1c98de383360b1e26eb41f216cea17ab909f8fcf027ba20791"
+        },
+        {
+          "path": "utf8-winzip.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/utf8-winzip.zip"
+          ],
+          "sha256": "f04b2fca5ebaac681e7ca1f859bc0a1abe4193800255a449b2a3a871dc3f64a0"
+        },
+        {
+          "path": "winxp.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/winxp.zip"
+          ],
+          "sha256": "d60fd70a6de4cc16363b5a424bcf703f5345f01c6a0595f5246ae12822bf719d"
+        },
+        {
+          "path": "zip64-2.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/zip64-2.zip"
+          ],
+          "sha256": "941bf893b024dcb2269684357b6df18ca747ce873d6bdc626796572bf3a3f9e3"
+        },
+        {
+          "path": "zip64.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/golang/go/880f3ba4028fbe81523ce4935c29c225972fff02/src/archive/zip/testdata/zip64.zip"
+          ],
+          "sha256": "d1a659d5a2d292682a17d789834d97b97650b6a8d188799ac1166fd85ace7dbd"
+        }
+      ]
+    },
+    {
+      "name": "cpython-zip",
+      "kind": "files",
+      "dest": "testdata/fetched/cpython-zip",
+      "note": "Test data of CPython zipfile (PSF licence). Commit ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef.",
+      "files": [
+        {
+          "path": "exe_with_z64",
+          "urls": [
+            "https://raw.githubusercontent.com/python/cpython/ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef/Lib/test/archivetestdata/exe_with_z64"
+          ],
+          "sha256": "b1a8382acacce4022b02daa25b293ddfc1dc6ce6a3ddb8b3d95b517592c5a428"
+        },
+        {
+          "path": "exe_with_zip",
+          "urls": [
+            "https://raw.githubusercontent.com/python/cpython/ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef/Lib/test/archivetestdata/exe_with_zip"
+          ],
+          "sha256": "2f27f5c9108936a693fd496565e5c5050b5c62cfbb61d1d5da9d97c89533d637"
+        },
+        {
+          "path": "testdata_module_inside_zip.py",
+          "urls": [
+            "https://raw.githubusercontent.com/python/cpython/ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef/Lib/test/archivetestdata/testdata_module_inside_zip.py"
+          ],
+          "sha256": "ba5f2b50b0712b113f73ed1f23b741b0a120e2cabbe6cfbe73653ae2724d00f8"
+        },
+        {
+          "path": "zip_cp437_header.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/python/cpython/ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef/Lib/test/archivetestdata/zip_cp437_header.zip"
+          ],
+          "sha256": "e2cdb56febb5106607bf5f9b92b2b7a9516814e7650139cfe46f6b36bfcfa327"
+        },
+        {
+          "path": "zipdir.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/python/cpython/ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef/Lib/test/archivetestdata/zipdir.zip"
+          ],
+          "sha256": "19cb87050b0fb410da3b88df752c2e1bdaeec77ac052b04febef31a68823cfcb"
+        },
+        {
+          "path": "zipdir_backslash.zip",
+          "urls": [
+            "https://raw.githubusercontent.com/python/cpython/ff9803a617a3a4d42f5ce9c1ea2cb3bf224766ef/Lib/test/archivetestdata/zipdir_backslash.zip"
+          ],
+          "sha256": "afdfa1f139c91c2b486f3a4a931bef18e08883fc5f5c81975f5bd19cf92e6d1f"
+        }
+      ]
+    },
+    {
+      "name": "fifield-zipbomb",
+      "kind": "files",
+      "dest": "testdata/fetched/fifield-zipbomb",
+      "note": "David Fifield, A better zip bomb (WOOT 2019): overlapping entries. zbsm.zip is 42 kB and expands to 5.5 GB: never extract it with a program that has no limits.",
+      "files": [
+        {
+          "path": "zbsm.zip",
+          "urls": [
+            "https://www.bamsoftware.com/hacks/zipbomb/zbsm.zip"
+          ],
+          "sha256": "fb4ff972d21189beec11e05109c4354d0cd6d3b629263d6c950cf8cc3f78bd99"
+        }
+      ]
+    }
+  ]
+}
