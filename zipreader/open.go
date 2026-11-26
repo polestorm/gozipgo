@@ -4,6 +4,7 @@ import (
 	"errors"
 	"hash/crc32"
 	"io"
+	"sync"
 
 	"github.com/polestorm/gozipgo/internal/format"
 	"github.com/polestorm/gozipgo/internal/inflate"
@@ -86,7 +87,8 @@ func (s *rawReader) Read(p []byte) (int, error) {
 // Reader exceeds Options.MaxTotalSize.
 //
 // Open may be called any number of times, also at the same time from several goroutines; each call gives an
-// independent reader. Close releases nothing and does not close the archive. Open reads no byte outside the data
+// independent reader. Close does not close the archive; it lets the reader's buffers be reused, so call it when
+// done, and do not use the reader from another goroutine while closing it. Open reads no byte outside the data
 // of the entry.
 func (r *Reader) Open(e Entry) (io.ReadCloser, error) {
 	own := r.lookup(e)
@@ -110,13 +112,18 @@ func (r *Reader) Open(e Entry) (io.ReadCloser, error) {
 	c := &contentReader{r: r, e: own, left: own.UncompressedSize}
 	raw := &rawReader{ra: r.ra, off: int64(own.DataOffset), left: own.CompressedSize}
 	if own.Method == format.MethodDeflate {
-		c.inf = inflate.NewReader(raw)
+		c.inf = decoders.Get().(*inflate.Reader)
+		c.inf.Reset(raw)
 		c.src = c.inf
 	} else {
 		c.src = raw
 	}
 	return c, nil
 }
+
+// decoders trzyma dekodery DEFLATE zwrócone przez Close: dekoder to około 46 KiB (okno, bufor, tablice), a archiwa
+// miewają tysiące małych wpisów. Wynik odczytu nie zależy od tego, czy dekoder jest nowy (inflate.Reader.Reset).
+var decoders = sync.Pool{New: func() any { return inflate.NewReader(nil) }}
 
 // contentReader wydaje treść wpisu i sprawdza ją w locie (ENT-006…009).
 type contentReader struct {
@@ -134,11 +141,14 @@ func (c *contentReader) fail(code, message string) error {
 	return c.err
 }
 
-// Close kończy odczyt; nie zamyka archiwum.
+// Close kończy odczyt; nie zamyka archiwum. Dekoder wraca do puli, a czytnik przestaje go używać.
 func (c *contentReader) Close() error {
-	if c.err == nil || c.err == io.EOF {
-		c.err = ErrClosed
+	if c.inf != nil {
+		c.inf.Reset(nil)
+		decoders.Put(c.inf)
+		c.inf, c.src = nil, nil
 	}
+	c.err = ErrClosed
 	return nil
 }
 

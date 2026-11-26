@@ -50,4 +50,4 @@ pola rekordów, nie tylko bajty).
 
 | Data | Commit | Host i sprzęt | Fuzzer | Czas zegarowy | Wykonania | Wynik |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | kampanii jeszcze nie było; krótkie sprawdzenia lokalne z etapów 1 i 2 są w tabeli pomiarów w `testing.md` |
+| — | `4a0326b` | Synology StormSyn (DS224+, Celeron J4125, 4 rdzenie) | `FuzzInflate`, `FuzzReader` | zlecone 25 h | — | w kolejce od 2026-11-27 (za zadaniami innych projektów); wiersze z wynikiem dopisze `tools/fuzz -import` po zakończeniu. Krótkie sprawdzenia lokalne z etapów 1–3 są w tabeli pomiarów w `testing.md` |

@@ -63,6 +63,16 @@ dla archiwów z macOS, `CodePage` z tablicą CP852 dla archiwum 7-Zipa z polskie
 | `macos-ditto.zip`, `macos-ditto-rsrc.zip` | `ditto` z macOS 27.0.1 | to samo |
 | `windows11-7zip.zip` | 7-Zip na polskim Windows 11 (wersja niezapisana) | nazwy z polskimi literami zapisane w stronie OEM systemu (CP852) bez bitu 11; nazwa w UTF-8 jest tylko w polu Unicode Path nagłówka lokalnego, katalog centralny jej nie ma. Jako CP437 archiwum też się czyta, ale daje inne znaki („Agresêaw”). `TestSameFolderTwoWriters` porównuje wynik z archiwum Eksploratora tego samego folderu |
 
+## Korpus zgodności: różnice między czarnymi skrzynkami (K3)
+
+Stan z 2026-11-27, `tools/compare` (`comparison.md`, surowy wynik `results/compare.tsv`). `gozipgo`, `archive/zip`,
+7-Zip i `zipfile` Pythona dają na wszystkich 22 archiwach tę samą treść co manifest. Dwa programy nie:
+
+| Program | Archiwa | Co się dzieje | Czyja to cecha |
+|---|---|---|---|
+| Info-ZIP UnZip 6.00 w wydaniu Apple (macOS 27.0.1) | `go-deflate.zip`, `go-raw.zip`, `go-stored.zip`, `windows11-7zip.zip` | kończy pracę kodem 50 („write error”) na pliku o nazwie z polskimi literami: w archiwach Go nazwa jest w UTF-8 z bitem 11, w archiwum 7-Zipa w CP852; pozostałe pliki rozpakowuje poprawnie | programu: to wydanie nie zamienia takiej nazwy na poprawną nazwę pliku w systemie APFS. Treść, którą czytamy my, jest zgodna z manifestem |
+| bsdtar 3.5.3 (libarchive 3.7.4, macOS) | `macos-ditto-rsrc.zip` | daje 8 plików zamiast 10: wpisy `__MACOSX/._*` scala z plikami, które opisują (atrybuty rozszerzone macOS) | programu i systemu: tak libarchive traktuje pliki AppleDouble na macOS. My wydajemy je jako zwykłe wpisy, tak jak są zapisane |
+
 ## Dekompresja względem `compress/flate`
 
 Strumienie, dla których werdykt (poprawny albo błędny) różni się, z odwołaniem do RFC 1951. Test różnicowy

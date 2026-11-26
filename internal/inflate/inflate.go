@@ -205,6 +205,20 @@ type Reader struct {
 // NewReader zwraca dekoder strumienia czytanego z src.
 func NewReader(src io.Reader) *Reader { return &Reader{src: src} }
 
+// Reset przygotowuje dekoder do nowego strumienia czytanego z src, bez nowej alokacji. Okno i tablice kodów
+// zostają, jak były: odległość jest sprawdzana względem liczby bajtów wydanych w bieżącym strumieniu, a kody są
+// budowane przed każdym blokiem, więc dane poprzedniego strumienia nie mogą trafić do wyjścia.
+func (r *Reader) Reset(src io.Reader) {
+	r.src, r.srcErr = src, nil
+	r.ip, r.ie, r.pulled = 0, 0, 0
+	r.bb, r.nb = 0, 0
+	r.wp, r.rp, r.flushed = 0, 0, 0
+	r.state, r.final = stateHeader, false
+	r.lit, r.dist, r.distEmpty = nil, nil, false
+	r.storedLeft, r.copyLen, r.copyDist = 0, 0, 0
+	r.err = nil
+}
+
 // Consumed zwraca liczbę bajtów wejścia zużytych przez strumień. Po końcu strumienia (Read zwróciło io.EOF) to
 // długość strumienia w bajtach: bity dopełniające ostatni bajt należą do niego.
 func (r *Reader) Consumed() int64 { return r.pulled - int64(r.nb/8) }
@@ -583,14 +597,17 @@ func (r *Reader) copyMatch() {
 	n := min(r.copyLen, windowSize-r.wp)
 	r.copyLen -= n
 	sp := r.wp - r.copyDist
-	if sp >= 0 && r.copyDist >= n {
-		copy(r.win[r.wp:r.wp+n], r.win[sp:sp+n])
-		r.wp += n
-	} else {
-		// Źródło zachodzi na cel (odległość mniejsza niż długość) albo leży w poprzednim obrocie okna.
-		if sp < 0 {
-			sp += windowSize
+	if sp >= 0 {
+		// Źródło leży przed celem i może na niego zachodzić (odległość mniejsza niż długość): kopiujemy
+		// kawałkami, z których każdy sięga do bieżącego końca wyjścia, więc dostępne źródło się podwaja.
+		for n > 0 {
+			k := copy(r.win[r.wp:r.wp+n], r.win[sp:r.wp])
+			r.wp += k
+			n -= k
 		}
+	} else {
+		// Źródło leży w poprzednim obrocie okna.
+		sp += windowSize
 		for ; n > 0; n-- {
 			r.win[r.wp] = r.win[sp]
 			r.wp++

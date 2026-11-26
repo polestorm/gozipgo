@@ -50,8 +50,9 @@ kolumnę „Stan” w `docs/roadmap.md`.
 
 - etapy w kolejności z `docs/roadmap.md`; **etapy 0 i 1 wykonane 2026-11-26** (narzędzia, budowniczy, korpus,
   inwentarz formatu, czytnik katalogu: ADR 0002), **etap 2 wykonany 2026-11-27** (nagłówki lokalne, układ pliku,
-  własny dekoder DEFLATE, `Open`: ADR 0003); **następny: etap 3** (korpus wrogi, `tools/compare`, `tools/bench`,
-  kampania fuzzingu);
+  własny dekoder DEFLATE, `Open`: ADR 0003); **v0.1.0 wydane 2026-11-27**; **etap 3 wykonany 2026-11-27** poza kampanią fuzzingu
+  (korpus wrogi, `tools/compare`, `tools/bench`: ADR 0004; K5 czeka w kolejce na Synology, v0.2.0 po kampanii);
+  **następny: etap 4** (pisarz), a przed nim decyzja w pytaniu 2;
 - **v0.1.0 po etapie 2** (czytnik kompletny) odblokowuje `godocxgo`; pisarz (etap 4) powstaje po utwardzeniu;
 - pytania otwarte (`docs/adr/open-questions.md`) rozstrzygamy w etapach, z rekomendacją; pytanie 1 rozstrzygnięte
   2026-11-26 (własna dekompresja DEFLATE, `compress/flate` tylko w testach); przed etapem 4 potrzebna decyzja

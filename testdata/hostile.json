@@ -1,0 +1,356 @@
+{
+  "note": "Hostile corpus of gozipgo (requirements/safety.md, SAFE-003). The archives are built by the test builder: go test ./zipreader -run TestHostileArchives -write-hostile DIR writes them as DIR/\u003cid\u003e.zip. code is the error code of the strict reader; at_read means New accepts the archive and reading an entry fails.",
+  "archives": [
+    {
+      "id": "bomb-ratio",
+      "family": "a",
+      "what": "one entry of 16 MiB of zeros compressed 1032:1, the most DEFLATE can do",
+      "code": "limit-ratio",
+      "at_read": true,
+      "size": 16387,
+      "sha256": "dc4be251e4b3bfc84cadd08bae213c85728bc0b7ed194d125f3fc28fb172fa2a"
+    },
+    {
+      "id": "bomb-lying-size",
+      "family": "b",
+      "what": "the headers declare 1000 bytes, the DEFLATE stream expands to 16 MiB",
+      "code": "zip-size-mismatch",
+      "at_read": true,
+      "size": 16387,
+      "sha256": "02ed85e5fae2ba08573c4874c56ed373d35e22963bead9c9d60b5797a1580bde"
+    },
+    {
+      "id": "overlap-shared-stream",
+      "family": "c",
+      "what": "64 directory entries point at one local header and one DEFLATE stream of 1 MiB",
+      "code": "zip-entries-overlap",
+      "at_read": false,
+      "size": 4210,
+      "sha256": "d1d42f72a8a122477705f7c2386f39e0dee58866067475eb1b8caedcd78733d3"
+    },
+    {
+      "id": "overlap-quoted-header",
+      "family": "d",
+      "what": "the stored block of entry A quotes the local header of entry B, and both entries continue into the same DEFLATE stream",
+      "code": "zip-entries-overlap",
+      "at_read": false,
+      "size": 260,
+      "sha256": "3b28799926e1ae966ca16206af14acddca267e19a6c81088f550757604d498b3"
+    },
+    {
+      "id": "entries-over-limit",
+      "family": "e",
+      "what": "65,537 empty entries, one more than the default limit",
+      "code": "limit-entries",
+      "at_read": false,
+      "size": 5636280,
+      "sha256": "88b9875de58014a6a1584b6b700c741966333774180d9c81b12085a56affb59c"
+    },
+    {
+      "id": "entries-count-lie",
+      "family": "e",
+      "what": "the end record declares 60,000 entries in a directory of 102 bytes",
+      "code": "zip-directory-count-mismatch",
+      "at_read": false,
+      "size": 205,
+      "sha256": "6fd1f515944ea1d4a3f5fc0fadfdfeb1625188fd945b419284e8b03e597d8ce0"
+    },
+    {
+      "id": "directory-past-file",
+      "family": "f",
+      "what": "the central directory offset points past the end of the file",
+      "code": "zip-directory-out-of-bounds",
+      "at_read": false,
+      "size": 205,
+      "sha256": "f30628467f4bc4914a240818af1db0d85cc4e14f615c8f86019a037d2cb3797e"
+    },
+    {
+      "id": "directory-over-data",
+      "family": "f",
+      "what": "the central directory is declared to start inside the data of the first entry",
+      "code": "zip-directory-signature",
+      "at_read": false,
+      "size": 205,
+      "sha256": "f7ef88d01ea8c2ac600930ee1a2a1e72281c825eb63d4df5646a283faebe42b5"
+    },
+    {
+      "id": "two-ends-comment",
+      "family": "g",
+      "what": "a whole second archive in the comment of the first",
+      "code": "zip-multiple-directory-ends",
+      "at_read": false,
+      "size": 326,
+      "sha256": "02fbc8c958557c00ce3e045d69b240655bb7c1ab038c3c8522d9fe3f3a1910fd"
+    },
+    {
+      "id": "concatenated",
+      "family": "g",
+      "what": "two archives one after the other",
+      "code": "zip-directory-out-of-bounds",
+      "at_read": false,
+      "size": 326,
+      "sha256": "512225353e0e448ba7c258e08c80b908a1f8512bea9a1b391aaabeca12c7ee39"
+    },
+    {
+      "id": "data-after-end",
+      "family": "g",
+      "what": "bytes after the comment of the end of central directory record",
+      "code": "zip-trailing-data",
+      "at_read": false,
+      "size": 219,
+      "sha256": "3bc08f9f5e52a061595dde547e5e262aaea2d9e44d681df8d97d3a993c804d2b"
+    },
+    {
+      "id": "local-name",
+      "family": "h",
+      "what": "the local header names the entry e.exe, the directory a.txt",
+      "code": "zip-local-header-mismatch",
+      "at_read": false,
+      "size": 205,
+      "sha256": "3283a42db837f6e3f423cc708f4497d4452388ac3b8b9798795cefc7bc4b2fcd"
+    },
+    {
+      "id": "local-method",
+      "family": "h",
+      "what": "the local header says Deflate, the directory says Stored",
+      "code": "zip-local-header-mismatch",
+      "at_read": false,
+      "size": 205,
+      "sha256": "344a5a332b1acbb209f2bb2247677c06e6bcfeaf973fd9c388c2595041f6869a"
+    },
+    {
+      "id": "local-size",
+      "family": "h",
+      "what": "the local header declares 3 bytes, the directory 5",
+      "code": "zip-local-header-mismatch",
+      "at_read": false,
+      "size": 205,
+      "sha256": "742a9706621a7d28eedc1d2f6fe4134491131d3fb0b968560c5a47c56e0341be"
+    },
+    {
+      "id": "descriptor-size",
+      "family": "h",
+      "what": "the data descriptor declares another size than the directory",
+      "code": "zip-descriptor-mismatch",
+      "at_read": false,
+      "size": 129,
+      "sha256": "2e4c022a20fa7db9167981b8b1262af962b67bfda4c9cbd01dd2f7f99cffacc1"
+    },
+    {
+      "id": "hidden-entry",
+      "family": "i",
+      "what": "a complete entry between two listed ones that the directory does not mention",
+      "code": "zip-unreferenced-data",
+      "at_read": false,
+      "size": 250,
+      "sha256": "af734775a042aec942f5eea02b04ea949e52cc9d13c371ffcb08d4038198e0d8"
+    },
+    {
+      "id": "prefix",
+      "family": "i",
+      "what": "a program before the first entry (self-extracting layout)",
+      "code": "zip-unreferenced-data",
+      "at_read": false,
+      "size": 333,
+      "sha256": "5957478667e818eb69c0b450838a35eac1163fe28f0d2fcbd697f980135b0df5"
+    },
+    {
+      "id": "name-traversal",
+      "family": "j",
+      "what": "the name ../../outside.txt",
+      "code": "name-traversal",
+      "at_read": false,
+      "size": 137,
+      "sha256": "3617204a8211af1536cc4cf1d50e5dc31c3a66f6759d046cfd8cd8ec294a81ce"
+    },
+    {
+      "id": "name-absolute",
+      "family": "j",
+      "what": "the name /etc/passwd",
+      "code": "name-absolute",
+      "at_read": false,
+      "size": 125,
+      "sha256": "fc2b9e117591fba848b8e5ca2423cf01fcea6345b5e1cc606cd09e77be4a1331"
+    },
+    {
+      "id": "name-drive",
+      "family": "j",
+      "what": "the name C:/Windows/win.ini",
+      "code": "name-absolute",
+      "at_read": false,
+      "size": 139,
+      "sha256": "261a3ea2b2b33c54c286ffcefb1e5b063c214c70fc9dbd137c01363c1e3a6ac5"
+    },
+    {
+      "id": "name-backslash",
+      "family": "j",
+      "what": "the name ..\\..\\outside.txt",
+      "code": "name-backslash",
+      "at_read": false,
+      "size": 137,
+      "sha256": "3232ed1db23defcf5b16ab0f633777cd7fcdd61991a1c373419cf3300c9fc71d"
+    },
+    {
+      "id": "name-nul",
+      "family": "j",
+      "what": "the name safe.txt\u003cNUL\u003e.exe",
+      "code": "name-nul",
+      "at_read": false,
+      "size": 129,
+      "sha256": "de058b727d445dc318a2c36ded3981b836d59470cb751bd284873bfb6213bbf0"
+    },
+    {
+      "id": "name-duplicate",
+      "family": "j",
+      "what": "two entries named a.txt with different content",
+      "code": "name-duplicate",
+      "at_read": false,
+      "size": 204,
+      "sha256": "2609ff6b4f9c35c7094db4cfdd5c9476591c6452b08fe0b802727ce7368263c9"
+    },
+    {
+      "id": "name-file-and-directory",
+      "family": "j",
+      "what": "a file a and an entry a/b",
+      "code": "name-duplicate",
+      "at_read": false,
+      "size": 192,
+      "sha256": "a2cd3aaf39c37c8742a54ba8ad19e4184b48b7e67facd05de621d8bd1207c131"
+    },
+    {
+      "id": "zip64-size-past-file",
+      "family": "k",
+      "what": "the ZIP64 extra field of the directory declares 1 TiB of data, the local header 5 bytes",
+      "code": "zip-local-header-mismatch",
+      "at_read": false,
+      "size": 161,
+      "sha256": "e757979b67bae1bc185f255905b8ad96219f2f9e5860efd30dbd78d97f8637a6"
+    },
+    {
+      "id": "zip64-disagrees",
+      "family": "k",
+      "what": "the ZIP64 end record declares another number of entries than the ordinary one",
+      "code": "zip64-inconsistent",
+      "at_read": false,
+      "size": 189,
+      "sha256": "2b6dab1e8fa42e852b9e5cbd2fa9c05bb08d3c816f9f7d598a66585396a71c0e"
+    },
+    {
+      "id": "zip64-locator-astray",
+      "family": "k",
+      "what": "the ZIP64 locator points into the data of the first entry",
+      "code": "zip64-inconsistent",
+      "at_read": false,
+      "size": 189,
+      "sha256": "429ed17c95493e2d158f97c6a2440c3247aac128a07b9f81b0263e7652715f45"
+    },
+    {
+      "id": "extra-past-header",
+      "family": "l",
+      "what": "an extra field block declares more data than the extra field holds",
+      "code": "zip-extra-field",
+      "at_read": false,
+      "size": 210,
+      "sha256": "a399bbffe62ec3aa738c055d7f7eeaa8d88556a6231aa88f04a1d406c390655f"
+    },
+    {
+      "id": "extra-length-past-directory",
+      "family": "l",
+      "what": "the extra field length of the last directory header runs past the directory",
+      "code": "zip-directory-truncated",
+      "at_read": false,
+      "size": 205,
+      "sha256": "22b7da4b91c4412bcd6bff7fdcba2442c84d1c8abe10f4c81af0da3d870fdcf9"
+    },
+    {
+      "id": "truncated-in-data",
+      "family": "m",
+      "what": "the file ends inside the data of the first entry",
+      "code": "zip-no-directory-end",
+      "at_read": false,
+      "size": 33,
+      "sha256": "e49ba86c26d3012b7121659f3643f0dbd886e55da8d01f9bef9e0b79ea37be3e"
+    },
+    {
+      "id": "truncated-in-directory",
+      "family": "m",
+      "what": "the file ends inside the central directory",
+      "code": "zip-no-directory-end",
+      "at_read": false,
+      "size": 165,
+      "sha256": "a1314b84d45e06d4edf43a4f0b9d2e192f68717d6d9d67f754511680bed224d5"
+    },
+    {
+      "id": "truncated-in-end",
+      "family": "m",
+      "what": "the file ends inside the end of central directory record",
+      "code": "zip-no-directory-end",
+      "at_read": false,
+      "size": 202,
+      "sha256": "7e72cd7618025e81981bf8d259cfbfa1a6f98cf4857ace27cb6ee3f0845c5d8f"
+    },
+    {
+      "id": "inflate-block-type",
+      "family": "n",
+      "what": "a DEFLATE block of the reserved type",
+      "code": "inflate-block-type",
+      "at_read": true,
+      "size": 109,
+      "sha256": "6554074ebd25188df367fc9856d11d9ff74c063204978165eb51acba4a5a9f7d"
+    },
+    {
+      "id": "inflate-stored-length",
+      "family": "n",
+      "what": "a stored block whose NLEN is not the complement of LEN",
+      "code": "inflate-stored-length",
+      "at_read": true,
+      "size": 118,
+      "sha256": "c618f87dc12b2068bd9c32c4b984e2213172858e770a19bc62b14303b2f65abc"
+    },
+    {
+      "id": "inflate-code-lengths",
+      "family": "n",
+      "what": "a dynamic block that declares 287 literal/length codes",
+      "code": "inflate-code-lengths",
+      "at_read": true,
+      "size": 116,
+      "sha256": "6d45df8490ff60a8ee8c317116035d6c27248104a731f8f059e0c1fc095c0be3"
+    },
+    {
+      "id": "inflate-distance",
+      "family": "n",
+      "what": "a match that reaches before the start of the output",
+      "code": "inflate-distance",
+      "at_read": true,
+      "size": 110,
+      "sha256": "027a687d3d18f742728fdbb325dae7ee1ff8d1d1f51410eca985fd4758847e7b"
+    },
+    {
+      "id": "inflate-truncated",
+      "family": "n",
+      "what": "the compressed data end inside the stream",
+      "code": "inflate-truncated",
+      "at_read": true,
+      "size": 116,
+      "sha256": "79b3bef68b447943f9a08027fbd776d172088ac17021f327e6406935e3d8eace"
+    },
+    {
+      "id": "inflate-trailing-data",
+      "family": "n",
+      "what": "bytes after the end of the DEFLATE stream inside the entry",
+      "code": "inflate-trailing-data",
+      "at_read": true,
+      "size": 126,
+      "sha256": "85db75c1591e909f8cb7be386bb04f07b7b3444454770fd49ba1237063247910"
+    },
+    {
+      "id": "crc",
+      "family": "n",
+      "what": "the content does not have the declared CRC-32",
+      "code": "zip-checksum",
+      "at_read": true,
+      "size": 205,
+      "sha256": "f248ba109a996821df0699a6579d1d312225be4ee7f98f8d23a4a0283ea557dc"
+    }
+  ]
+}

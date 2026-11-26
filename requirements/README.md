@@ -10,8 +10,8 @@ Każde wymaganie ma identyfikator `PREFIKS-nnn`. Testy odwołują się do nich p
 | `NAME` | `names.md` | nazwy wpisów: kodowanie, reguły, powtórzenia | 1, 2 | przyjęte |
 | `ENT` | `entries.md` | nagłówki lokalne, deskryptory, układ pliku, treść wpisu, CRC | 2 | przyjęte |
 | `INF` | `inflate.md` | dekompresja DEFLATE | 2 | przyjęte |
-| `SAFE` | `safety.md` | limity, wrogie archiwa, brak wejścia i wyjścia, czas liniowy | 1, 2, 3 | SAFE-001, 002, 004, 007 przyjęte; reszta szkic (etap 3) |
-| `DET` | `determinism.md` | powtarzalność, niezależność od systemu i wersji Go, pamięć | 1, 3 | DET-001, 003–006 przyjęte; reszta szkic (etap 3) |
+| `SAFE` | `safety.md` | limity, wrogie archiwa, brak wejścia i wyjścia, czas liniowy | 1, 2, 3 | SAFE-001–007 przyjęte; SAFE-008 szkic (etap 5) |
+| `DET` | `determinism.md` | powtarzalność, niezależność od systemu i wersji Go, pamięć | 1, 3 | przyjęte |
 | `ZW` | `writer.md` | pisarz i kompresja | 4 | szkic |
 | `API` | `api.md` | stabilność API, wzorce, kody błędów | 0, 1 | API-001, 003–006 przyjęte; 002 i 007 szkic |
 | `EVD` | `evidence.md` | pakiet dowodów (K9) | 5 | szkic |

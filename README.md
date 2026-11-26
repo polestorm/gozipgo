@@ -6,8 +6,9 @@ No cgo, no dependencies outside the Go standard library, and no use of `archive/
 Status: in development. Stages 1 and 2 of the [plan](docs/roadmap.md) are done: the reader checks the end of
 central directory records, ZIP64, the central directory, every local header and data descriptor and the layout of
 the file, and reads entry contents (Stored and Deflate, with its own DEFLATE decoder) while checking size and
-CRC-32. Still to come before 1.0: the corpus of hostile archives, the comparison with other programs, measured
-speed and memory, and a 24-hour fuzzing campaign (stage 3). A writer with byte-identical output follows.
+CRC-32. It rejects every archive of its hostile corpus, and reading is about as fast as `archive/zip`
+([comparison](docs/comparison.md), [method](docs/methodology.md)). Still to come before 1.0: a 24-hour fuzzing
+campaign and the trial at the first consumer. A writer with byte-identical output follows.
 
 Use:
 
@@ -47,6 +48,8 @@ What it is for:
 
 Not in scope: encryption, multi-volume archives, compression methods other than Stored and Deflate, repairing
 damaged archives, extracting to disk.
+
+What other programs do with the same hostile archives, and measured speed: [docs/comparison.md](docs/comparison.md).
 
 Error codes: [docs/errors.md](docs/errors.md). What the reader rejects that other programs open, and why:
 [docs/differences.md](docs/differences.md).

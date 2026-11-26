@@ -30,7 +30,7 @@ var libraryPackages = []string{".", "zipreader", "internal/format", "internal/in
 // wejścia ani wyjścia poza interfejsami io. Nowy pakiet na liście wymaga decyzji (CLAUDE.md, „Zasady”).
 var allowedImports = map[string]bool{
 	"encoding/binary": true, "errors": true, "hash/crc32": true, "io": true, "math/bits": true, "sort": true,
-	"strconv": true, "strings": true, "sync/atomic": true, "unicode/utf8": true,
+	"strconv": true, "strings": true, "sync": true, "sync/atomic": true, "unicode/utf8": true,
 }
 
 // TestAPISnapshot mierzy kryterium K4: publiczne API każdego pakietu jest równe wzorcowi api/<pakiet>.txt.

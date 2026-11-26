@@ -122,7 +122,12 @@ func checkDuplicates(entries []Entry, foldCase bool) error {
 	}
 	key := func(i int) string { return strings.TrimSuffix(entries[i].Name, "/") }
 	compare := func(a, b string) int {
-		for i := 0; i < len(a) && i < len(b); i++ {
+		n := min(len(a), len(b))
+		i := 0
+		for i < n && a[i] == b[i] { // równe bajty mają równą rangę: wspólny początek bez liczenia rang
+			i++
+		}
+		for ; i < n; i++ {
 			if ra, rb := rank(a[i]), rank(b[i]); ra != rb {
 				return ra - rb
 			}

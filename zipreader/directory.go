@@ -51,9 +51,9 @@ func (r *Reader) readDirectory(dir directory, opts Options) error {
 	// Rozmiar katalogu jest już sprawdzony względem pliku i limitu; bufor nie jest większy niż katalog.
 	w := &window{ra: r.ra, pos: int64(dir.offset), end: int64(dir.offset + dir.size),
 		buf: make([]byte, min(dir.size, windowSize))}
-	// Pojemność początkowa nie pochodzi wprost z pola archiwum: liczba wpisów jest już ograniczona rozmiarem
-	// katalogu, a tu dodatkowo stałą, żeby mały plik nie wymusił dużej alokacji.
-	r.entries = make([]Entry, 0, min(dir.entries, 1024))
+	// Liczba wpisów jest już ograniczona limitem i rozmiarem katalogu, który leży w pliku (46 bajtów na wpis),
+	// więc alokacja jest proporcjonalna do danych, które wywołujący naprawdę podał (SAFE-006).
+	r.entries = make([]Entry, 0, dir.entries)
 	for i := 0; uint64(i) < dir.entries; i++ {
 		at := w.pos
 		left := w.end - w.pos

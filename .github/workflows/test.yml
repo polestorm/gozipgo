@@ -41,13 +41,21 @@ jobs:
       - name: tools
         shell: bash
         run: |
-          for tool in fetch fuzz evidence corpus; do
+          for tool in fetch fuzz evidence corpus compare bench; do
             test -z "$(gofmt -l tools/$tool)"
             go -C tools/$tool vet ./...
             go -C tools/$tool test ./...
           done
       - name: conformance corpus matches its manifest
         run: go -C tools/corpus run . -check
+      - name: comparison with other readers (informational; the published run is in docs/results)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cp docs/comparison.md /tmp/comparison.md
+          go -C tools/compare run . -root ../.. -raw /tmp/compare.tsv -doc /tmp/comparison.md || true
+          grep '^# candidate' /tmp/compare.tsv || true
+          grep -E '^\| \*\*(same|reads)' /tmp/comparison.md || true
       - name: race detector
         if: matrix.os == 'ubuntu-latest' && matrix.go == 'stable'
-        run: go test -race ./...
+        # -short pomija testy czasu i archiwum ponad 4 GiB, które pod detektorem wyścigów trwają minuty
+        run: go test -race -short ./...

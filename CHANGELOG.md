@@ -3,6 +3,18 @@
 Versions follow semantic versioning. In 0.x the API may grow; an incompatible change needs a decision record in
 `docs/adr/`. Release tags are signed from v0.1.0 on.
 
+## Unreleased
+
+Stage 3 of the plan: hardening and measurements.
+
+- Faster reading: overlapping matches are copied in growing chunks (content made of one repeated byte was nine
+  times slower than in `archive/zip`, now 1.3 times), and `Close` of an entry reader lets its DEFLATE decoder be
+  reused, which matters for archives of many small entries. Opening an archive of many entries allocates a
+  quarter of what it did.
+- Hostile corpus (`testdata/hostile.json`, 39 archives built by the tests), `tools/compare` and `tools/bench`
+  with their raw results in `docs/results/`, and `docs/comparison.md` written by the tools.
+- No change to the API or to which archives are accepted.
+
 ## v0.1.0 (2026-11-27)
 
 First release: the reader. Stages 0 to 2 of the plan (`docs/roadmap.md`). Not yet done: the corpus of hostile
