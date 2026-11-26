@@ -68,7 +68,8 @@ A reader that is not installed is left out, and the result says which readers ra
 **Known limits.** The result describes the installed versions on one system. Apple's build of UnZip 6.00 cannot
 create a file whose name is stored as UTF-8 with the UTF-8 flag (it fails on four conformance archives with exit
 status 50), and bsdtar on macOS merges `__MACOSX` entries into the files they describe (one archive). Both are
-recorded in [differences.md](differences.md). Extraction programs have defences of their own, such as stripping
+recorded in [differences.md](differences.md). The continuous integration workflow runs the same tool on Linux as an
+informational step; there Debian's build of UnZip agrees on all archives. That run is not a published result. Extraction programs have defences of their own, such as stripping
 `../`; the table shows what was written and where, not whether a program is safe. The table is not a ranking.
 
 ## Speed and memory: `tools/bench`

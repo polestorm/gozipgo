@@ -23,7 +23,8 @@ i wymusiły kilka decyzji o tym, co i jak liczymy.
 3. **Wynik K3 z 2026-11-27:** gozipgo 22/22 na korpusie zgodności i 39/39 odrzuconych na korpusie wrogim.
    `archive/zip`, 7-Zip i Python 22/22; unzip w wydaniu Apple 18/22 i bsdtar 21/22, z przyczyn leżących po ich
    stronie (`differences.md`). Kryterium „ta sama lista i treść co każda czarna skrzynka” jest więc spełnione
-   wobec trzech z pięciu; dla dwóch pozostałych różnica jest opisana i nie dotyczy naszego odczytu.
+   wobec trzech z pięciu; dla dwóch pozostałych różnica jest opisana i nie dotyczy naszego odczytu. Na Linuksie (krok informacyjny CI,
+   UnZip w wydaniu Debiana) wszystkie czytniki mają 22/22.
 4. **Tabela wrogich archiwów nie jest rankingiem.** Większość tych archiwów nie łamie litery specyfikacji,
    a programy rozpakowujące mają własne zabezpieczenia. Tabela pokazuje, gdzie jeden plik znaczy co innego dla
    różnych czytników (np. `two-ends-comment`: 7-Zip czyta inne pliki niż pozostali).

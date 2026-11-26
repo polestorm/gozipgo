@@ -66,7 +66,8 @@ dla archiwów z macOS, `CodePage` z tablicą CP852 dla archiwum 7-Zipa z polskie
 ## Korpus zgodności: różnice między czarnymi skrzynkami (K3)
 
 Stan z 2026-11-27, `tools/compare` (`comparison.md`, surowy wynik `results/compare.tsv`). `gozipgo`, `archive/zip`,
-7-Zip i `zipfile` Pythona dają na wszystkich 22 archiwach tę samą treść co manifest. Dwa programy nie:
+7-Zip i `zipfile` Pythona dają na wszystkich 22 archiwach tę samą treść co manifest. Dwa programy nie (macOS).
+Na Linuksie różnicy nie ma: ten sam pomiar w CI (krok informacyjny przepływu `test`, Ubuntu, UnZip 6.00 w wydaniu Debiana, 7-Zip 26.00, Python 3.14, go1.27.4; przebieg z 2026-11-27 na commicie `08f68e8`) dał 22/22 dla wszystkich czytników. Wynik z CI nie jest zapisany w `results/`, więc nie jest pomiarem publikowanym; pokazuje tylko, że 18/22 to cecha wydania Apple.
 
 | Program | Archiwa | Co się dzieje | Czyja to cecha |
 |---|---|---|---|
