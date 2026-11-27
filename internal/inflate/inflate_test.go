@@ -393,7 +393,8 @@ func TestNoAllocations(t *testing.T) {
 }
 
 // FuzzInflate: dla dowolnego wejścia dekoder nie panikuje i kończy pracę; gdy on i compress/flate oba przyjmują
-// strumień, dają te same bajty; strumień przyjęty przez nas musi przyjąć też compress/flate.
+// strumień, dają te same bajty; strumień przyjęty przez nas musi przyjąć też compress/flate; szybka ścieżka
+// daje to samo co zwykła: bajty, rodzaj i miejsce błędu, liczbę zużytych bajtów (INF-010).
 func FuzzInflate(f *testing.F) {
 	for kind := 0; kind < 5; kind++ {
 		for _, level := range []int{flate.HuffmanOnly, 0, 1, 6} {
@@ -406,6 +407,13 @@ func FuzzInflate(f *testing.F) {
 	}
 	f.Fuzz(func(t *testing.T, stream []byte) {
 		const limit = 8 << 20
+		if fast, plain := decodeWith(stream, false, 4096, 32<<10, limit), decodeWith(stream, true, 4096, 32<<10, limit); !fast.equal(plain) {
+			t.Fatalf("the fast path gives %d bytes, kind %d at %d, consumed %d; the plain path %d bytes, kind %d at %d, consumed %d",
+				len(fast.out), fast.kind, fast.offset, fast.consumed, len(plain.out), plain.kind, plain.offset, plain.consumed)
+		}
+		if pieces := decodeWith(stream, false, 11, 700, limit); !pieces.equal(decodeWith(stream, true, 11, 700, limit)) {
+			t.Fatalf("the fast path differs from the plain path with input in pieces of 11 bytes")
+		}
 		ours, oursErr := io.ReadAll(io.LimitReader(NewReader(bytes.NewReader(stream)), limit))
 		fr := flate.NewReader(bytes.NewReader(stream))
 		theirs, theirsErr := io.ReadAll(io.LimitReader(fr, limit))

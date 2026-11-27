@@ -13,6 +13,12 @@ Two new options of the reader, both off by default and reported by `Reader.Relax
 `AllowUnusedZip64` accepts a local header with a ZIP64 extra field of zeros next to real sizes. Strict reading is
 unchanged.
 
+Faster reading (`docs/adr/0008-decoder-fast-path.md`): the DEFLATE decoder has a second path through a block
+that runs while it has eight bytes of input and room for the longest match in its window, and checks neither on
+every symbol. It reports no errors: anything but a literal, a match or the end of the block goes back to the
+existing path, so output, error codes and offsets are unchanged, which the tests and the fuzzer compare on every
+input. Markup and numeric rows are read about 40 to 55 percent faster (`docs/comparison.md`).
+
 Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
 
 - New package `zipwriter`: `New`, `Writer.Add` (whole content, sizes in the local header), `Writer.Create`

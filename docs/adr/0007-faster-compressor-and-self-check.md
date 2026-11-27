@@ -102,7 +102,7 @@ pozostałe punkty (bajty jako kontrakt, bloki, kody Huffmana, pełne kody) obowi
   Parametry dobieraliśmy na obu rodzajach danych właśnie dlatego, że generowane dają się łatwo przestroić.
 - Większe tablice (2^16 i 2^18): 0,2% mniej, bez zysku czasu.
 - Szybka ścieżka dekodera (kilka symboli naraz) nie weszła do tej zmiany: dekoder czyta wrogie dane, więc
-  wymaga osobnej decyzji i osobnej kampanii fuzzingu.
+  wymaga osobnej decyzji i osobnej kampanii fuzzingu. Weszła tego samego dnia osobną decyzją: ADR 0008.
 
 ## Skutki
 

@@ -95,7 +95,10 @@ RFC 1951: bloki niezakodowane, ze stałymi i z dynamicznymi kodami Huffmana; okn
 - pamięć stała (okno i tablice kodów), niezależna od danych;
 - czytnik bitów nie czyta poza koniec danych skompresowanych i mówi, ile bajtów wejścia zużył;
 - test różnicowy z `compress/flate`: te same bajty wyjścia dla każdego poprawnego strumienia, błąd dla każdego
-  niepoprawnego (różnice w tym, co jest błędem, opisane w `differences.md`).
+  niepoprawnego (różnice w tym, co jest błędem, opisane w `differences.md`);
+- dwie ścieżki przez blok z kodami (INF-010, ADR 0008): szybka dekoduje ze stanem w zmiennych lokalnych, dopóki
+  ma osiem bajtów wejścia i miejsce w oknie na najdłuższe odwołanie, i nie zgłasza błędów; zwykła obsługuje
+  brzegi i każdy przypadek, którego szybka nie bierze. Testy i fuzzer porównują obie na każdym wejściu.
 
 ## Pisarz (`zipwriter`)
 

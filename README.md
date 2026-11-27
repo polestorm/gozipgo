@@ -90,7 +90,7 @@ it: [How the comparison was measured](#how-the-comparison-was-measured), in full
 - **Small and self-contained**: 203 kB added to a program, half of what `archive/zip` adds; its own DEFLATE
   decoder and compressor written from RFC 1951; no file system and no network, only `io.ReaderAt` in and
   `io.Writer` out.
-- **Evidence, not claims**: 86 numbered requirements, each with a test; every field of the format has a recorded
+- **Evidence, not claims**: 87 numbered requirements, each with a test; every field of the format has a recorded
   verdict; every number here comes from a tool in the repository and a raw result next to it.
 
 Where it is weaker: klauspost/compress is faster, 1.6 to 2.8 times when writing (1.2 to 1.9 times against the
@@ -188,7 +188,7 @@ Version 0.1.1 has the reader; the writer and the compressor are on the main bran
 
 - Format inventory: 219 of 219 records, fields, flag bits and methods of the specification have a verdict
   (handled, or refused with a named code) and an archive that shows it.
-- Requirements: 86 of 86 have a test; the public API and the strict verdict for 568 public test archives are
+- Requirements: 87 of 87 have a test; the public API and the strict verdict for 568 public test archives are
   pinned, so neither changes without a recorded decision.
 - Hostile corpus: 40 of 40 refused, each in under a millisecond and under 110 KiB of memory. A ZIP64 archive of
   4.3 GB is read with 130 KiB allocated.

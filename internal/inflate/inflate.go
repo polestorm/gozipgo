@@ -200,6 +200,10 @@ type Reader struct {
 	copyLen    int
 	copyDist   int
 	err        error
+
+	// slow wyłącza szybką ścieżkę (fast). Ustawiają je tylko testy tego pakietu, żeby porównać obie ścieżki;
+	// Reset go nie zmienia.
+	slow bool
 }
 
 // NewReader zwraca dekoder strumienia czytanego z src.
@@ -535,6 +539,10 @@ func (r *Reader) stored() {
 // symbols dekoduje znaki i odwołania bloku z kodami (3.2.3, 3.2.5).
 func (r *Reader) symbols() {
 	for r.wp < windowSize {
+		// Szybka ścieżka robi, co może; symbol, którego nie wzięła, dekoduje krok poniżej.
+		if !r.slow && r.ie-r.ip >= 8 && r.wp <= windowSize-fastRoom && r.fast() {
+			return
+		}
 		// Najdłuższy ciąg na jeden krok: 15 + 5 bitów długości i 15 + 13 bitów odległości, razem 48.
 		r.fill()
 		s := r.symbol(r.lit, CodeLengths)
@@ -590,6 +598,124 @@ func (r *Reader) symbols() {
 			return
 		}
 	}
+}
+
+// fastRoom to miejsce w oknie, którego szybka ścieżka wymaga przed każdym symbolem: najdłuższe odwołanie.
+const fastRoom = 258
+
+// fast dekoduje symbole bloku, dopóki w buforze wejścia jest osiem bajtów do wczytania naraz, a w oknie miejsce
+// na najdłuższe odwołanie. Wtedy żaden krok nie może trafić na brak wejścia ani na koniec okna, więc te
+// sprawdzenia robi raz warunek pętli, a stan (bity, pozycje) żyje w zmiennych lokalnych. Wszystko, co nie jest
+// zwykłym symbolem (kod bez symbolu, symbol spoza alfabetu, odległość przed początek wyjścia), szybka ścieżka
+// zostawia nietknięte: wraca ze stanem sprzed tego symbolu, a zwykła ścieżka dekoduje go ponownie i zgłasza
+// błąd, więc błędy mają jedno źródło. Zwraca true po końcu bloku.
+//
+// Odwołania są kopiowane dokładnie co do bajta. Kopiowanie po osiem bajtów z nadmiarem byłoby tu błędem: okno
+// jest kołowe, więc bajty za bieżącym końcem wyjścia to dane poprzedniego obrotu, do których następne odwołanie
+// może jeszcze sięgnąć (TestFastPathWindow).
+func (r *Reader) fast() bool {
+	lit, dist := r.lit, r.dist
+	in, win := &r.in, &r.win
+	bb, nb, ip, wp := r.bb, r.nb, r.ip, r.wp
+	ie := r.ie
+	eob := false
+	for ip+8 <= ie && wp <= windowSize-fastRoom {
+		if nb < 48 {
+			bb |= binary.LittleEndian.Uint64(in[ip:ip+8]) << nb
+			n := (63 - nb) >> 3
+			ip += int(n)
+			nb += n << 3
+		}
+		// Od tego miejsca do końca kroku potrzeba najwyżej 48 bitów i tyle jest.
+		b0, n0 := bb, nb
+		var s int
+		if e := lit.table[bb&(1<<primaryBits-1)]; e != 0 {
+			l := uint(e & 15)
+			bb >>= l
+			nb -= l
+			s = int(e >> 4)
+		} else if s = long(lit, &bb, &nb); s < 0 {
+			bb, nb = b0, n0
+			break
+		}
+		if s < endOfBlock {
+			win[wp] = byte(s)
+			wp++
+			continue
+		}
+		if s == endOfBlock {
+			eob = true
+			break
+		}
+		s -= 257
+		if s >= len(lengthBase) || r.distEmpty {
+			bb, nb = b0, n0
+			break
+		}
+		x := uint(lengthExtra[s])
+		length := int(lengthBase[s]) + int(uint32(bb)&(1<<x-1))
+		bb >>= x
+		nb -= x
+		var d int
+		if e := dist.table[bb&(1<<primaryBits-1)]; e != 0 {
+			l := uint(e & 15)
+			bb >>= l
+			nb -= l
+			d = int(e >> 4)
+		} else if d = long(dist, &bb, &nb); d < 0 {
+			bb, nb = b0, n0
+			break
+		}
+		if d >= len(distBase) {
+			bb, nb = b0, n0
+			break
+		}
+		x = uint(distExtra[d])
+		back := int(distBase[d]) + int(uint32(bb)&(1<<x-1))
+		if int64(back) > r.flushed+int64(wp) {
+			bb, nb = b0, n0
+			break
+		}
+		bb >>= x
+		nb -= x
+		sp := wp - back
+		if sp < 0 {
+			// Początek źródła leży w poprzednim obrocie okna, za bieżącym końcem wyjścia: cel jest przed
+			// źródłem, więc kopia w przód czyta każdy bajt, zanim zostanie nadpisany.
+			sp += windowSize
+			k := min(length, windowSize-sp)
+			copy(win[wp:wp+k], win[sp:sp+k])
+			wp += k
+			length -= k
+			sp = 0
+		}
+		for length > 0 {
+			k := copy(win[wp:wp+length], win[sp:wp])
+			wp += k
+			length -= k
+		}
+	}
+	r.pulled += int64(ip - r.ip)
+	r.bb, r.nb, r.ip, r.wp = bb, nb, ip, wp
+	if eob {
+		r.state = stateHeader
+	}
+	return eob
+}
+
+// long dekoduje symbol, którego kod jest dłuższy niż primaryBits; w buforze jest co najmniej 15 bitów. Zwraca −1
+// i nie zmienia bufora, gdy żaden kod nie pasuje.
+func long(h *huffman, bb *uint64, nb *uint) int {
+	rev := bits.Reverse16(uint16(*bb)) >> 1 // 15 najbliższych bitów jako kod od bitu najbardziej znaczącego
+	for l := uint(primaryBits + 1); l <= maxCodeBits; l++ {
+		code := rev >> (maxCodeBits - l)
+		if d := code - h.first[l]; code >= h.first[l] && d < h.count[l] {
+			*bb >>= l
+			*nb -= l
+			return int(h.symbols[h.offset[l]+d])
+		}
+	}
+	return -1
 }
 
 // copyMatch kopiuje odwołanie w oknie; gdy okno się zapełni, zostawia resztę na następne wywołanie.
