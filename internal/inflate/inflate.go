@@ -539,9 +539,12 @@ func (r *Reader) stored() {
 // symbols dekoduje znaki i odwołania bloku z kodami (3.2.3, 3.2.5).
 func (r *Reader) symbols() {
 	for r.wp < windowSize {
-		// Szybka ścieżka robi, co może; symbol, którego nie wzięła, dekoduje krok poniżej.
-		if !r.slow && r.ie-r.ip >= 8 && r.wp <= windowSize-fastRoom && r.fast() {
-			return
+		// Szybka ścieżka robi, co może; symbol, którego nie wzięła, dekoduje krok poniżej. Jej ostatnie
+		// odwołanie mogło zapełnić okno co do bajta: wtedy następny symbol czeka na wydanie okna.
+		if !r.slow && r.ie-r.ip >= 8 && r.wp <= windowSize-fastRoom {
+			if r.fast() || r.wp == windowSize {
+				return
+			}
 		}
 		// Najdłuższy ciąg na jeden krok: 15 + 5 bitów długości i 15 + 13 bitów odległości, razem 48.
 		r.fill()

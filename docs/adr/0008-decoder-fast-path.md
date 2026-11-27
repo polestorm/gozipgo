@@ -56,6 +56,17 @@ zwykłej). Pierwsza próba zostawiła cztery usterki, które wynik zmieniają, n
 `TestFastPathLongestStep`, `TestFastPathRefusals`, zapas wejścia w `TestFastPathWindow` i przypadki granicy
 odległości.
 
+## Znalezisko fuzzingu w pierwszej wersji
+
+Pierwsza wersja tej zmiany (commit `ca1e2e7`, niewydana) panikowała: `FuzzInflate` znalazł to w pierwszej
+sekundzie, `FuzzReader` po trzech minutach. Odwołanie zdekodowane szybką ścieżką może skończyć się dokładnie na
+końcu okna; szybka ścieżka wtedy wraca, a zwykła, która zakłada wolne miejsce w oknie, zapisywała następny znak
+za oknem (indeks poza tablicą, czyli panika zamiast błędu: naruszenie INF-008, bez zapisu poza pamięć). Prototyp
+miał to sprawdzenie; zniknęło przy porządkowaniu kodu, a testy brzegów okna nie miały przypadku, w którym po
+takim odwołaniu stoi znak. Poprawka: po powrocie szybkiej ścieżki pełne okno kończy krok. `TestFastPathWindow`
+ma teraz ten przypadek (bez poprawki panikuje), a oba wejścia fuzzera są ziarnami. Wniosek zapisany w pkt 7:
+testy pisane przez autora zmiany nie zastąpiły tu fuzzera, który porównuje ścieżki na każdym wejściu.
+
 ## Pomiar
 
 `tools/bench`, Apple M4, mediana z 7 przebiegów; liczby i surowy wynik w `docs/comparison.md` i `docs/results/`.

@@ -269,6 +269,22 @@ func TestFastPathWindow(t *testing.T) {
 		}
 	}
 
+	// Odwołanie, które kończy się dokładnie na końcu okna: po nim okno jest pełne i następny symbol, jakikolwiek
+	// jest, czeka na wydanie okna (znalezisko FuzzInflate z 2026-11-27: zwykła ścieżka pisała wtedy za okno).
+	for _, length := range []int{3, 100, 258} {
+		for after := 0; after < 3; after++ {
+			k = start(2*windowSize - length)
+			k.match(length, 1+next()%windowSize)
+			switch after {
+			case 0:
+				k.literal('x')
+			case 1:
+				k.match(7, windowSize)
+			}
+			check("a match that ends with the window", k)
+		}
+	}
+
 	// Mieszanka: znaki i odwołania o odległościach i długościach z brzegów zakresów.
 	k = start(1)
 	for len(k.want) < 5*windowSize {
