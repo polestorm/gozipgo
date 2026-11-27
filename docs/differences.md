@@ -32,6 +32,12 @@ Każdy wpis powstaje razem z testem, który różnicę pokazuje, i wskazuje regu
 | pole ZIP64 w nagłówku lokalnym obok pól rozmiaru bez wartości granicznej | 4.5.3 | przyjmujemy, gdy wartości są równe (`TestLocalHeaderFields`) | tak zapisuje `zipfile` Pythona z wymuszonym ZIP64 (`python-zip64.zip`) |
 | wersja wymagana oraz data i czas w nagłówku lokalnym inne niż w katalogu | 4.4.3, 4.4.6 | nie porównujemy (wiersze `lfh.version-needed`, `lfh.mod-time`, `lfh.mod-date`) | nie wpływają na odczyt; Info-ZIP z `-fz` zapisuje w nagłówku lokalnym wersję 4.5, a w katalogu 1.0 albo 2.0 (`infozip-zip64.zip`) |
 
+## Archiwa, które `gozipgo` przyjmuje ściśle, a `archive/zip` odrzuca
+
+| Archiwum | Co robimy | Kto czyta tak jak my | Powód |
+|---|---|---|---|
+| rozmiar katalogu w zwykłym rekordzie końca ma wartość graniczną 0xFFFFFFFF, a liczba wpisów i przesunięcie katalogu nie; rekordy ZIP64 podają rozmiar prawdziwy | przyjmujemy (DIR-005, `TestZip64`: każde pole z osobna jako wartość graniczna) | `zipfile` Pythona, UnZip, 7-Zip, bsdtar | APPNOTE 4.4.1.4: wartość graniczna w którymkolwiek polu odsyła do rekordu ZIP64. `archive/zip` (Go 1.26.6, czarna skrzynka) sięga po rekord ZIP64 tylko przy wartości granicznej liczby wpisów albo przesunięcia i zgłasza „not a valid zip file”. Odrzucenie nie jest drugim odczytaniem, więc nie ma tu ryzyka dwóch treści; `FuzzReader` pomija dla takich archiwów porównanie z `archive/zip` (znalezisko z 2026-11-27, wejście `2e3fea7f197fedb0`) |
+
 ## Co pokazały zestawy pobrane (2026-11-27)
 
 568 plików z dziewięciu zestawów (`testdata/sources.json`): bez paniki, każdy błąd ze stałym kodem, a każde

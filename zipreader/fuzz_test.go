@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 	"unicode/utf8"
+
+	"github.com/polestorm/gozipgo/internal/format"
 )
 
 // knownCodes zwraca zbiór kodów błędów zdefiniowanych w errors.go.
@@ -23,6 +25,17 @@ func knownCodes(t testing.TB) map[string]bool {
 		codes[string(m[1])] = true
 	}
 	return codes
+}
+
+// oracleSkipsZip64 rozpoznaje archiwa, których archive/zip nie przyjmuje, choć są poprawne: rozmiar katalogu
+// w zwykłym rekordzie końca ma wartość graniczną, a liczba wpisów i przesunięcie katalogu nie. APPNOTE 4.4.1.4
+// odsyła wtedy do rekordu ZIP64, ale archive/zip (zmierzone jako czarna skrzynka, Go 1.26.6) sięga po niego
+// tylko przy wartości granicznej liczby wpisów albo przesunięcia i bierze rozmiar 0xFFFFFFFF dosłownie. Python,
+// UnZip, 7-Zip i bsdtar czytają takie archiwum tak jak my (docs/differences.md; znalezisko z 2026-11-27).
+func oracleSkipsZip64(data []byte) bool {
+	end, err := findEnd(bytes.NewReader(data), int64(len(data)))
+	return err == nil && end.dirSize == format.Sentinel32 && end.entries != format.Sentinel16 &&
+		end.dirOffset != format.Sentinel32
 }
 
 // FuzzReader: dowolne wejście nie powoduje paniki; błąd jest typu *Error ze znanym kodem i przesunięciem w pliku;
@@ -65,10 +78,14 @@ func FuzzReader(f *testing.F) {
 			var oracle *zip.Reader
 			if strict {
 				zr, zerr := zip.NewReader(bytes.NewReader(data), int64(len(data)))
-				if zerr != nil || len(zr.File) != len(r.Entries()) {
+				switch {
+				case zerr != nil && oracleSkipsZip64(data):
+					// archive/zip odrzuca to archiwum, więc nie ma drugiego odczytania do porównania.
+				case zerr != nil || len(zr.File) != len(r.Entries()):
 					t.Fatalf("accepted strictly, archive/zip does not agree: %v", zerr)
+				default:
+					oracle = zr
 				}
-				oracle = zr
 			}
 			for i, e := range r.Entries() {
 				if e.DataOffset < e.LocalHeaderOffset+30 || e.DataOffset+e.CompressedSize > uint64(len(data)) {
