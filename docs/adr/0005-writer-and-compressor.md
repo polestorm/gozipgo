@@ -45,9 +45,9 @@ przejrzano z APPNOTE 6.3.10 i RFC 1951 i przyjęto; poniżej decyzje, które prz
    każdy dekoder, także nasz, który niepełne kody znaków odrzuca (ADR 0003 pkt 10). Koszt to najwyżej kilka bitów
    na blok.
 6. **Szybkość nie jest kryterium, ale jest zmierzona i ma cel: nie wolniej niż `archive/zip`.** Pomiar
-   `tools/bench` (`comparison.md`): czas zapisu od 0,57 do 0,85 czasu `archive/zip` w postaci fabrycznej na danych
-   kompresowanych (znaczniki 73 MB/s wobec 49 MB/s, wiersze liczb 55 wobec 47, szum 204 wobec 116, zera 1156
-   wobec 823, 100 000 małych wpisów 90 wobec 70). Rozmiar: archiwum znaczników praktycznie równe temu
+   `tools/bench` (`comparison.md`, commit `435fc4e`, Apple M4): czas zapisu od 0,57 do 0,85 czasu `archive/zip`
+   w postaci fabrycznej na danych kompresowanych (znaczniki 72 MB/s wobec 48 MB/s, wiersze liczb 55 wobec 47,
+   szum 200 wobec 114, zera 1148 wobec 819, 100 000 małych wpisów 89 wobec 71). Rozmiar: archiwum znaczników praktycznie równe temu
    z `archive/zip` (7,26 MB wobec 7,27 MB) i 1,078 wyniku `compress/flate` na poziomie domyślnym, przy progu 1,1
    z ZW-006; wiersze liczb 1,045. `archive/zip`, mierzone jako czarna skrzynka, kompresuje słabiej niż poziom
    domyślny `compress/flate`, stąd dwa punkty odniesienia.
@@ -104,7 +104,7 @@ przejrzano z APPNOTE 6.3.10 i RFC 1951 i przyjęto; poniżej decyzje, które prz
 - Czarne skrzynki (ZW-007, `tools/compare`, 2026-11-27, macOS): `archive/zip`, 7-Zip, `zipfile` Pythona i bsdtar
   oddają treść wszystkich 7 archiwów pisarza; UnZip w wydaniu Apple 6 z 7 (nie tworzy plików o nazwach spoza
   ASCII, tak samo jak dla archiwów innych programów: `differences.md`).
-- Rozmiar (ZW-006, `tools/bench`): 1,020 wyniku `compress/flate` na znacznikach i 1,052 na wierszach liczb
+- Rozmiar (ZW-006, `tools/bench`): 1,078 wyniku `compress/flate` na znacznikach i 1,045 na wierszach liczb
   (próg 1,1).
 - Kampania fuzzingu dla wydania musi objąć `FuzzRoundTrip` i `FuzzDeflate`; zlecenie na commicie kandydata.
 - Do decyzji właściciela: czy v0.3.0 (pisarz) wychodzi osobno po v0.2.0, czy jedno wydanie obejmuje etapy 3 i 4;

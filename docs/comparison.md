@@ -12,7 +12,7 @@ go -C tools/bench run . -root ../..       # speed and memory; raw: docs/results/
 ## Behaviour
 
 <!-- compare:begin -->
-Measured on 2026-11-27 at commit `c00125e` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
+Measured on 2026-11-27 at commit `435fc4e` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
 
 - gozipgo: this commit
 - archive/zip: go1.26.6
@@ -131,19 +131,19 @@ rejects although others read them are listed, with the reason, in [differences.m
 ## Speed and memory
 
 <!-- bench:begin -->
-Measured on 2026-11-27 at commit `c00125e` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
+Measured on 2026-11-27 at commit `435fc4e` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
 gozipgo is faster. Reading includes opening the archive and, for both readers, checking the CRC-32.
-The largest ratio for reading content is 1.27; criterion K7 allows 1.5.
+The largest ratio for reading content is 1.31; criterion K7 allows 1.5.
 
 | Case | gozipgo | archive/zip | time, gozipgo / archive/zip | allocated, gozipgo | allocated, archive/zip |
 |---|---|---|---|---|---|
-| Deflate, xml, 32 MiB (7266999 bytes compressed) | 429 MB/s | 344 MB/s | 0.80 | 130 KiB | 120 KiB |
-| Deflate, table, 32 MiB (13028297 bytes compressed) | 219 MB/s | 203 MB/s | 0.92 | 82 KiB | 75 KiB |
-| Deflate, random, 32 MiB (33564807 bytes compressed) | 6802 MB/s | 7334 MB/s | 1.08 | 130 KiB | 51 KiB |
-| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3424 MB/s | 4335 MB/s | 1.27 | 90 KiB | 51 KiB |
-| Stored, 32 MiB | 8078 MB/s | 8087 MB/s | 1.00 | 80 KiB | 6 KiB |
-| open an archive of 100000 entries (81 MiB) | 52.6 ms (526 ns per entry) | 10.8 ms (108 ns per entry) | 4.89 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) |
-| open and read all 100000 entries | 926.2 ms (9262 ns per entry) | 950.0 ms (9500 ns per entry) | 0.98 | 36.3 MiB (380 bytes per entry) | 53.5 MiB (560 bytes per entry) |
+| Deflate, xml, 32 MiB (7266999 bytes compressed) | 524 MB/s | 395 MB/s | 0.75 | 130 KiB | 120 KiB |
+| Deflate, table, 32 MiB (13028297 bytes compressed) | 270 MB/s | 237 MB/s | 0.88 | 130 KiB | 118 KiB |
+| Deflate, random, 32 MiB (33564807 bytes compressed) | 7731 MB/s | 8405 MB/s | 1.09 | 82 KiB | 51 KiB |
+| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3773 MB/s | 4943 MB/s | 1.31 | 42 KiB | 7 KiB |
+| Stored, 32 MiB | 9344 MB/s | 9594 MB/s | 1.03 | 80 KiB | 6 KiB |
+| open an archive of 100000 entries (81 MiB) | 43.2 ms (432 ns per entry) | 9.1 ms (91 ns per entry) | 4.76 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) |
+| open and read all 100000 entries | 751.7 ms (7517 ns per entry) | 791.2 ms (7912 ns per entry) | 0.95 | 36.3 MiB (380 bytes per entry) | 53.5 MiB (561 bytes per entry) |
 <!-- bench:end -->
 
 ## Writing
@@ -156,14 +156,14 @@ contract: the same content gives the same bytes with every version of Go. `compr
 Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that
 only counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level
 registered as its compressor, which is the level requirement ZW-006 names. Sizes are bytes of the whole archive.
-The largest size ratio on markup and tabular data is 1.052; ZW-006 allows 1.1.
+The largest size ratio on markup and tabular data is 1.078; ZW-006 allows 1.1.
 
 | Case | gozipgo | archive/zip | compress/flate, default level | archive, gozipgo | archive, archive/zip | archive, compress/flate default | size, gozipgo / compress/flate default |
 |---|---|---|---|---|---|---|---|
-| Deflate, xml, 32 MiB | 22 MB/s | 42 MB/s | 19 MB/s | 6869327 | 7266999 | 6731617 | 1.020 |
-| Deflate, table, 32 MiB | 17 MB/s | 40 MB/s | 28 MB/s | 13636680 | 13028297 | 12960172 | 1.052 |
-| Deflate, random, 32 MiB | 55 MB/s | 117 MB/s | 114 MB/s | 33564802 | 33564807 | 33564807 | 1.000 |
-| Deflate, zeros, 32 MiB | 506 MB/s | 703 MB/s | 691 MB/s | 39058 | 32750 | 32750 | 1.193 |
-| Stored, 32 MiB | 9631 MB/s | 10003 MB/s | 9572 MB/s | 33554562 | 33554562 | 33554562 | 1.000 |
-| Deflate, 100000 entries of 1 to 4 KiB | 48 MB/s | 71 MB/s | 58 MB/s | 85063394 | 85916923 | 85845743 | 0.991 |
+| Deflate, xml, 32 MiB | 72 MB/s | 48 MB/s | 22 MB/s | 7257414 | 7266999 | 6731617 | 1.078 |
+| Deflate, table, 32 MiB | 55 MB/s | 47 MB/s | 32 MB/s | 13546825 | 13028297 | 12960172 | 1.045 |
+| Deflate, random, 32 MiB | 200 MB/s | 114 MB/s | 113 MB/s | 33564802 | 33564807 | 33564807 | 1.000 |
+| Deflate, zeros, 32 MiB | 1148 MB/s | 819 MB/s | 821 MB/s | 39058 | 32750 | 32750 | 1.193 |
+| Stored, 32 MiB | 10709 MB/s | 10713 MB/s | 10662 MB/s | 33554562 | 33554562 | 33554562 | 1.000 |
+| Deflate, 100000 entries of 1 to 4 KiB | 89 MB/s | 71 MB/s | 62 MB/s | 85674169 | 85916923 | 85845743 | 0.998 |
 <!-- bench-write:end -->
