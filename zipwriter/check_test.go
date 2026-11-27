@@ -127,3 +127,48 @@ func TestSelfCheckFailure(t *testing.T) {
 		t.Errorf("Stored entry: %v", err)
 	}
 }
+
+// TestSkipSelfCheck: z Options.SkipSelfCheck pisarz nie dekoduje własnych strumieni (ta sama zmieniona suma nie
+// daje write-self-check), a bajty archiwum są te same co z kontrolą, dla Add i dla Create.
+// REQ: ZW-011
+func TestSkipSelfCheck(t *testing.T) {
+	var buf bytes.Buffer
+	w := NewWithOptions(&buf, Options{SkipSelfCheck: true})
+	e, err := w.Create(Header{Name: "a.txt", Method: Deflate})
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.Write([]byte("content"))
+	e.(*entryWriter).crc ^= 1
+	if err := e.Close(); err != nil {
+		t.Errorf("Close of the entry without the check: %v", err)
+	}
+	if w.check.inf != nil {
+		t.Error("the decoder of the check was set up although the check is off")
+	}
+
+	archive := func(opts Options) []byte {
+		var out bytes.Buffer
+		w := NewWithOptions(&out, opts)
+		for i, data := range checkData() {
+			if err := w.Add(Header{Name: string(rune('a' + i)), Method: Deflate}, data); err != nil {
+				t.Fatal(err)
+			}
+			e, err := w.Create(Header{Name: string(rune('A' + i)), Method: Deflate})
+			if err != nil {
+				t.Fatal(err)
+			}
+			e.Write(data)
+			if err := e.Close(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := w.Close(); err != nil {
+			t.Fatal(err)
+		}
+		return out.Bytes()
+	}
+	if !bytes.Equal(archive(Options{}), archive(Options{SkipSelfCheck: true})) {
+		t.Error("the bytes of the archive depend on SkipSelfCheck")
+	}
+}

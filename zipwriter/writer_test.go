@@ -99,10 +99,11 @@ func strict(t testing.TB, data []byte, opts zipreader.Options) *zipreader.Reader
 }
 
 // check czyta archiwum czytnikiem w trybie ścisłym i przez archive/zip i porównuje z oczekiwaniem: nazwy
-// w kolejności, treść, brak pól dodatkowych poza ZIP64.
+// w kolejności, treść, brak pól dodatkowych poza ZIP64. Limit długości nazwy czytnika jest podniesiony do
+// granicy formatu, bo pisarz przyjmuje każdą nazwę, którą format zapisze (ZW-007); pozostałe są domyślne.
 func check(t testing.TB, data []byte, want []item) {
 	t.Helper()
-	r := strict(t, data, zipreader.Options{})
+	r := strict(t, data, zipreader.Options{MaxNameLength: 65535})
 	entries := r.Entries()
 	if len(entries) != len(want) {
 		t.Fatalf("zipreader lists %d entries, want %d", len(entries), len(want))
@@ -249,7 +250,7 @@ func TestFixedFields(t *testing.T) {
 
 // TestNames: nazwa, którą czytnik odrzuca, jest błędem z tym samym kodem; nazwa spoza ASCII idzie w UTF-8
 // z bitem 11. Po błędzie pisarz jest w tym samym stanie: archiwum jest takie, jakby wywołania nie było.
-// REQ: ZW-002
+// REQ: ZW-002 ZW-007
 func TestNames(t *testing.T) {
 	bad := []struct{ name, code string }{
 		{"", CodeNameEmpty},
@@ -308,6 +309,13 @@ func TestNames(t *testing.T) {
 		if e.Name != okNames[i] {
 			t.Errorf("entry %d: %q, want %q", i, e.Name, okNames[i])
 		}
+	}
+	// Limity czytnika nie są limitami pisarza: to samo archiwum czytnik z domyślnymi opcjami odrzuca kodem
+	// limitu, a nie błędem formatu (ZW-007).
+	_, err := zipreader.New(bytes.NewReader(data), int64(len(data)), zipreader.Options{})
+	var re *zipreader.Error
+	if !errors.As(err, &re) || re.Code != zipreader.CodeLimitNameLength {
+		t.Errorf("reader with default limits, name of 65,535 bytes: %v, want %s", err, zipreader.CodeLimitNameLength)
 	}
 }
 
@@ -931,8 +939,8 @@ func TestLarge(t *testing.T) {
 
 // FuzzRoundTrip mierzy część kryterium K5: z dowolnych danych powstają nazwy i treść wpisów; to, co pisarz
 // zapisał bez błędu, czytnik przyjmuje w trybie ścisłym z tymi samymi nazwami i treścią, a archive/zip czyta
-// tak samo; te same wywołania z treścią podzieloną inaczej dają te same bajty.
-// REQ: ZW-007 ZW-008
+// tak samo; te same wywołania z treścią podzieloną inaczej i bez samokontroli dają te same bajty.
+// REQ: ZW-007 ZW-008 ZW-011
 func FuzzRoundTrip(f *testing.F) {
 	f.Add([]byte("a\x00hello\x00dir/\x00\x00b/c\x00some content some content some content"), uint8(0))
 	f.Add([]byte("../x\x00evil\x00a\x00a\x00a/\x00"), uint8(3))
@@ -940,10 +948,10 @@ func FuzzRoundTrip(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte, mode uint8) {
 		parts := bytes.Split(data, []byte{0})
 		// run zapisuje archiwum; pieces to liczba zapisów, na które dzielona jest treść wpisu strumieniowego.
-		run := func(pieces int) ([]byte, []item) {
+		run := func(pieces int, opts Options) ([]byte, []item) {
 			var want []item
 			var out bytes.Buffer
-			w := New(&out)
+			w := NewWithOptions(&out, opts)
 			for i := 0; i+1 < len(parts) && i < 40; i += 2 {
 				name, content := string(parts[i]), bytes.Repeat(parts[i+1], 1+int(mode)%5*7)
 				h := Header{Name: name, Method: []uint16{Stored, Deflate}[(int(mode)+i/2)%2], Zip64: mode&64 != 0}
@@ -979,10 +987,10 @@ func FuzzRoundTrip(f *testing.F) {
 			}
 			return out.Bytes(), want
 		}
-		archive, want := run(2)
+		archive, want := run(2, Options{})
 		check(t, archive, want)
-		if again, _ := run(5); !bytes.Equal(again, archive) {
-			t.Fatal("the same calls with content split differently give other bytes")
+		if again, _ := run(5, Options{SkipSelfCheck: true}); !bytes.Equal(again, archive) {
+			t.Fatal("the same calls with content split differently and without the self-check give other bytes")
 		}
 	})
 }

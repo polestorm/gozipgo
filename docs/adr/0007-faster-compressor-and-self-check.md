@@ -1,7 +1,8 @@
 # 0007 Szybszy kompresor i samokontrola pisarza
 
 Status: przyjęta · 2026-11-27 (decyzja właściciela: przepisać kompresor przed pierwszym wydaniem pisarza
-i dodać samokontrolę); pkt 7 czeka na potwierdzenie po pomiarze
+i dodać samokontrolę; po pomiarze i znalezisku fuzzingu tego samego dnia: samokontrola domyślnie włączona
+z nazwaną opcją wyłączenia, limity czytnika nie są limitami pisarza)
 
 ## Kontekst
 
@@ -66,12 +67,25 @@ pozostałe punkty (bajty jako kontrakt, bloki, kody Huffmana, pełne kody) obowi
      jego wywołanie dekoduje najwyżej okno (32 768 bajtów treści) i zużywa przy tym mniej niż 75 000 bajtów
      strumienia (rachunek przy stałej `checkReserve`). Gdyby rachunek zawiódł, kontrola kończy się błędem,
      nie milczeniem. Pamięć: do około 200 KiB kolejki i dekoder (około 50 KiB) na pisarza.
-   - Koszt czasu jest w pkt 8. Czy kontrola ma być zawsze włączona, czy wyłączana nazwaną opcją, rozstrzyga
-     właściciel po tym pomiarze.
+   - Kontrola kosztuje około połowy szybkości zapisu wpisów kompresowanych (nasz dekoder jest tylko około
+     1,7 raza szybszy od kompresora; pomiar w pkt 9). Decyzja właściciela z 2026-11-27: **domyślnie włączona,
+     wyłączana nazwaną opcją** `Options.SkipSelfCheck`, podawaną przez `NewWithOptions`; `New` zostaje i znaczy
+     opcje domyślne. Opcja jest dla wywołującego, który sprawdza archiwum inaczej, na przykład czytając je po
+     zapisie. Nie zmienia bajtów archiwum (`TestSkipSelfCheck`, `FuzzRoundTrip`), więc inaczej niż poluzowania
+     czytnika nie zostawia śladu w wyniku: nie ma czego oznaczać.
+8. **Limity czytnika nie są limitami pisarza.** `FuzzRoundTrip` pokazał 2026-11-27, że pisarz zapisuje nazwę
+   dłuższą niż 4096 bajtów (format pozwala na 65 535), a czytnik z domyślnymi opcjami odrzuca takie archiwum
+   (`limit-name-length`). To samo dotyczy pozostałych limitów: ponad 65 536 wpisów, katalog ponad 64 MiB, wpis
+   ponad 1 GiB, łącznie ponad 4 GiB czytanej treści. Limity bronią czytającego przed wrogim wejściem i ustawia
+   je czytający; pisarz zapisuje dane, którym wywołujący ufa, i ma zapisać wszystko, co format mieści (po to
+   jest ZIP64). Decyzja właściciela: pisarz zostaje bez zmian, ZW-007 mówi „o ile archiwum mieści się
+   w limitach czytnika”, dokumentacja pakietu wymienia limity domyślne, a testy czytają z limitem nazwy
+   podniesionym do granicy formatu. Odrzucone: limit 4096 bajtów nazwy w pisarzu (zamyka jeden z pięciu
+   limitów) i własne limity pisarza równe domyślnym czytnika (pisarz odmawiałby wpisu ponad 1 GiB).
 
 ### Pomiar
 
-8. Wynik `tools/bench` po tej zmianie jest w `docs/comparison.md` i `docs/results/`; README bierze liczby stamtąd.
+9. Wynik `tools/bench` po tej zmianie jest w `docs/comparison.md` i `docs/results/`; README bierze liczby stamtąd.
 
 ## Sprawdzone i odrzucone
 

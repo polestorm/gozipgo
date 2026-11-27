@@ -46,6 +46,10 @@ type Header struct {
 	Zip64 bool
 }
 
+type Options struct {
+	SkipSelfCheck bool
+}
+
 type RawInfo struct {
 	CompressedSize   uint64
 	UncompressedSize uint64
@@ -62,6 +66,8 @@ type Writer struct {
 }
 
 func New(w io.Writer) *Writer
+
+func NewWithOptions(w io.Writer, opts Options) *Writer
 
 func (e *Error) Error() string
 

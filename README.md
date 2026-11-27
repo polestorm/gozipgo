@@ -145,6 +145,10 @@ err = w.Close() // central directory and end records
 ```
 
 `AddRaw` copies an entry from `zipreader.Reader.OpenRaw` without compressing it again and checks it on the way.
+The writer decodes every stream its compressor produces and compares it with the content;
+`zipwriter.NewWithOptions(out, zipwriter.Options{SkipSelfCheck: true})` turns that off for a caller that
+verifies the archive in another way. The limits of the reader are not applied by the writer: an archive above
+them (a name longer than 4,096 bytes, an entry above 1 GiB) is read after raising the limits.
 
 Strict reading is the default and the only mode that needs no decision from the caller. Each relaxation is a
 named option, off by default, and every use of one is reported by `Reader.Relaxed`: `UnflaggedNames` (the

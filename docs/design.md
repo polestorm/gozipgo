@@ -121,7 +121,8 @@ err = w.Close()
   zapisie nagłówka, decyduje `Header.Zip64`;
 - błąd wykryty przed pierwszym bajtem wpisu nie zmienia stanu; błąd późniejszy (cel zapisu, rozmiar, dane surowe,
   samokontrola wpisu strumieniowego) jest trwały, bo archiwum nie da się dokończyć;
-- to, co pisarz zapisał, czytnik przyjmuje w trybie ścisłym, a czarne skrzynki rozpakowują z tą samą treścią.
+- to, co pisarz zapisał, czytnik przyjmuje w trybie ścisłym, a czarne skrzynki rozpakowują z tą samą treścią;
+  limity czytnika są ustawieniem czytającego i pisarz ich nie stosuje (ADR 0007 pkt 8).
 
 ## Kompresja (`internal/deflate`)
 
@@ -141,7 +142,8 @@ RFC 1951, rozdziały 3 i 4. Jeden algorytm, stałe parametry, żadnych poziomów
 - pamięć stała (około 1,8 MiB na koder: bufor wejścia 1 MiB i tablice), bez alokacji w czasie pracy; nowy
   strumień nie czyści tablic, więc mały wpis nie płaci za ich rozmiar;
 - pisarz dekoduje każdy strumień kompresora w trakcie zapisu i porównuje rozmiar oraz CRC-32 wyniku z treścią
-  wpisu (`write-self-check`, ZW-011, ADR 0007 pkt 6).
+  wpisu (`write-self-check`, ZW-011, ADR 0007 pkt 7); kontrolę wyłącza `Options.SkipSelfCheck`, bez wpływu na
+  bajty archiwum.
 
 ## Kody błędów
 

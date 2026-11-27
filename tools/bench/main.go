@@ -205,10 +205,19 @@ type piece struct {
 }
 
 // writeOurs writes the parts with zipwriter, each through Create in pieces of 32 KiB, as a program that streams
-// content would, and returns the size of the archive.
+// content would, and returns the size of the archive. writeOursUnchecked does the same with the self-check of
+// the writer turned off.
 func writeOurs(parts []piece, method uint16) int64 {
+	return writeWith(zipwriter.Options{}, parts, method)
+}
+
+func writeOursUnchecked(parts []piece, method uint16) int64 {
+	return writeWith(zipwriter.Options{SkipSelfCheck: true}, parts, method)
+}
+
+func writeWith(opts zipwriter.Options, parts []piece, method uint16) int64 {
 	var c counter
-	w := zipwriter.New(&c)
+	w := zipwriter.NewWithOptions(&c, opts)
 	for _, p := range parts {
 		e, err := w.Create(zipwriter.Header{Name: p.name, Method: method})
 		if err != nil {
@@ -577,12 +586,12 @@ func main() {
 		name string
 		f    func([]piece, uint16) int64
 	}{{"gozipgo", writeOurs}, {"archive/zip", writeStdlib(0)}, {flateDefault, writeStdlib(flate.DefaultCompression)},
-		{"klauspost/compress", writeKlauspost}}
-	wdoc.WriteString("| Case | gozipgo | archive/zip | compress/flate, default level | klauspost/compress | archive, gozipgo | archive, archive/zip | archive, compress/flate default | archive, klauspost/compress | size, gozipgo / compress/flate default |\n|---|---|---|---|---|---|---|---|---|---|\n")
+		{"klauspost/compress", writeKlauspost}, {"gozipgo without the self-check", writeOursUnchecked}}
+	wdoc.WriteString("| Case | gozipgo | gozipgo, no self-check | archive/zip | compress/flate, default level | klauspost/compress | archive, gozipgo | archive, archive/zip | archive, compress/flate default | archive, klauspost/compress | size, gozipgo / compress/flate default |\n|---|---|---|---|---|---|---|---|---|---|---|\n")
 	worstSize := 0.0
 	for _, r := range wrows {
-		var med [4]time.Duration
-		var bytesOut [4]int64
+		var med [5]time.Duration
+		var bytesOut [5]int64
 		for k, wr := range writers {
 			bytesOut[k] = wr.f(r.parts, r.method)
 			times, a := measure(func() int64 { return wr.f(r.parts, r.method) })
@@ -596,12 +605,15 @@ func main() {
 		if strings.Contains(r.label, "xml") || strings.Contains(r.label, "table") {
 			worstSize = max(worstSize, sizeRatio)
 		}
-		fmt.Fprintf(&wdoc, "| %s | %s | %s | %s | %s | %d | %d | %d | %d | %.3f |\n", r.label[len("write "):], speed(med[0]), speed(med[1]), speed(med[2]), speed(med[3]),
+		if bytesOut[4] != bytesOut[0] {
+			fatal(fmt.Errorf("%s: the archive without the self-check has %d bytes, with it %d", r.label, bytesOut[4], bytesOut[0]))
+		}
+		fmt.Fprintf(&wdoc, "| %s | %s | %s | %s | %s | %s | %d | %d | %d | %d | %.3f |\n", r.label[len("write "):], speed(med[0]), speed(med[4]), speed(med[1]), speed(med[2]), speed(med[3]),
 			bytesOut[0], bytesOut[1], bytesOut[2], bytesOut[3], sizeRatio)
 		fmt.Printf("%-55s time %.2f of archive/zip, %.2f of flate default; size %.3f of flate default\n", r.label,
 			float64(med[0])/float64(med[1]), float64(med[0])/float64(med[2]), sizeRatio)
 	}
-	wheader := fmt.Sprintf("Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that\nonly counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level\nregistered as its compressor, which is the level requirement ZW-006 names; `klauspost/compress` is its `zip`\npackage as it ships. Sizes are bytes of the whole archive.\nThe largest size ratio on markup and tabular data is %.3f; ZW-006 allows 1.1.\n\n", worstSize)
+	wheader := fmt.Sprintf("Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that\nonly counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level\nregistered as its compressor, which is the level requirement ZW-006 names; `klauspost/compress` is its `zip`\npackage as it ships. gozipgo is measured twice: as it ships, decoding every DEFLATE stream it writes and\ncomparing it with the content, and with that self-check turned off (`Options.SkipSelfCheck`); the archive is the\nsame. Sizes are bytes of the whole archive.\nThe largest size ratio on markup and tabular data is %.3f; ZW-006 allows 1.1.\n\n", worstSize)
 
 	// Size of a program: what each library adds to a binary that reads an archive and writes it again.
 	toolDir, err := os.Getwd()

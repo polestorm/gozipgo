@@ -15,7 +15,11 @@
 // An archive written without an error is one that zipreader accepts in its strict mode, with the same names and
 // content: the names follow the rules of the reader, the content given to AddRaw is checked while it is copied,
 // and every DEFLATE stream the writer produces is decoded while it is written and compared with the content it
-// was made from (a difference is the error write-self-check).
+// was made from (a difference is the error write-self-check; Options.SkipSelfCheck turns the comparison off).
+// The reader has limits that the format does not have, and an archive must fit in them to be read: with the
+// default Options of zipreader a name of at most 4,096 bytes, at most 65,536 entries, a central directory of at
+// most 64 MiB, and for the content that is read, at most 1 GiB per entry and 4 GiB in total. The writer does not
+// apply them; whoever reads a larger archive raises the limits of the reader.
 //
 // Entries can be written in three ways. Add takes the whole content and records the sizes and the CRC-32 in the
 // local header. Create returns a writer for content of unknown length and records them in a data descriptor
@@ -90,6 +94,7 @@ type Writer struct {
 
 	comp    *deflate.Writer
 	check   checker // kontrola strumienia kompresora bieżącego wpisu
+	nocheck bool    // Options.SkipSelfCheck
 	inf     *inflate.Reader
 	scratch []byte // nagłówki i kopiowanie
 	packed  []byte // treść skompresowana w Add
@@ -107,9 +112,25 @@ type record struct {
 	zip64         bool // nagłówek lokalny w postaci ZIP64
 }
 
-// New returns a Writer that writes an archive to w. The archive is complete after Close.
+// Options configures a Writer. The zero value is the default. No option changes the bytes of the archive.
+type Options struct {
+	// SkipSelfCheck turns off the check of the compressor: without it the writer does not decode the DEFLATE
+	// streams it produces, so a fault of the compressor would give an archive whose entry does not unpack to
+	// its content, and no error. Writing compressed entries takes about half the time. It is meant for a
+	// caller that verifies the archive in another way, for example by reading it back.
+	SkipSelfCheck bool
+}
+
+// New returns a Writer that writes an archive to w, with the default Options. The archive is complete after
+// Close.
 func New(w io.Writer) *Writer {
-	return &Writer{dst: w, files: map[string]struct{}{}, dirs: map[string]struct{}{}, parents: map[string]struct{}{}}
+	return NewWithOptions(w, Options{})
+}
+
+// NewWithOptions returns a Writer that writes an archive to w. The archive is complete after Close.
+func NewWithOptions(w io.Writer, opts Options) *Writer {
+	return &Writer{dst: w, nocheck: opts.SkipSelfCheck,
+		files: map[string]struct{}{}, dirs: map[string]struct{}{}, parents: map[string]struct{}{}}
 }
 
 func (w *Writer) fail(code string, h *Header, message string) *Error {
@@ -140,7 +161,9 @@ func (s sink) Write(p []byte) (int, error) {
 	if err := s.w.write(p); err != nil {
 		return 0, err
 	}
-	s.w.check.feed(p)
+	if !s.w.nocheck {
+		s.w.check.feed(p)
+	}
 	return len(p), nil
 }
 
@@ -335,7 +358,7 @@ func (w *Writer) Add(h Header, content []byte) error {
 		data = w.packed
 	}
 	r.crc = crc32.ChecksumIEEE(content)
-	if r.method == Deflate {
+	if r.method == Deflate && !w.nocheck {
 		// Nic jeszcze nie zostało zapisane, więc po tym błędzie archiwum da się dokończyć.
 		w.check.feed(data)
 		if !w.check.finish(r.crc, uint64(len(content))) {
@@ -360,7 +383,9 @@ func (a *appender) Write(p []byte) (int, error) {
 
 // compressor przygotowuje kompresor i kontrolę jego strumienia dla nowego wpisu.
 func (w *Writer) compressor(dst io.Writer) {
-	w.check.reset()
+	if !w.nocheck {
+		w.check.reset()
+	}
 	if w.comp == nil {
 		w.comp = deflate.NewWriter(dst)
 		return
@@ -458,7 +483,7 @@ func (e *entryWriter) Close() error {
 		if err := w.comp.Close(); err != nil {
 			return err
 		}
-		if !w.check.finish(e.crc, e.usize) {
+		if !w.nocheck && !w.check.finish(e.crc, e.usize) {
 			// Dane wpisu są już w archiwum, więc nie da się go dokończyć.
 			w.err = e.fail(CodeSelfCheck, selfCheckMessage)
 			return w.err

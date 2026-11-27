@@ -34,7 +34,13 @@ Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
   the earlier bytes. A compressor uses about 1.8 MiB of memory (0.5 MiB before).
 - The writer checks its own compressor: every DEFLATE stream is decoded while it is written, and the size and
   the CRC-32 of the result are compared with the content of the entry. A difference is the new error
-  `write-self-check` (`CodeSelfCheck`) instead of an archive that unpacks to something else.
+  `write-self-check` (`CodeSelfCheck`) instead of an archive that unpacks to something else. The check takes
+  about half of the time of writing compressed entries; `NewWithOptions` with `Options.SkipSelfCheck` turns it
+  off, for a caller that verifies the archive in another way. The option does not change the bytes.
+- The limits of the reader are not limits of the writer: it writes whatever the format holds (a name of up to
+  65,535 bytes, any number and size of entries), and an archive above the default limits of the reader is read
+  after raising them. Found by `FuzzRoundTrip` with a name longer than 4,096 bytes; the requirement and the
+  documentation of the package now say so.
 - `tools/compare` also gives the archives `zipwriter` writes to the other readers, and `tools/bench` measures
   writing against `archive/zip`.
 - The reader is unchanged; its rules for names moved to a package shared with the writer.
