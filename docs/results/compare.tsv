@@ -1,9 +1,10 @@
 # gozipgo tools/compare
 # date	2026-11-27
-# commit	0a48ee9
+# commit	1469779 with uncommitted changes
 # machine	darwin/arm64, Apple M4, macOS 27.0.1
 # candidate	gozipgo	this commit
 # candidate	archive/zip	go1.26.6
+# candidate	klauspost/compress	github.com/klauspost/compress/zip v1.20.5
 # candidate	Info-ZIP unzip	UnZip 6.00 of 20 April 2009, by Info-ZIP, with modifications by Apple Inc.
 # candidate	7-Zip	7-Zip (z) 26.01 (arm64) : Copyright (c) 1999-2026 Igor Pavlov : 2026-04-27
 # candidate	Python zipfile	Python 3.9.6 (default, Aug 25 2026, 21:26:21)
@@ -11,396 +12,462 @@
 corpus	archive	candidate	verdict	detail	files	escaped	content digest	agrees
 interop	7zip-default.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	7zip-default.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	7zip-default.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	7zip-default.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	7zip-default.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	7zip-default.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	7zip-default.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	7zip-fastest.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	7zip-fastest.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	7zip-fastest.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	7zip-fastest.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	7zip-fastest.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	7zip-fastest.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	7zip-fastest.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	7zip-stored.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	7zip-stored.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	7zip-stored.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	7zip-stored.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	7zip-stored.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	7zip-stored.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	7zip-stored.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	7zip-ultra.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	7zip-ultra.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	7zip-ultra.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	7zip-ultra.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	7zip-ultra.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	7zip-ultra.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	7zip-ultra.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	go-deflate.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	go-deflate.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	go-deflate.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	go-deflate.zip	Info-ZIP unzip	rejects	exit status 50, 7 files written	7	0	d627e126	false
 interop	go-deflate.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	go-deflate.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	go-deflate.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	go-raw.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	go-raw.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	go-raw.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	go-raw.zip	Info-ZIP unzip	rejects	exit status 50, 7 files written	7	0	d627e126	false
 interop	go-raw.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	go-raw.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	go-raw.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	go-stored.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	go-stored.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	go-stored.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	go-stored.zip	Info-ZIP unzip	rejects	exit status 50, 7 files written	7	0	d627e126	false
 interop	go-stored.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	go-stored.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	go-stored.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-best.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-best.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-best.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-best.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-best.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-best.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-best.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-comment.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-comment.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-comment.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-comment.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-comment.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-comment.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-comment.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-default.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-default.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-default.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-default.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-default.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-default.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-default.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-noextra.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-noextra.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-noextra.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-noextra.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-noextra.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-noextra.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-noextra.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-stored.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-stored.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-stored.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-stored.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-stored.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-stored.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-stored.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-stream.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-stream.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-stream.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-stream.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-stream.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-stream.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-stream.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	infozip-zip64.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	libreoffice-docx.docx	gozipgo	reads		10	0	5505abaf	true
 interop	libreoffice-docx.docx	archive/zip	reads		10	0	5505abaf	true
+interop	libreoffice-docx.docx	klauspost/compress	reads		10	0	5505abaf	true
 interop	libreoffice-docx.docx	Info-ZIP unzip	reads		10	0	5505abaf	true
 interop	libreoffice-docx.docx	7-Zip	reads		10	0	5505abaf	true
 interop	libreoffice-docx.docx	Python zipfile	reads		10	0	5505abaf	true
 interop	libreoffice-docx.docx	bsdtar (libarchive)	reads		10	0	5505abaf	true
 interop	libreoffice-odt.odt	gozipgo	reads		8	0	c5106d1f	true
 interop	libreoffice-odt.odt	archive/zip	reads		8	0	c5106d1f	true
+interop	libreoffice-odt.odt	klauspost/compress	reads		8	0	c5106d1f	true
 interop	libreoffice-odt.odt	Info-ZIP unzip	reads		8	0	c5106d1f	true
 interop	libreoffice-odt.odt	7-Zip	reads		8	0	c5106d1f	true
 interop	libreoffice-odt.odt	Python zipfile	reads		8	0	c5106d1f	true
 interop	libreoffice-odt.odt	bsdtar (libarchive)	reads		8	0	c5106d1f	true
 interop	macos-ditto.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	macos-ditto.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	macos-ditto-rsrc.zip	gozipgo	reads		9	0	36a83b08	true
 interop	macos-ditto-rsrc.zip	archive/zip	reads		9	0	36a83b08	true
+interop	macos-ditto-rsrc.zip	klauspost/compress	reads		9	0	36a83b08	true
 interop	macos-ditto-rsrc.zip	Info-ZIP unzip	reads		9	0	36a83b08	true
 interop	macos-ditto-rsrc.zip	7-Zip	reads		9	0	36a83b08	true
 interop	macos-ditto-rsrc.zip	Python zipfile	reads		9	0	36a83b08	true
 interop	macos-ditto-rsrc.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	false
 interop	python-deflated.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	python-deflated.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	python-deflated.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	python-deflated.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	python-deflated.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	python-deflated.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	python-deflated.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	python-stored.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	python-stored.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	python-stored.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	python-stored.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	python-stored.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	python-stored.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	python-stored.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	python-stream.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	python-stream.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	python-stream.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	python-stream.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	python-stream.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	python-stream.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	python-stream.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	python-zip64.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	python-zip64.zip	archive/zip	reads		8	0	791c6ad1	true
+interop	python-zip64.zip	klauspost/compress	reads		8	0	791c6ad1	true
 interop	python-zip64.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	python-zip64.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	python-zip64.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	python-zip64.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
 interop	windows11-7zip.zip	gozipgo	reads		8	0	333aac4a	true
 interop	windows11-7zip.zip	archive/zip	reads		8	0	333aac4a	true
+interop	windows11-7zip.zip	klauspost/compress	reads		8	0	333aac4a	true
 interop	windows11-7zip.zip	Info-ZIP unzip	rejects	exit status 50, 1 files written	1	0	e7def367	false
 interop	windows11-7zip.zip	7-Zip	reads		8	0	333aac4a	true
 interop	windows11-7zip.zip	Python zipfile	reads		8	0	333aac4a	true
 interop	windows11-7zip.zip	bsdtar (libarchive)	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	gozipgo	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	archive/zip	reads		8	0	333aac4a	true
+interop	windows11-explorer.zip	klauspost/compress	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	Info-ZIP unzip	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	7-Zip	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	Python zipfile	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	bsdtar (libarchive)	reads		8	0	333aac4a	true
 interop	word-docx.docx	gozipgo	reads		11	0	ab442197	true
 interop	word-docx.docx	archive/zip	reads		11	0	ab442197	true
+interop	word-docx.docx	klauspost/compress	reads		11	0	ab442197	true
 interop	word-docx.docx	Info-ZIP unzip	reads		11	0	ab442197	true
 interop	word-docx.docx	7-Zip	reads		11	0	ab442197	true
 interop	word-docx.docx	Python zipfile	reads		11	0	ab442197	true
 interop	word-docx.docx	bsdtar (libarchive)	reads		11	0	ab442197	true
 hostile	bomb-ratio	gozipgo	rejects	limit-ratio	0	0	e3b0c442	
 hostile	bomb-ratio	archive/zip	reads		1	0	fa819044	
+hostile	bomb-ratio	klauspost/compress	reads		1	0	fa819044	
 hostile	bomb-ratio	Info-ZIP unzip	reads		1	0	fa819044	
 hostile	bomb-ratio	7-Zip	reads		1	0	fa819044	
 hostile	bomb-ratio	Python zipfile	reads		1	0	fa819044	
 hostile	bomb-ratio	bsdtar (libarchive)	reads		1	0	fa819044	
 hostile	bomb-lying-size	gozipgo	rejects	zip-size-mismatch	0	0	e3b0c442	
 hostile	bomb-lying-size	archive/zip	rejects	zip: not a valid zip file	0	0	e3b0c442	
+hostile	bomb-lying-size	klauspost/compress	rejects	zip: not a valid zip file	0	0	e3b0c442	
 hostile	bomb-lying-size	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	fa819044	
 hostile	bomb-lying-size	7-Zip	rejects	exit status 2, 1 files written	1	0	67844152	
 hostile	bomb-lying-size	Python zipfile	reads		1	0	67844152	
 hostile	bomb-lying-size	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	67844152	
 hostile	overlap-shared-stream	gozipgo	rejects	zip-entries-overlap	0	0	e3b0c442	
 hostile	overlap-shared-stream	archive/zip	reads		64	0	1ddad64b	
+hostile	overlap-shared-stream	klauspost/compress	reads		64	0	1ddad64b	
 hostile	overlap-shared-stream	Info-ZIP unzip	reads with a warning	exit status 1	64	0	1ddad64b	
 hostile	overlap-shared-stream	7-Zip	reads		64	0	1ddad64b	
 hostile	overlap-shared-stream	Python zipfile	rejects	BadZipFile: File name in directory 'k1' and header b'k0' differ.	0	0	e3b0c442	
 hostile	overlap-shared-stream	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	overlap-quoted-header	gozipgo	rejects	zip-entries-overlap	0	0	e3b0c442	
 hostile	overlap-quoted-header	archive/zip	reads		2	0	40df80fe	
+hostile	overlap-quoted-header	klauspost/compress	reads		2	0	40df80fe	
 hostile	overlap-quoted-header	Info-ZIP unzip	reads		2	0	40df80fe	
 hostile	overlap-quoted-header	7-Zip	reads		2	0	40df80fe	
 hostile	overlap-quoted-header	Python zipfile	reads		2	0	40df80fe	
 hostile	overlap-quoted-header	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	entries-over-limit	gozipgo	rejects	limit-entries	0	0	e3b0c442	
 hostile	entries-over-limit	archive/zip	reads		65537	0	cbc607eb	
+hostile	entries-over-limit	klauspost/compress	reads		65537	0	cbc607eb	
 hostile	entries-over-limit	Info-ZIP unzip	reads		65537	0	cbc607eb	
 hostile	entries-over-limit	7-Zip	reads		65537	0	cbc607eb	
 hostile	entries-over-limit	Python zipfile	reads		65537	0	cbc607eb	
 hostile	entries-over-limit	bsdtar (libarchive)	reads		65537	0	cbc607eb	
 hostile	entries-count-lie	gozipgo	rejects	zip-directory-count-mismatch	0	0	e3b0c442	
 hostile	entries-count-lie	archive/zip	rejects	unexpected EOF	0	0	e3b0c442	
+hostile	entries-count-lie	klauspost/compress	rejects	unexpected EOF	0	0	e3b0c442	
 hostile	entries-count-lie	Info-ZIP unzip	rejects	exit status 3, 2 files written	2	0	04008f83	
 hostile	entries-count-lie	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	entries-count-lie	Python zipfile	reads		2	0	04008f83	
 hostile	entries-count-lie	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	directory-past-file	gozipgo	rejects	zip-directory-out-of-bounds	0	0	e3b0c442	
 hostile	directory-past-file	archive/zip	rejects	bytes.Reader.ReadAt: negative offset	0	0	e3b0c442	
+hostile	directory-past-file	klauspost/compress	rejects	bytes.Reader.ReadAt: negative offset	0	0	e3b0c442	
 hostile	directory-past-file	Info-ZIP unzip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	directory-past-file	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	directory-past-file	Python zipfile	rejects	OSError: [Errno 22] Invalid argument	0	0	e3b0c442	
 hostile	directory-past-file	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	directory-over-data	gozipgo	rejects	zip-directory-signature	0	0	e3b0c442	
 hostile	directory-over-data	archive/zip	rejects	zip: not a valid zip file	0	0	e3b0c442	
+hostile	directory-over-data	klauspost/compress	rejects	zip: not a valid zip file	0	0	e3b0c442	
 hostile	directory-over-data	Info-ZIP unzip	rejects	exit status 3	0	0	e3b0c442	
 hostile	directory-over-data	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	directory-over-data	Python zipfile	rejects	BadZipFile: Bad magic number for central directory	0	0	e3b0c442	
 hostile	directory-over-data	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	two-ends-comment	gozipgo	rejects	zip-multiple-directory-ends	0	0	e3b0c442	
 hostile	two-ends-comment	archive/zip	reads		1	0	abcba814	
+hostile	two-ends-comment	klauspost/compress	reads		1	0	abcba814	
 hostile	two-ends-comment	Info-ZIP unzip	reads with a warning	exit status 1	1	0	abcba814	
 hostile	two-ends-comment	7-Zip	reads		2	0	04008f83	
 hostile	two-ends-comment	Python zipfile	reads		1	0	abcba814	
 hostile	two-ends-comment	bsdtar (libarchive)	reads		1	0	abcba814	
 hostile	two-ends-comment-trailing	gozipgo	rejects	zip-multiple-directory-ends	0	0	e3b0c442	
 hostile	two-ends-comment-trailing	archive/zip	reads		1	0	abcba814	
+hostile	two-ends-comment-trailing	klauspost/compress	reads		1	0	abcba814	
 hostile	two-ends-comment-trailing	Info-ZIP unzip	reads with a warning	exit status 1	1	0	abcba814	
 hostile	two-ends-comment-trailing	7-Zip	reads		2	0	04008f83	
 hostile	two-ends-comment-trailing	Python zipfile	reads		1	0	abcba814	
 hostile	two-ends-comment-trailing	bsdtar (libarchive)	reads		1	0	abcba814	
 hostile	concatenated	gozipgo	rejects	zip-directory-out-of-bounds	0	0	e3b0c442	
 hostile	concatenated	archive/zip	reads		1	0	abcba814	
+hostile	concatenated	klauspost/compress	reads		1	0	abcba814	
 hostile	concatenated	Info-ZIP unzip	reads with a warning	exit status 1	1	0	abcba814	
 hostile	concatenated	7-Zip	reads		2	0	04008f83	
 hostile	concatenated	Python zipfile	reads		1	0	abcba814	
 hostile	concatenated	bsdtar (libarchive)	reads		1	0	abcba814	
 hostile	data-after-end	gozipgo	rejects	zip-trailing-data	0	0	e3b0c442	
 hostile	data-after-end	archive/zip	reads		2	0	04008f83	
+hostile	data-after-end	klauspost/compress	reads		2	0	04008f83	
 hostile	data-after-end	Info-ZIP unzip	reads		2	0	04008f83	
 hostile	data-after-end	7-Zip	reads		2	0	04008f83	
 hostile	data-after-end	Python zipfile	reads		2	0	04008f83	
 hostile	data-after-end	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	local-name	gozipgo	rejects	zip-local-header-mismatch	0	0	e3b0c442	
 hostile	local-name	archive/zip	reads		2	0	04008f83	
+hostile	local-name	klauspost/compress	reads		2	0	04008f83	
 hostile	local-name	Info-ZIP unzip	reads with a warning	exit status 1	2	0	04008f83	
 hostile	local-name	7-Zip	reads		2	0	04008f83	
 hostile	local-name	Python zipfile	rejects	BadZipFile: File name in directory 'a.txt' and header b'e.exe' differ.	0	0	e3b0c442	
 hostile	local-name	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	local-method	gozipgo	rejects	zip-local-header-mismatch	0	0	e3b0c442	
 hostile	local-method	archive/zip	reads		2	0	04008f83	
+hostile	local-method	klauspost/compress	reads		2	0	04008f83	
 hostile	local-method	Info-ZIP unzip	rejects	exit status 2, 2 files written	2	0	4e62abc5	
 hostile	local-method	7-Zip	rejects	exit status 2, 2 files written	2	0	4e62abc5	
 hostile	local-method	Python zipfile	reads		2	0	04008f83	
 hostile	local-method	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	eef90731	
 hostile	local-size	gozipgo	rejects	zip-local-header-mismatch	0	0	e3b0c442	
 hostile	local-size	archive/zip	reads		2	0	04008f83	
+hostile	local-size	klauspost/compress	reads		2	0	04008f83	
 hostile	local-size	Info-ZIP unzip	rejects	exit status 2, 2 files written	2	0	c35dfe11	
 hostile	local-size	7-Zip	rejects	exit status 2, 1 files written	1	0	8386f042	
 hostile	local-size	Python zipfile	reads		2	0	04008f83	
 hostile	local-size	bsdtar (libarchive)	rejects	exit status 1, 2 files written	2	0	c35dfe11	
 hostile	descriptor-size	gozipgo	rejects	zip-descriptor-mismatch	0	0	e3b0c442	
 hostile	descriptor-size	archive/zip	reads		1	0	d7914fe5	
+hostile	descriptor-size	klauspost/compress	reads		1	0	d7914fe5	
 hostile	descriptor-size	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	descriptor-size	7-Zip	reads		1	0	d7914fe5	
 hostile	descriptor-size	Python zipfile	reads		1	0	d7914fe5	
 hostile	descriptor-size	bsdtar (libarchive)	reads		1	0	d7914fe5	
 hostile	hidden-entry	gozipgo	rejects	zip-unreferenced-data	0	0	e3b0c442	
 hostile	hidden-entry	archive/zip	reads		2	0	ee35211c	
+hostile	hidden-entry	klauspost/compress	reads		2	0	ee35211c	
 hostile	hidden-entry	Info-ZIP unzip	reads		2	0	ee35211c	
 hostile	hidden-entry	7-Zip	reads		2	0	ee35211c	
 hostile	hidden-entry	Python zipfile	reads		2	0	ee35211c	
 hostile	hidden-entry	bsdtar (libarchive)	reads		2	0	ee35211c	
 hostile	prefix	gozipgo	rejects	zip-unreferenced-data	0	0	e3b0c442	
 hostile	prefix	archive/zip	reads		2	0	04008f83	
+hostile	prefix	klauspost/compress	reads		2	0	04008f83	
 hostile	prefix	Info-ZIP unzip	reads		2	0	04008f83	
 hostile	prefix	7-Zip	reads		2	0	04008f83	
 hostile	prefix	Python zipfile	reads		2	0	04008f83	
 hostile	prefix	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	name-traversal	gozipgo	rejects	name-traversal	0	0	e3b0c442	
 hostile	name-traversal	archive/zip	reads		1	0	d7914fe5	
+hostile	name-traversal	klauspost/compress	reads		1	0	d7914fe5	
 hostile	name-traversal	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	name-traversal	7-Zip	reads		1	0	d7914fe5	
 hostile	name-traversal	Python zipfile	reads		1	0	d7914fe5	
 hostile	name-traversal	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	name-absolute	gozipgo	rejects	name-absolute	0	0	e3b0c442	
 hostile	name-absolute	archive/zip	reads		1	0	d7914fe5	
+hostile	name-absolute	klauspost/compress	reads		1	0	d7914fe5	
 hostile	name-absolute	Info-ZIP unzip	reads with a warning	exit status 1	1	0	d7914fe5	
 hostile	name-absolute	7-Zip	reads		1	0	d7914fe5	
 hostile	name-absolute	Python zipfile	reads		1	0	d7914fe5	
 hostile	name-absolute	bsdtar (libarchive)	reads		1	0	d7914fe5	
 hostile	name-drive	gozipgo	rejects	name-absolute	0	0	e3b0c442	
 hostile	name-drive	archive/zip	reads		1	0	d7914fe5	
+hostile	name-drive	klauspost/compress	reads		1	0	d7914fe5	
 hostile	name-drive	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	name-drive	7-Zip	reads		1	0	d7914fe5	
 hostile	name-drive	Python zipfile	reads		1	0	d7914fe5	
 hostile	name-drive	bsdtar (libarchive)	reads		1	0	d7914fe5	
 hostile	name-backslash	gozipgo	rejects	name-backslash	0	0	e3b0c442	
 hostile	name-backslash	archive/zip	reads		1	0	d7914fe5	
+hostile	name-backslash	klauspost/compress	reads		1	0	d7914fe5	
 hostile	name-backslash	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	name-backslash	7-Zip	reads		1	0	d7914fe5	
 hostile	name-backslash	Python zipfile	reads		1	0	d7914fe5	
 hostile	name-backslash	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	name-nul	gozipgo	rejects	name-nul	0	0	e3b0c442	
 hostile	name-nul	archive/zip	reads		1	0	d7914fe5	
+hostile	name-nul	klauspost/compress	reads		1	0	d7914fe5	
 hostile	name-nul	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	name-nul	7-Zip	rejects	exit status 2	0	0	e3b0c442	
 hostile	name-nul	Python zipfile	reads		1	0	d7914fe5	
 hostile	name-nul	bsdtar (libarchive)	reads		1	0	d7914fe5	
 hostile	name-duplicate	gozipgo	rejects	name-duplicate	0	0	e3b0c442	
 hostile	name-duplicate	archive/zip	reads		2	0	988e249f	
+hostile	name-duplicate	klauspost/compress	reads		2	0	988e249f	
 hostile	name-duplicate	Info-ZIP unzip	reads		1	0	87d83c82	
 hostile	name-duplicate	7-Zip	reads		1	0	87d83c82	
 hostile	name-duplicate	Python zipfile	reads		2	0	988e249f	
 hostile	name-duplicate	bsdtar (libarchive)	reads		1	0	87d83c82	
 hostile	name-file-and-directory	gozipgo	rejects	name-duplicate	0	0	e3b0c442	
 hostile	name-file-and-directory	archive/zip	reads		2	0	ee35211c	
+hostile	name-file-and-directory	klauspost/compress	reads		2	0	ee35211c	
 hostile	name-file-and-directory	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	name-file-and-directory	7-Zip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	name-file-and-directory	Python zipfile	reads		2	0	ee35211c	
 hostile	name-file-and-directory	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	d7914fe5	
 hostile	zip64-size-past-file	gozipgo	rejects	zip-local-header-mismatch	0	0	e3b0c442	
 hostile	zip64-size-past-file	archive/zip	rejects	unexpected EOF	0	0	e3b0c442	
+hostile	zip64-size-past-file	klauspost/compress	rejects	unexpected EOF	0	0	e3b0c442	
 hostile	zip64-size-past-file	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	zip64-size-past-file	7-Zip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	zip64-size-past-file	Python zipfile	rejects	EOFError: 	0	0	e3b0c442	
 hostile	zip64-size-past-file	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	d7914fe5	
 hostile	zip64-disagrees	gozipgo	rejects	zip64-inconsistent	0	0	e3b0c442	
 hostile	zip64-disagrees	archive/zip	reads		1	0	d7914fe5	
+hostile	zip64-disagrees	klauspost/compress	reads		1	0	d7914fe5	
 hostile	zip64-disagrees	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	zip64-disagrees	7-Zip	reads		1	0	d7914fe5	
 hostile	zip64-disagrees	Python zipfile	reads		1	0	d7914fe5	
 hostile	zip64-disagrees	bsdtar (libarchive)	reads		1	0	d7914fe5	
 hostile	zip64-locator-astray	gozipgo	rejects	zip64-inconsistent	0	0	e3b0c442	
 hostile	zip64-locator-astray	archive/zip	rejects	zip: not a valid zip file	0	0	e3b0c442	
+hostile	zip64-locator-astray	klauspost/compress	rejects	zip: not a valid zip file	0	0	e3b0c442	
 hostile	zip64-locator-astray	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	zip64-locator-astray	7-Zip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	zip64-locator-astray	Python zipfile	reads		1	0	d7914fe5	
 hostile	zip64-locator-astray	bsdtar (libarchive)	reads		1	0	d7914fe5	
 hostile	extra-past-header	gozipgo	rejects	zip-extra-field	0	0	e3b0c442	
 hostile	extra-past-header	archive/zip	reads		2	0	04008f83	
+hostile	extra-past-header	klauspost/compress	reads		2	0	04008f83	
 hostile	extra-past-header	Info-ZIP unzip	reads		2	0	04008f83	
 hostile	extra-past-header	7-Zip	reads		2	0	04008f83	
 hostile	extra-past-header	Python zipfile	rejects	BadZipFile: Corrupt extra field 5455 (size=65535)	0	0	e3b0c442	
 hostile	extra-past-header	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	extra-length-past-directory	gozipgo	rejects	zip-directory-truncated	0	0	e3b0c442	
 hostile	extra-length-past-directory	archive/zip	rejects	unexpected EOF	0	0	e3b0c442	
+hostile	extra-length-past-directory	klauspost/compress	rejects	unexpected EOF	0	0	e3b0c442	
 hostile	extra-length-past-directory	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	extra-length-past-directory	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	extra-length-past-directory	Python zipfile	reads		2	0	04008f83	
 hostile	extra-length-past-directory	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	truncated-in-data	gozipgo	rejects	zip-no-directory-end	0	0	e3b0c442	
 hostile	truncated-in-data	archive/zip	rejects	zip: not a valid zip file	0	0	e3b0c442	
+hostile	truncated-in-data	klauspost/compress	rejects	zip: not a valid zip file	0	0	e3b0c442	
 hostile	truncated-in-data	Info-ZIP unzip	rejects	exit status 9	0	0	e3b0c442	
 hostile	truncated-in-data	7-Zip	rejects	exit status 2	0	0	e3b0c442	
 hostile	truncated-in-data	Python zipfile	rejects	BadZipFile: File is not a zip file	0	0	e3b0c442	
 hostile	truncated-in-data	bsdtar (libarchive)	rejects	exit status 1	0	0	e3b0c442	
 hostile	truncated-in-directory	gozipgo	rejects	zip-no-directory-end	0	0	e3b0c442	
 hostile	truncated-in-directory	archive/zip	rejects	zip: not a valid zip file	0	0	e3b0c442	
+hostile	truncated-in-directory	klauspost/compress	rejects	zip: not a valid zip file	0	0	e3b0c442	
 hostile	truncated-in-directory	Info-ZIP unzip	rejects	exit status 9	0	0	e3b0c442	
 hostile	truncated-in-directory	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	truncated-in-directory	Python zipfile	rejects	BadZipFile: File is not a zip file	0	0	e3b0c442	
 hostile	truncated-in-directory	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	truncated-in-end	gozipgo	rejects	zip-no-directory-end	0	0	e3b0c442	
 hostile	truncated-in-end	archive/zip	rejects	zip: not a valid zip file	0	0	e3b0c442	
+hostile	truncated-in-end	klauspost/compress	rejects	zip: not a valid zip file	0	0	e3b0c442	
 hostile	truncated-in-end	Info-ZIP unzip	rejects	exit status 9	0	0	e3b0c442	
 hostile	truncated-in-end	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	truncated-in-end	Python zipfile	rejects	BadZipFile: File is not a zip file	0	0	e3b0c442	
 hostile	truncated-in-end	bsdtar (libarchive)	reads		2	0	04008f83	
 hostile	inflate-block-type	gozipgo	rejects	inflate-block-type	0	0	e3b0c442	
 hostile	inflate-block-type	archive/zip	rejects	flate: corrupt input before offset 1	0	0	e3b0c442	
+hostile	inflate-block-type	klauspost/compress	rejects	flate: corrupt input before offset 1	0	0	e3b0c442	
 hostile	inflate-block-type	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-block-type	7-Zip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-block-type	Python zipfile	rejects	error: Error -3 while decompressing data: invalid block type	0	0	e3b0c442	
 hostile	inflate-block-type	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	eef90731	
 hostile	inflate-stored-length	gozipgo	rejects	inflate-stored-length	0	0	e3b0c442	
 hostile	inflate-stored-length	archive/zip	rejects	flate: corrupt input before offset 5	0	0	e3b0c442	
+hostile	inflate-stored-length	klauspost/compress	rejects	flate: corrupt input before offset 5	0	0	e3b0c442	
 hostile	inflate-stored-length	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-stored-length	7-Zip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-stored-length	Python zipfile	rejects	error: Error -3 while decompressing data: invalid stored block lengths	0	0	e3b0c442	
 hostile	inflate-stored-length	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	eef90731	
 hostile	inflate-code-lengths	gozipgo	rejects	inflate-code-lengths	0	0	e3b0c442	
 hostile	inflate-code-lengths	archive/zip	rejects	flate: corrupt input before offset 3	0	0	e3b0c442	
+hostile	inflate-code-lengths	klauspost/compress	rejects	flate: corrupt input before offset 3	0	0	e3b0c442	
 hostile	inflate-code-lengths	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-code-lengths	7-Zip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-code-lengths	Python zipfile	rejects	error: Error -3 while decompressing data: too many length or distance symbols	0	0	e3b0c442	
 hostile	inflate-code-lengths	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	eef90731	
 hostile	inflate-distance	gozipgo	rejects	inflate-distance	0	0	e3b0c442	
 hostile	inflate-distance	archive/zip	rejects	flate: corrupt input before offset 2	0	0	e3b0c442	
+hostile	inflate-distance	klauspost/compress	rejects	flate: corrupt input before offset 2	0	0	e3b0c442	
 hostile	inflate-distance	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	6ec0f71f	
 hostile	inflate-distance	7-Zip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-distance	Python zipfile	rejects	error: Error -3 while decompressing data: invalid distance too far back	0	0	e3b0c442	
 hostile	inflate-distance	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	eef90731	
 hostile	inflate-truncated	gozipgo	rejects	inflate-truncated	0	0	e3b0c442	
 hostile	inflate-truncated	archive/zip	rejects	unexpected EOF	0	0	e3b0c442	
+hostile	inflate-truncated	klauspost/compress	rejects	unexpected EOF	0	0	e3b0c442	
 hostile	inflate-truncated	Info-ZIP unzip	rejects	exit status 2, 1 files written	1	0	cd372fb8	
 hostile	inflate-truncated	7-Zip	rejects	exit status 2, 1 files written	1	0	8386f042	
 hostile	inflate-truncated	Python zipfile	rejects	BadZipFile: Bad CRC-32 for file 'a.txt'	0	0	e3b0c442	
 hostile	inflate-truncated	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	59721c7d	
 hostile	inflate-trailing-data	gozipgo	rejects	inflate-trailing-data	0	0	e3b0c442	
 hostile	inflate-trailing-data	archive/zip	reads		1	0	d7914fe5	
+hostile	inflate-trailing-data	klauspost/compress	reads		1	0	d7914fe5	
 hostile	inflate-trailing-data	Info-ZIP unzip	reads		1	0	d7914fe5	
 hostile	inflate-trailing-data	7-Zip	rejects	exit status 2, 1 files written	1	0	d7914fe5	
 hostile	inflate-trailing-data	Python zipfile	reads		1	0	d7914fe5	
 hostile	inflate-trailing-data	bsdtar (libarchive)	rejects	exit status 1, 1 files written	1	0	eef90731	
 hostile	crc	gozipgo	rejects	zip-checksum	0	0	e3b0c442	
 hostile	crc	archive/zip	rejects	zip: checksum error	0	0	e3b0c442	
+hostile	crc	klauspost/compress	rejects	zip: checksum error	0	0	e3b0c442	
 hostile	crc	Info-ZIP unzip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	crc	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	crc	Python zipfile	rejects	BadZipFile: Bad CRC-32 for file 'a.txt'	0	0	e3b0c442	
 hostile	crc	bsdtar (libarchive)	rejects	exit status 1, 2 files written	2	0	04008f83	
 written	added	gozipgo	reads		7	0	a06c2e4b	true
 written	added	archive/zip	reads		7	0	a06c2e4b	true
+written	added	klauspost/compress	reads		7	0	a06c2e4b	true
 written	added	Info-ZIP unzip	reads		7	0	a06c2e4b	true
 written	added	7-Zip	reads		7	0	a06c2e4b	true
 written	added	Python zipfile	reads		7	0	a06c2e4b	true
@@ -408,6 +475,7 @@ written	added	bsdtar (libarchive)	reads		7	0	a06c2e4b	true
 written	added	(archive)	288876 bytes	effab3d44a27a8b7d8d4239989365876e0da3d2f7a8f14554ab6e4ecd824d7d8	7	0		
 written	streamed	gozipgo	reads		6	0	a884a1fd	true
 written	streamed	archive/zip	reads		6	0	a884a1fd	true
+written	streamed	klauspost/compress	reads		6	0	a884a1fd	true
 written	streamed	Info-ZIP unzip	reads		6	0	a884a1fd	true
 written	streamed	7-Zip	reads		6	0	a884a1fd	true
 written	streamed	Python zipfile	reads		6	0	a884a1fd	true
@@ -415,6 +483,7 @@ written	streamed	bsdtar (libarchive)	reads		6	0	a884a1fd	true
 written	streamed	(archive)	311229 bytes	263dfb6f20f63b4f29c94e778a8b9e14e79c0075d66854432e957126374d47ab	6	0		
 written	utf8-names	gozipgo	reads		3	0	8b974e57	true
 written	utf8-names	archive/zip	reads		3	0	8b974e57	true
+written	utf8-names	klauspost/compress	reads		3	0	8b974e57	true
 written	utf8-names	Info-ZIP unzip	rejects	exit status 50	0	0	e3b0c442	false
 written	utf8-names	7-Zip	reads		3	0	8b974e57	true
 written	utf8-names	Python zipfile	reads		3	0	8b974e57	true
@@ -422,6 +491,7 @@ written	utf8-names	bsdtar (libarchive)	reads		3	0	8b974e57	true
 written	utf8-names	(archive)	6153 bytes	ff914a9f53035265df5e623991bdc20ab091dddcf585faa523284ae2db9ee75a	3	0		
 written	zip64-headers	gozipgo	reads		4	0	d1628322	true
 written	zip64-headers	archive/zip	reads		4	0	d1628322	true
+written	zip64-headers	klauspost/compress	reads		4	0	d1628322	true
 written	zip64-headers	Info-ZIP unzip	reads		4	0	d1628322	true
 written	zip64-headers	7-Zip	reads		4	0	d1628322	true
 written	zip64-headers	Python zipfile	reads		4	0	d1628322	true
@@ -429,6 +499,7 @@ written	zip64-headers	bsdtar (libarchive)	reads		4	0	d1628322	true
 written	zip64-headers	(archive)	74398 bytes	62cce9eec904db87bbc3e81d25910131a59b5de2b0e15da3ff93ac9f43c31681	4	0		
 written	zip64-count	gozipgo	reads		66000	0	d7234db8	true
 written	zip64-count	archive/zip	reads		66000	0	d7234db8	true
+written	zip64-count	klauspost/compress	reads		66000	0	d7234db8	true
 written	zip64-count	Info-ZIP unzip	reads		66000	0	d7234db8	true
 written	zip64-count	7-Zip	reads		66000	0	d7234db8	true
 written	zip64-count	Python zipfile	reads		66000	0	d7234db8	true
@@ -436,6 +507,7 @@ written	zip64-count	bsdtar (libarchive)	reads		66000	0	d7234db8	true
 written	zip64-count	(archive)	7512988 bytes	5095fc84f24dc09a69e391c06b3673a75eacff3539e5d757d63c5edfc1418040	66000	0		
 written	raw-copy	gozipgo	reads		7	0	a06c2e4b	true
 written	raw-copy	archive/zip	reads		7	0	a06c2e4b	true
+written	raw-copy	klauspost/compress	reads		7	0	a06c2e4b	true
 written	raw-copy	Info-ZIP unzip	reads		7	0	a06c2e4b	true
 written	raw-copy	7-Zip	reads		7	0	a06c2e4b	true
 written	raw-copy	Python zipfile	reads		7	0	a06c2e4b	true
@@ -443,6 +515,7 @@ written	raw-copy	bsdtar (libarchive)	reads		7	0	a06c2e4b	true
 written	raw-copy	(archive)	288956 bytes	7d9c90b427a4617e150b4b87c907a623ece2429b45b035a4803a99224b46ee32	7	0		
 written	empty	gozipgo	reads		0	0	e3b0c442	true
 written	empty	archive/zip	reads		0	0	e3b0c442	true
+written	empty	klauspost/compress	reads		0	0	e3b0c442	true
 written	empty	Info-ZIP unzip	reads with a warning	exit status 1	0	0	e3b0c442	true
 written	empty	7-Zip	reads		0	0	e3b0c442	true
 written	empty	Python zipfile	reads		0	0	e3b0c442	true

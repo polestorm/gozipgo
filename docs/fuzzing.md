@@ -46,23 +46,30 @@ sprawdzenie lokalne uruchamiamy z `-fuzzminimizetime 1s`.
 Wejścia startowe: korpus zgodności, korpus wrogi i archiwa z budowniczego testów (fuzzer strukturalny: mutuje
 pola rekordów, nie tylko bajty).
 
-## Przebiegi
-
-| Data | Commit | Host i sprzęt | Fuzzer | Czas zegarowy | Wykonania | Wynik |
-|---|---|---|---|---|---|---|
-| — | `4a0326b` | Synology StormSyn (DS224+, Celeron J4125, 4 rdzenie) | `FuzzInflate`, `FuzzReader` | zlecone 25 h | — | w kolejce od 2026-11-27 (za zadaniami innych projektów); wiersze z wynikiem dopisze `tools/fuzz -import` po zakończeniu. Krótkie sprawdzenia lokalne z etapów 1–3 są w tabeli pomiarów w `testing.md` |
-| 2026-11-27 10:02 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzDeflate` (./internal/deflate) | 10m2s | 515549 | ok |
-| 2026-11-27 10:12 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzInflate` (./internal/inflate) | 10m5s | 16320196 | ok |
-| 2026-11-27 10:22 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzReader` (./zipreader) | 7m39s | 1572191 | **błąd**: input testdata/fuzz/FuzzReader/5f059cbfad239190 |
-| 2026-11-27 10:30 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzRoundTrip` (./zipwriter) | 10m2s | 1139622 | ok |
-
 ## Znaleziska
 
 | Data | Fuzzer | Wejście | Co pokazało | Poprawka |
 |---|---|---|---|---|
 | 2026-11-27 | `FuzzReader` (lokalnie, po 7 min 39 s) | `zipreader/testdata/fuzz/FuzzReader/5f059cbfad239190` | archiwum przyjęte ściśle, którego `archive/zip` nie przyjmuje: komentarz zawierał sygnaturę końca katalogu, a rekord od niej zaczęty nie kończył się równo z plikiem, więc nie był dla nas kandydatem. Zbudowany z tego przykład (drugie archiwum i jeden bajt w komentarzu) czytają inaczej niż my `archive/zip`, Python, UnZip i bsdtar. Luka była w v0.1.0 | sygnatura końca katalogu po pierwszym bajcie wybranego rekordu daje `zip-multiple-directory-ends` (DIR-002, ADR 0002 pkt 3); archiwum `two-ends-comment-trailing` w korpusie wrogim; wejście zostaje jako test regresji |
+
+## Przebiegi
+
+Ta tabela musi być ostatnia w pliku: `tools/fuzz` dopisuje wiersze na jego końcu.
+
+| Data | Commit | Host i sprzęt | Fuzzer | Czas zegarowy | Wykonania | Wynik |
+|---|---|---|---|---|---|---|
+| — | `4a0326b` | Synology StormSyn (DS224+, Celeron J4125, 4 rdzenie) | `FuzzInflate`, `FuzzReader` | zlecone 25 h | — | nie odbyła się: zlecona 2026-11-27, czekała w kolejce, a serwer stracił zasilanie tego samego dnia. Zastąpi ją kampania czterech fuzzerów na commicie kandydata do v0.2.0 |
+| 2026-11-27 10:02 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzDeflate` (./internal/deflate) | 10m2s | 515549 | ok |
+| 2026-11-27 10:12 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzInflate` (./internal/inflate) | 10m5s | 16320196 | ok |
+| 2026-11-27 10:22 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzReader` (./zipreader) | 7m39s | 1572191 | **błąd**: input testdata/fuzz/FuzzReader/5f059cbfad239190 |
+| 2026-11-27 10:30 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzRoundTrip` (./zipwriter) | 10m2s | 1139622 | ok |
 | 2026-11-27 11:02 | `28784c9` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzReader` (./zipreader) | 10m2s | 3660908 | ok |
 | 2026-11-27 11:42 | `ceceeb6` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzDeflate` (./internal/deflate) | 2m32s | 41976 | ok |
 | 2026-11-27 11:45 | `ceceeb6` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzInflate` (./internal/inflate) | 2m32s | 5950435 | ok |
 | 2026-11-27 11:47 | `ceceeb6` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzReader` (./zipreader) | 2m32s | 1522698 | ok |
 | 2026-11-27 11:50 | `ceceeb6` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzRoundTrip` (./zipwriter) | 2m32s | 160123 | ok |
+| 2026-11-27 12:54 | `1469779` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzDeflate` (./internal/deflate) | 2m32s | 316434 | ok |
+| 2026-11-27 12:56 | `1469779` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzInflate` (./internal/inflate) | 2m32s | 5018023 | ok |
+| 2026-11-27 12:59 | `1469779` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzReader` (./zipreader) | 2m33s | 1545926 | ok |
+| 2026-11-27 13:01 | `1469779` | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzRoundTrip` (./zipwriter) | 2m32s | 173084 | ok |
+| — | `1469779` | Synology StormSyn (DS224+, Celeron J4125, 4 rdzenie) | `FuzzDeflate`, `FuzzInflate`, `FuzzReader`, `FuzzRoundTrip` | zlecone 4 × 375 min (25 h), 3 wątki | — | w toku od 2026-11-27 13:30 (pierwsza w kolejce po powrocie zasilania); koniec około 2026-11-28 14:30; wiersze z wynikiem dopisze `tools/fuzz -import` |

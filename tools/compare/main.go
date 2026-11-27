@@ -23,10 +23,12 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"sort"
 	"strings"
 	"time"
 
+	kzip "github.com/klauspost/compress/zip"
 	"github.com/polestorm/gozipgo/zipreader"
 )
 
@@ -90,6 +92,32 @@ func rejected(err error) outcome {
 
 func runStdlib(_ string, data []byte, _ zipreader.Options) outcome {
 	r, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return outcome{Verdict: "rejects", Detail: err.Error()}
+	}
+	o := outcome{Verdict: "reads", Files: map[string]string{}}
+	for _, f := range r.File {
+		if strings.HasSuffix(f.Name, "/") {
+			continue
+		}
+		rc, err := f.Open()
+		if err != nil {
+			return outcome{Verdict: "rejects", Detail: err.Error()}
+		}
+		body, err := io.ReadAll(io.LimitReader(rc, 1<<30))
+		if err != nil {
+			return outcome{Verdict: "rejects", Detail: err.Error()}
+		}
+		o.Files[f.Name] = sum(body)
+		o.Sums = append(o.Sums, sum(body))
+	}
+	sort.Strings(o.Sums)
+	return o
+}
+
+// runKlauspost reads with github.com/klauspost/compress/zip, whose API is that of archive/zip.
+func runKlauspost(_ string, data []byte, _ zipreader.Options) outcome {
+	r, err := kzip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
 		return outcome{Verdict: "rejects", Detail: err.Error()}
 	}
@@ -245,10 +273,23 @@ func firstLine(name string, args ...string) string {
 	return ""
 }
 
+// klauspostVersion returns the version of github.com/klauspost/compress this tool was built with.
+func klauspostVersion() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, d := range info.Deps {
+			if d.Path == "github.com/klauspost/compress" {
+				return "github.com/klauspost/compress/zip " + d.Version
+			}
+		}
+	}
+	return "github.com/klauspost/compress/zip"
+}
+
 func candidates() []candidate {
 	cs := []candidate{
 		{"gozipgo", "this commit", runGozipgo},
 		{"archive/zip", runtime.Version(), runStdlib},
+		{"klauspost/compress", klauspostVersion(), runKlauspost},
 	}
 	if p, err := exec.LookPath("unzip"); err == nil {
 		cs = append(cs, candidate{"Info-ZIP unzip", firstLine(p, "-v"), runExtractor(1, func(a, t string) []string {

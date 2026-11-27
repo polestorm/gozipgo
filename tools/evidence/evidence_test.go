@@ -296,11 +296,11 @@ func TestCriteriaFromInputs(t *testing.T) {
 	run := events(
 		pass(pkgReader, "TestFormatInventory", "format inventory: 2 rows, 2 verified, 0 pending (stage 2)"),
 		pass(pkgReader, "TestInteropCorpus", "interop corpus: 38 archives, 37 read as the manifest says, 1 listed exceptions"),
-		pass(pkgRoot, "TestRequirementsCovered", "requirements: 1 accepted, 0 draft; 1 referenced by tests or corpus files"),
-		pass(pkgRoot, "TestAPISnapshot"),
-		pass(pkgRoot, "TestErrorCatalog"),
+		pass(pkgProject, "TestRequirementsCovered", "requirements: 1 accepted, 0 draft; 1 referenced by tests or corpus files"),
+		pass(pkgProject, "TestAPISnapshot"),
+		pass(pkgProject, "TestErrorCatalog"),
 		pass(pkgReader, "TestHostileArchives"),
-		pass(pkgRoot, "TestNoIOImports"),
+		pass(pkgProject, "TestNoIOImports"),
 		pass(pkgReader, "TestPathological"),
 		pass(pkgRoot+"/internal/inflate", "TestPathological"),
 		pass(pkgReader, "TestLargeArchive"),
@@ -328,7 +328,7 @@ func TestCriteriaFromInputs(t *testing.T) {
 
 	// Stan etapu 0: testów niosących liczby jeszcze nie ma, wymagania są szkicami, dokumenty mają wiersze „—”.
 	// Nic nie jest niespełnione, wszystko poza K9 czeka, kod wyjścia 0.
-	empty := buildCriteria(Inputs{Runs: []*TestRun{events(pass(pkgRoot, "TestRequirementsCovered", "requirements: 0 accepted, 1 draft; 0 referenced by tests or corpus files"))},
+	empty := buildCriteria(Inputs{Runs: []*TestRun{events(pass(pkgProject, "TestRequirementsCovered", "requirements: 0 accepted, 1 draft; 0 referenced by tests or corpus files"))},
 		Traces: []Trace{{Requirement: Requirement{ID: "AB-002", Status: statusDraft}, Result: "draft"}}, DataVerify: DataVerify{OK: true}})
 	want := map[string]string{"K1": "pending", "K2": "pending", "K3": "pending", "K4": "pending", "K5": "pending", "K6": "pending",
 		"K7": "pending", "K8": "pending", "K9": "met"}
@@ -392,7 +392,7 @@ func TestCriteriaFromInputs(t *testing.T) {
 	failing := events(
 		pass(pkgReader, "TestFormatInventory", "format inventory: 2 rows, 1 verified, 1 pending (stage 2)"),
 		`{"Action":"fail","Package":"`+pkgReader+`","Test":"TestHostileArchives"}`,
-		pass(pkgRoot, "TestNoIOImports"),
+		pass(pkgProject, "TestNoIOImports"),
 	)
 	s := statuses(buildCriteria(Inputs{Runs: []*TestRun{failing}, Inventory: inventory, DataVerify: DataVerify{OK: true}}))
 	if s["K1"] != "pending" || s["K6"] != "not_met" || s["K9"] != "not_met" {
@@ -548,7 +548,7 @@ func TestBuildOnStageZeroRepository(t *testing.T) {
 		"requirements/README.md": "| `API` | `api.md` | a | 0 | szkic |\n| `EVD` | `evidence.md` | e | 5 | szkic |\n",
 		"requirements/api.md":    "# API\n\nStatus: szkic\n\n| Id | Wymaganie |\n|---|---|\n| API-001 | wzorzec API |\n",
 		"requirements/format.md": "# Inwentarz\n\nStatus: szkic\n\nTabele wypełnia etap 0.\n",
-		"requirements_test.go": "package gozipgo\n\nimport \"testing\"\n\n// REQ: API-001\nfunc TestRequirementsCovered(t *testing.T) {\n" +
+		"internal/project/requirements_test.go": "package project\n\nimport \"testing\"\n\n// REQ: API-001\nfunc TestRequirementsCovered(t *testing.T) {\n" +
 			"\tt.Logf(\"requirements: %d accepted, %d draft; %d referenced by tests or corpus files\", 0, 1, 1)\n}\n\nfunc TestAPISnapshot(t *testing.T) {}\n",
 		"tools/fetch/go.mod":         "module " + pkgRoot + "/tools/fetch\n\ngo 1.22\n",
 		"tools/fetch/main_test.go":   "package main\n\nimport \"testing\"\n\nfunc TestFetch(t *testing.T) {}\n",
@@ -577,7 +577,7 @@ func TestBuildOnStageZeroRepository(t *testing.T) {
 	if exitCode(e.Criteria) != 0 {
 		t.Error("exit 1")
 	}
-	if len(e.Traces) != 1 || e.Traces[0].Result != "pass" || e.Traces[0].Evidence[0] != pkgRoot+".TestRequirementsCovered" {
+	if len(e.Traces) != 1 || e.Traces[0].Result != "pass" || e.Traces[0].Evidence[0] != pkgProject+".TestRequirementsCovered" {
 		t.Errorf("traces: %+v", e.Traces)
 	}
 	if !e.Dirty || e.Commit == "" || e.GoVersion == "" || !e.DataVerify.OK || e.Generated != "2026-11-26 12:00" {

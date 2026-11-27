@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	kzip "github.com/klauspost/compress/zip"
 	"github.com/polestorm/gozipgo/zipreader"
 	"github.com/polestorm/gozipgo/zipwriter"
 )
@@ -126,6 +127,56 @@ func readStdlib(data []byte) int64 {
 	return n
 }
 
+// readKlauspost and openKlauspost do with github.com/klauspost/compress/zip what readStdlib and openStdlib do
+// with archive/zip; the two packages have the same API.
+func readKlauspost(data []byte) int64 {
+	r, err := kzip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		fatal(err)
+	}
+	var n int64
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			fatal(err)
+		}
+		n += drain(rc)
+		rc.Close()
+	}
+	return n
+}
+
+func openKlauspost(data []byte) int64 {
+	r, err := kzip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		fatal(err)
+	}
+	return int64(len(r.File))
+}
+
+// writeKlauspost writes the parts with github.com/klauspost/compress/zip as it ships.
+func writeKlauspost(parts []piece, method uint16) int64 {
+	var c counter
+	w := kzip.NewWriter(&c)
+	for _, p := range parts {
+		e, err := w.CreateHeader(&kzip.FileHeader{Name: p.name, Method: method})
+		if err != nil {
+			fatal(err)
+		}
+		for d := p.data; len(d) > 0; {
+			n := min(len(d), 32<<10)
+			if _, err := e.Write(d[:n]); err != nil {
+				fatal(err)
+			}
+			d = d[n:]
+		}
+	}
+	if err := w.Close(); err != nil {
+		fatal(err)
+	}
+	return c.n
+}
+
 func openOurs(data []byte) int64 {
 	r, err := zipreader.New(bytes.NewReader(data), int64(len(data)), zipreader.Options{MaxEntries: -1})
 	if err != nil {
@@ -209,6 +260,155 @@ func writeStdlib(level int) func(parts []piece, method uint16) int64 {
 	}
 }
 
+// The programs whose sizes are compared: each reads an archive from standard input, reads every entry and writes
+// the entries into a new archive on standard output. The first has no ZIP library and only copies.
+var footprintPrograms = []struct{ name, source string }{
+	{"no ZIP library", `package main
+
+import (
+	"io"
+	"os"
+)
+
+func main() {
+	data, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		os.Exit(1)
+	}
+	os.Stdout.Write(data)
+}
+`},
+	{"gozipgo", `package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+
+	"github.com/polestorm/gozipgo/zipreader"
+	"github.com/polestorm/gozipgo/zipwriter"
+)
+
+func main() {
+	data, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		os.Exit(1)
+	}
+	r, err := zipreader.New(bytes.NewReader(data), int64(len(data)), zipreader.Options{})
+	if err != nil {
+		os.Exit(1)
+	}
+	w := zipwriter.New(os.Stdout)
+	for _, e := range r.Entries() {
+		rc, err := r.Open(e)
+		if err != nil {
+			os.Exit(1)
+		}
+		body, err := io.ReadAll(rc)
+		if err != nil {
+			os.Exit(1)
+		}
+		if w.Add(zipwriter.Header{Name: e.Name, Method: zipwriter.Deflate}, body) != nil {
+			os.Exit(1)
+		}
+	}
+	if w.Close() != nil {
+		os.Exit(1)
+	}
+}
+`},
+	{"archive/zip", stdlibShaped("archive/zip")},
+	{"klauspost/compress", stdlibShaped("github.com/klauspost/compress/zip")},
+}
+
+// stdlibShaped returns the program for a package with the API of archive/zip.
+func stdlibShaped(pkg string) string {
+	return `package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+
+	zip "` + pkg + `"
+)
+
+func main() {
+	data, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		os.Exit(1)
+	}
+	r, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		os.Exit(1)
+	}
+	w := zip.NewWriter(os.Stdout)
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			os.Exit(1)
+		}
+		body, err := io.ReadAll(rc)
+		if err != nil {
+			os.Exit(1)
+		}
+		out, err := w.Create(f.Name)
+		if err != nil {
+			os.Exit(1)
+		}
+		if _, err := out.Write(body); err != nil {
+			os.Exit(1)
+		}
+	}
+	if w.Close() != nil {
+		os.Exit(1)
+	}
+}
+`
+}
+
+// footprint builds the programs with "go build -trimpath -ldflags=-s -w" in a scratch module and returns the size
+// of each binary, in the order of footprintPrograms. toolDir is the directory of this tool: its go.mod and go.sum
+// pin the version of klauspost/compress.
+func footprint(root, toolDir string) []int64 {
+	scratch, err := os.MkdirTemp("", "gozipgo-footprint-")
+	if err != nil {
+		fatal(err)
+	}
+	defer os.RemoveAll(scratch)
+	mod, err := os.ReadFile(filepath.Join(toolDir, "go.mod"))
+	if err != nil {
+		fatal(err)
+	}
+	text := strings.Replace(string(mod), "module github.com/polestorm/gozipgo/tools/bench", "module footprint", 1)
+	text = strings.Replace(text, "=> ../..", "=> "+root, 1)
+	sum, _ := os.ReadFile(filepath.Join(toolDir, "go.sum"))
+	var sizes []int64
+	for i, p := range footprintPrograms {
+		dir := filepath.Join(scratch, fmt.Sprint("p", i))
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			fatal(err)
+		}
+		for name, content := range map[string]string{"go.mod": text, "go.sum": string(sum), "main.go": p.source} {
+			if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0o644); err != nil {
+				fatal(err)
+			}
+		}
+		cmd := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", "program", ".")
+		cmd.Dir = dir
+		cmd.Env = append(os.Environ(), "GOFLAGS=-mod=mod", "GOWORK=off", "CGO_ENABLED=0")
+		if out, err := cmd.CombinedOutput(); err != nil {
+			fatal("building the footprint program for", p.name+":", err, string(out))
+		}
+		st, err := os.Stat(filepath.Join(dir, "program"))
+		if err != nil {
+			fatal(err)
+		}
+		sizes = append(sizes, st.Size())
+	}
+	return sizes
+}
+
 // measure runs f `runs` times and returns the durations and the bytes allocated in the last run.
 func measure(f func() int64) ([]time.Duration, uint64) {
 	f() // warm up
@@ -279,6 +479,7 @@ func main() {
 		units        int64 // bytes of content, or entries
 		perEntry     bool
 		ours, theirs func() int64
+		klaus        func() int64
 	}
 	const size = 32 << 20
 	var rows []row
@@ -286,10 +487,11 @@ func main() {
 		data := generate(kind, size)
 		a := archive(data, zip.Deflate)
 		rows = append(rows, row{fmt.Sprintf("Deflate, %s, 32 MiB (%d bytes compressed)", kind, len(a)), size, false,
-			func() int64 { return readOurs(a) }, func() int64 { return readStdlib(a) }})
+			func() int64 { return readOurs(a) }, func() int64 { return readStdlib(a) }, func() int64 { return readKlauspost(a) }})
 	}
 	stored := archive(generate("random", size), zip.Store)
-	rows = append(rows, row{"Stored, 32 MiB", size, false, func() int64 { return readOurs(stored) }, func() int64 { return readStdlib(stored) }})
+	rows = append(rows, row{"Stored, 32 MiB", size, false, func() int64 { return readOurs(stored) }, func() int64 { return readStdlib(stored) },
+		func() int64 { return readKlauspost(stored) }})
 	// Many small entries: an office document has tens of parts, a bundle may have thousands.
 	var many bytes.Buffer
 	w := zip.NewWriter(&many)
@@ -310,17 +512,17 @@ func main() {
 	manyData := many.Bytes()
 	rows = append(rows,
 		row{fmt.Sprintf("open an archive of %d entries (%d MiB)", entries, len(manyData)>>20), entries, true,
-			func() int64 { return openOurs(manyData) }, func() int64 { return openStdlib(manyData) }},
+			func() int64 { return openOurs(manyData) }, func() int64 { return openStdlib(manyData) }, func() int64 { return openKlauspost(manyData) }},
 		row{fmt.Sprintf("open and read all %d entries", entries), entries, true,
-			func() int64 { return readOurs(manyData) }, func() int64 { return readStdlib(manyData) }})
+			func() int64 { return readOurs(manyData) }, func() int64 { return readStdlib(manyData) }, func() int64 { return readKlauspost(manyData) }})
 
-	doc.WriteString("| Case | gozipgo | archive/zip | time, gozipgo / archive/zip | allocated, gozipgo | allocated, archive/zip |\n|---|---|---|---|---|---|\n")
+	doc.WriteString("| Case | gozipgo | archive/zip | klauspost/compress | time, gozipgo / archive/zip | allocated, gozipgo | allocated, archive/zip | allocated, klauspost/compress |\n|---|---|---|---|---|---|---|---|\n")
 	worst := 0.0
 	for _, r := range rows {
-		var med [2]time.Duration
-		var alloc [2]uint64
-		for k, f := range []func() int64{r.ours, r.theirs} {
-			name := []string{"gozipgo", "archive/zip"}[k]
+		var med [3]time.Duration
+		var alloc [3]uint64
+		for k, f := range []func() int64{r.ours, r.theirs, r.klaus} {
+			name := []string{"gozipgo", "archive/zip", "klauspost/compress"}[k]
 			times, a := measure(f)
 			med[k], alloc[k] = median(times), a
 			for i, d := range times {
@@ -343,10 +545,11 @@ func main() {
 			}
 			return fmt.Sprintf("%d KiB", a>>10)
 		}
-		fmt.Fprintf(&doc, "| %s | %s | %s | %.2f | %s | %s |\n", r.label, speed(med[0]), speed(med[1]), ratio, mem(alloc[0]), mem(alloc[1]))
+		fmt.Fprintf(&doc, "| %s | %s | %s | %s | %.2f | %s | %s | %s |\n", r.label, speed(med[0]), speed(med[1]), speed(med[2]), ratio,
+			mem(alloc[0]), mem(alloc[1]), mem(alloc[2]))
 		fmt.Printf("%-55s %.2f\n", r.label, ratio)
 	}
-	header := fmt.Sprintf("Measured on %s at commit `%s` with %s on %s. Median of %d runs after one warm-up run; a ratio below 1 means\ngozipgo is faster. Reading includes opening the archive and, for both readers, checking the CRC-32.\nThe largest ratio for reading content is %.2f; criterion K7 allows 1.5.\n\n", date, commit, runtime.Version(), machine, runs, worst)
+	header := fmt.Sprintf("Measured on %s at commit `%s` with %s on %s. Median of %d runs after one warm-up run; a ratio below 1 means\ngozipgo is faster. Reading includes opening the archive and, for every reader, checking the CRC-32.\nThe largest ratio for reading content is %.2f; criterion K7 allows 1.5.\n\n", date, commit, runtime.Version(), machine, runs, worst)
 
 	// Writing: the same content through zipwriter and through archive/zip, time and size of the archive.
 	type wrow struct {
@@ -373,12 +576,13 @@ func main() {
 	writers := []struct {
 		name string
 		f    func([]piece, uint16) int64
-	}{{"gozipgo", writeOurs}, {"archive/zip", writeStdlib(0)}, {flateDefault, writeStdlib(flate.DefaultCompression)}}
-	wdoc.WriteString("| Case | gozipgo | archive/zip | compress/flate, default level | archive, gozipgo | archive, archive/zip | archive, compress/flate default | size, gozipgo / compress/flate default |\n|---|---|---|---|---|---|---|---|\n")
+	}{{"gozipgo", writeOurs}, {"archive/zip", writeStdlib(0)}, {flateDefault, writeStdlib(flate.DefaultCompression)},
+		{"klauspost/compress", writeKlauspost}}
+	wdoc.WriteString("| Case | gozipgo | archive/zip | compress/flate, default level | klauspost/compress | archive, gozipgo | archive, archive/zip | archive, compress/flate default | archive, klauspost/compress | size, gozipgo / compress/flate default |\n|---|---|---|---|---|---|---|---|---|---|\n")
 	worstSize := 0.0
 	for _, r := range wrows {
-		var med [3]time.Duration
-		var bytesOut [3]int64
+		var med [4]time.Duration
+		var bytesOut [4]int64
 		for k, wr := range writers {
 			bytesOut[k] = wr.f(r.parts, r.method)
 			times, a := measure(func() int64 { return wr.f(r.parts, r.method) })
@@ -392,12 +596,31 @@ func main() {
 		if strings.Contains(r.label, "xml") || strings.Contains(r.label, "table") {
 			worstSize = max(worstSize, sizeRatio)
 		}
-		fmt.Fprintf(&wdoc, "| %s | %s | %s | %s | %d | %d | %d | %.3f |\n", r.label[len("write "):], speed(med[0]), speed(med[1]), speed(med[2]),
-			bytesOut[0], bytesOut[1], bytesOut[2], sizeRatio)
+		fmt.Fprintf(&wdoc, "| %s | %s | %s | %s | %s | %d | %d | %d | %d | %.3f |\n", r.label[len("write "):], speed(med[0]), speed(med[1]), speed(med[2]), speed(med[3]),
+			bytesOut[0], bytesOut[1], bytesOut[2], bytesOut[3], sizeRatio)
 		fmt.Printf("%-55s time %.2f of archive/zip, %.2f of flate default; size %.3f of flate default\n", r.label,
 			float64(med[0])/float64(med[1]), float64(med[0])/float64(med[2]), sizeRatio)
 	}
-	wheader := fmt.Sprintf("Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that\nonly counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level\nregistered as its compressor, which is the level requirement ZW-006 names. Sizes are bytes of the whole archive.\nThe largest size ratio on markup and tabular data is %.3f; ZW-006 allows 1.1.\n\n", worstSize)
+	wheader := fmt.Sprintf("Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that\nonly counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level\nregistered as its compressor, which is the level requirement ZW-006 names; `klauspost/compress` is its `zip`\npackage as it ships. Sizes are bytes of the whole archive.\nThe largest size ratio on markup and tabular data is %.3f; ZW-006 allows 1.1.\n\n", worstSize)
+
+	// Size of a program: what each library adds to a binary that reads an archive and writes it again.
+	toolDir, err := os.Getwd()
+	if err != nil {
+		fatal(err)
+	}
+	sizes := footprint(abs, toolDir)
+	var sdoc strings.Builder
+	sdoc.WriteString("| Library | program | added by the library |\n|---|---|---|\n")
+	for i, p := range footprintPrograms {
+		fmt.Fprintf(&raw, "program size\t%s\t\t\t\t\t%d\n", p.name, sizes[i])
+		added := "—"
+		if i > 0 {
+			added = fmt.Sprintf("%d kB", (sizes[i]-sizes[0])/1000)
+		}
+		fmt.Fprintf(&sdoc, "| %s | %d bytes | %s |\n", p.name, sizes[i], added)
+		fmt.Printf("program with %-22s %d bytes\n", p.name, sizes[i])
+	}
+	sheader := fmt.Sprintf("Built in the same run for %s with `go build -trimpath -ldflags=\"-s -w\"` and `CGO_ENABLED=0`. Each program reads an\narchive from standard input, reads every entry and writes the entries into a new archive on standard output; the\nfirst has no ZIP library and only copies its input.\n\n", runtime.GOOS+"/"+runtime.GOARCH)
 
 	if err := os.WriteFile(resolve(abs, *rawPath), []byte(raw.String()), 0o644); err != nil {
 		fatal(err)
@@ -408,7 +631,8 @@ func main() {
 		fatal(err)
 	}
 	text := string(old)
-	for _, section := range []struct{ name, body string }{{"bench", header + doc.String()}, {"bench-write", wheader + wdoc.String()}} {
+	for _, section := range []struct{ name, body string }{{"bench", header + doc.String()}, {"bench-write", wheader + wdoc.String()},
+		{"bench-size", sheader + sdoc.String()}} {
 		begin, end := "<!-- "+section.name+":begin -->\n", "<!-- "+section.name+":end -->\n"
 		i, j := strings.Index(text, begin), strings.Index(text, end)
 		if i < 0 || j < i {

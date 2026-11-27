@@ -1,4 +1,4 @@
-package gozipgo
+package project
 
 import (
 	"go/ast"

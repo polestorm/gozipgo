@@ -89,8 +89,10 @@ result records.
 
 **Readers.** gozipgo with `MaxEntries: -1` and `MaxRatio: -1` (the zeros case is above the default ratio limit),
 everything else at its default: every local header is checked when the archive is opened and the size and CRC-32
-of every entry while it is read. `archive/zip` as it is. Both read from memory into the same 32 KiB buffer, and
-both close each entry reader.
+of every entry while it is read. `archive/zip` as it is, and the `zip` package of `github.com/klauspost/compress`
+(the version in `tools/bench/go.mod`) as it is; the two have the same API and run the same code of the tool. All
+read from memory into the same 32 KiB buffer and close each entry reader. The K7 threshold is about `archive/zip`
+only.
 
 **Statistics.** One warm-up run, then 7 runs; the table shows the median. "Allocated" is the growth of
 `runtime.MemStats.TotalAlloc` over the last run, that is, every byte allocated, not the peak. A reading case
@@ -132,6 +134,17 @@ counts bytes. One warm-up run, then 7 runs, median; the size is that of the whol
 compression levels. `TestBenchWriteRecorded` checks on the recorded file that for markup and tabular data the
 archive of gozipgo is at most 1.1 times the size of the one made with `compress/flate` at its default level
 (requirement ZW-006). There is no threshold for the speed of writing.
+
+**A third writer and the size of a program.** The writing table also has `klauspost/compress/zip` as it ships
+(it has compression levels; the default is measured). The table "Size of a program" comes from the same run: the
+tool writes four small programs into a scratch module, one that copies standard input to standard output and
+three that read an archive from standard input and write its entries into a new archive with gozipgo,
+`archive/zip` and `klauspost/compress`, builds each with `go build -trimpath -ldflags="-s -w"` and
+`CGO_ENABLED=0`, and records the sizes of the binaries. "Added by the library" is the size minus that of the
+copying program. The sources of the programs are in `tools/bench/main.go` (`footprintPrograms`).
+
+**klauspost/compress in the behaviour comparison.** `tools/compare` runs it in process next to `archive/zip`,
+with the same code, on all three corpora.
 
 **The same bytes everywhere.** `internal/deflate/testdata/golden.tsv` and `zipwriter/testdata/golden.tsv` hold
 the SHA-256 of what the compressor and the writer produce for fixed inputs. `TestGolden` in both packages

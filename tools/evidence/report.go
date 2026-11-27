@@ -66,6 +66,8 @@ const interopExceptionsSection = "(K2)"
 const (
 	pkgRoot   = "github.com/polestorm/gozipgo"
 	pkgReader = pkgRoot + "/zipreader"
+	// pkgProject to pakiet testów całego repozytorium (wzorce API, pokrycie wymagań, katalog błędów, importy).
+	pkgProject = pkgRoot + "/internal/project"
 )
 
 // Wiersze, które testy wypisują przez t.Logf; z nich biorą się liczby K1, K2 i K4.
@@ -239,13 +241,13 @@ func buildCriteria(in Inputs) []Criterion {
 	gate := map[string]string{}
 	gateFailed, gateOpen := false, false
 	for _, name := range []string{"TestRequirementsCovered", "TestAPISnapshot", "TestErrorCatalog"} {
-		gate[name] = in.result(pkgRoot + "." + name)
+		gate[name] = in.result(pkgProject + "." + name)
 		gateFailed = gateFailed || gate[name] == "fail"
 		gateOpen = gateOpen || gate[name] != "pass"
 		k4.Value += fmt.Sprintf("; %s %s", name, orNone(gate[name]))
 	}
 	mismatch := false
-	if n, found := findCounts(in.output(pkgRoot+".TestRequirementsCovered"), requirementsLogRe); found && (n[0] != accepted || n[1] != draft) {
+	if n, found := findCounts(in.output(pkgProject+".TestRequirementsCovered"), requirementsLogRe); found && (n[0] != accepted || n[1] != draft) {
 		mismatch = true
 		k4.Value += fmt.Sprintf("; **TestRequirementsCovered liczy inaczej: %d przyjętych, %d szkiców**", n[0], n[1])
 	}

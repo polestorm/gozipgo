@@ -230,7 +230,10 @@ func sameLibrary(root, candidate, commit string) bool {
 	if strings.HasPrefix(candidate, commit) || strings.HasPrefix(commit, candidate) {
 		return true
 	}
-	cmd := exec.Command("git", "diff", "--quiet", candidate, commit, "--", ".", ":!*_test.go", ":!testdata", ":!docs", ":!tools", ":!requirements")
+	// Kod biblioteki to pliki Go pakietów biblioteki bez testów i go.mod; dokumenty, wzorce, narzędzia i testy
+	// całego repozytorium do niego nie należą.
+	cmd := exec.Command("git", "diff", "--quiet", candidate, commit, "--", "go.mod", "zipreader", "zipwriter", "internal",
+		":!*_test.go", ":!internal/testkit", ":!internal/project", ":!**/testdata")
 	cmd.Dir = root
 	return cmd.Run() == nil
 }

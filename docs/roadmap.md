@@ -27,6 +27,6 @@ ok. 0,6 tys., kompresor ok. 0,8 tys.).
 
 ## Wydania
 
-Tagi podpisane (`git tag -s vX.Y.Z -m vX.Y.Z`, sprawdzenie `git tag -v` przed wypchnięciem), `CHANGELOG.md` od
+Tagi podpisane (`git tag -s vX.Y.Z -m vX.Y.Z`, sprawdzenie `git tag -v` przed wypchnięciem), `docs/CHANGELOG.md` od
 v0.1.0 z informacją, że wszystkie tagi są podpisane. Wersje 0.x: API może rosnąć, zmiany niezgodne tylko z wpisem
-w ADR i w `CHANGELOG.md`.
+w ADR i w `docs/CHANGELOG.md`.

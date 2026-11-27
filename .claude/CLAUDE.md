@@ -59,7 +59,7 @@ kolumnę „Stan” w `docs/roadmap.md`.
   2026-11-26 (własna dekompresja DEFLATE), pytanie 2 rozstrzygnięte 2026-11-27 (własny kompresor);
   `compress/flate` tylko w testach i narzędziach pomiaru;
 - **bajty pisarza są kontraktem**: każda zmiana w `internal/deflate` albo `zipwriter`, która zmienia wzorce
-  `testdata/golden.tsv`, wymaga decyzji, `-update-golden` i wpisu w `CHANGELOG.md`;
+  `testdata/golden.tsv`, wymaga decyzji, `-update-golden` i wpisu w `docs/CHANGELOG.md`;
 - wymagania w `requirements/` są szkicami do czasu rozpoczęcia ich etapu (`requirements/README.md`); etap zaczyna
   się od potwierdzenia swoich wymagań;
 - najpierw test (archiwum zbudowane w teście albo plik korpusu), potem kod;
@@ -95,6 +95,10 @@ Zasady:
   lokalnie tylko krótki przebieg sprawdzający poprawkę (≤ 2 min, `-parallel 2`). W poleceniach dla podagentów
   przekazuj tę regułę wprost;
 - **żadnych danych prywatnych w repozytorium**: korpus to archiwa z treścią wymyśloną i publiczne zestawy testowe;
+- **katalog główny ma cztery pliki** (`go.mod`, `LICENSE`, `NOTICE`, `README.md`), jak w pozostałych repozytoriach
+  rodziny: testy całego repozytorium są w `internal/project`, dziennik zmian w `docs/CHANGELOG.md`, ten plik
+  w `.claude/`. README zaczyna się od krótkiego opisu i tabeli porównawczej z medalami; liczby w niej pochodzą
+  z `docs/results/` i po każdym nowym pomiarze trzeba je uzgodnić;
 - nazwy plików, pakietów i identyfikatorów po angielsku; komentarze dokumentacyjne publicznego API, `README.md`,
   `docs/provenance.md` i `docs/methodology.md` po angielsku; komentarze wewnętrzne, ADR, plan, wymagania i pomiary
   po polsku; komunikaty biblioteki po angielsku, ze stałym kodem do tłumaczenia przez wywołującego;

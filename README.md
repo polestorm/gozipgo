@@ -1,16 +1,107 @@
 # gozipgo
 
 Reads and writes ZIP archives in pure Go, written from the ZIP file format specification: a reader for input
-that is not trusted, and a writer whose output is the same bytes every time. No cgo, no dependencies outside the
-Go standard library, and no use of `archive/zip` or `compress/flate`.
+that is not trusted, which accepts an archive only when all of its structures agree, and a writer that gives the
+same bytes every time. No cgo, no dependencies outside the Go standard library, and no use of `archive/zip` or
+`compress/flate`.
 
-Status: in development. Stages 1 to 4 of the [plan](docs/roadmap.md) are done. The reader checks the end of
-central directory records, ZIP64, the central directory, every local header and data descriptor and the layout of
-the file, and reads entry contents (Stored and Deflate, with its own DEFLATE decoder) while checking size and
-CRC-32. It rejects every archive of its hostile corpus, and reading is about as fast as `archive/zip`. The writer
-has its own DEFLATE compressor; what it writes the reader accepts in strict mode, and 7-Zip, Python, bsdtar and
-`archive/zip` read it back unchanged ([comparison](docs/comparison.md), [method](docs/methodology.md)). Still to
-come before 1.0: a 24-hour fuzzing campaign and the trial at the first consumer.
+Compared with the two ZIP packages Go programs use today, [`archive/zip`](https://pkg.go.dev/archive/zip) of the
+standard library and the `zip` package of [klauspost/compress](https://github.com/klauspost/compress)[^ref]
+(the corpus and the method are [below](#the-test-corpus)):
+
+| | gozipgo | `archive/zip` (Go 1.26.6) | klauspost/compress 1.20.5 |
+|---|:---:|:---:|:---:|
+| Hostile archives refused, of 40[^hostile] | 40 🥇 | 16 | 16 |
+| Archives of real programs read with the recorded content, of 25[^conf] | 15 strict, 25 with named options | 25 🥇 | 25 🥇 |
+| Its own archives read back by five other programs, of 7[^written] | 7 | not measured | not measured |
+| Dependencies outside the standard library | 0 🥇 | 0 🥇 | 0 🥇 |
+| Added to a program[^size] | 203 kB 🥇 | 407 kB | 541 kB |
+| Reading, 32 MiB of markup (Deflate)[^bench] | 517 MB/s | 392 MB/s | 551 MB/s 🥇 |
+| Reading, 32 MiB of numeric rows (Deflate) | 259 MB/s | 236 MB/s | 350 MB/s 🥇 |
+| Reading 100,000 small entries, opening included | 790 ms | 783 ms | 520 ms 🥇 |
+| Memory allocated for that | 36 MiB 🥇 | 54 MiB | 452 MiB |
+| Opening an archive of 100,000 entries[^open] | 45.7 ms | 9.4 ms 🥇 | 9.6 ms |
+| Writing, 32 MiB of markup (Deflate) | 72 MB/s | 49 MB/s | 335 MB/s 🥇 |
+| Writing, 32 MiB of numeric rows (Deflate) | 55 MB/s | 45 MB/s | 140 MB/s 🥇 |
+| Writing 100,000 small entries | 89 MB/s | 70 MB/s | 281 MB/s 🥇 |
+| Archive of 32 MiB of markup[^arch] | 7.26 MB 🥇 | 7.27 MB | 7.58 MB |
+| Archive of 32 MiB of numeric rows | 13.55 MB | 13.03 MB 🥇 | 13.96 MB |
+| Local headers checked against the directory | yes, when the archive is opened | no | no |
+| Names with `../`, absolute or duplicate names[^names] | refused | read | read |
+| Limits on entries, sizes and compression ratio | on by default | none | none |
+| Errors | a fixed code, the entry and the offset | a few fixed values, otherwise text | a few fixed values, otherwise text |
+| Bytes of the written archive | part of the contract: the same with every Go version, tested | not documented | not documented |
+| ZIP64 | yes | yes | yes |
+| Compression methods | Stored, Deflate | Stored, Deflate; others can be registered | Stored, Deflate; others can be registered |
+| Encryption, multi-volume archives | no | no | no |
+| License | Apache 2.0 | BSD 3-Clause | BSD 3-Clause and others |
+| GitHub popularity[^pop] | new | part of Go | 5,734 stars |
+
+[^ref]: Both are only run, as programs and through their public API; gozipgo is written from the specifications,
+    not from the source code of other implementations ([docs/provenance.md](docs/provenance.md)).
+[^hostile]: Archives built so that two programs read different content from the same file, or so that reading
+    exhausts memory: bombs, overlapping entries, headers that contradict the directory, two ends of the
+    directory, names that climb out of the target. "Refused" means the library returned an error instead of
+    content. gozipgo refuses each with the code the corpus names. Every archive and what six other readers do
+    with it: [docs/comparison.md](docs/comparison.md).
+[^conf]: Archives made by Info-ZIP, 7-Zip, Windows Explorer, macOS `ditto`, Python, Go, LibreOffice and Word.
+    The ten that gozipgo does not read in its default, strict mode store names outside ASCII without the UTF-8
+    flag, so the archive does not say which encoding the name is in. gozipgo refuses to guess; the caller names
+    the encoding with an option, and the result reports that the option was used. In strict mode gozipgo reads
+    fewer archives than other programs on purpose; with the options it reads what they read.
+[^written]: Archives written by `zipwriter`, read back with the same content by `archive/zip`,
+    klauspost/compress, 7-Zip, Python `zipfile` and bsdtar; Apple's build of Info-ZIP UnZip reads six of the
+    seven (it cannot create files with names outside ASCII, whoever wrote the archive).
+[^size]: Size of a program that reads an archive and writes it again, minus the same program without a ZIP
+    library; `go build -trimpath -ldflags="-s -w"`, macOS arm64.
+[^bench]: Median of 7 runs on one Apple M4 laptop, Go 1.26.6, data generated by the tool, read from and written
+    to memory. Reading includes opening the archive and checking the CRC-32. 🥇 marks the best value in a row.
+[^open]: Opening is slower because of what makes the reader safe: before it returns, `zipreader.New` reads every
+    local header and checks it against the central directory, so that a file with two readings is refused
+    before any content is delivered. The other two read the directory only. The cost is about half a
+    microsecond per entry and disappears when the content is read as well (the row above).
+[^arch]: Each library as it ships; gozipgo has one compression setting. `compress/flate` at its default level,
+    which `archive/zip` does not use, gives 6.73 MB and 12.96 MB.
+[^names]: The archives `name-traversal`, `name-absolute`, `name-duplicate` and others of the hostile corpus.
+    A program that extracts to disk can add its own checks; the libraries hand the names over as they are.
+[^pop]: Stars on 2026-11-27.
+
+## Why gozipgo
+
+- **One reading or none.** A ZIP archive describes each file twice, in the central directory and in a local
+  header, and can hold data that no directory entry points to. Programs resolve the disagreements differently,
+  which is how one file can show one content to a scanner and another to the user. gozipgo accepts an archive
+  only when all of its structures agree and refuses it with a fixed error code otherwise: all 40 archives of its
+  hostile corpus, of which the other two libraries read 24.
+- **Limits on by default**: number of entries, size of an entry and of everything read, compression ratio, name
+  length. Reading never delivers more than an entry declares, so header fields cannot be used to get around them.
+- **Errors made for programs**: a stable code, the entry and the offset in the file
+  ([docs/errors.md](docs/errors.md)), so a caller can classify and translate without parsing text.
+- **The same bytes every time.** The writer never reads the clock, adds no extra fields, and has its own DEFLATE
+  compressor with one fixed algorithm. Checksums of its output are kept in the repository and compared on every
+  system of the CI and with two versions of Go.
+- **Small and self-contained**: 203 kB added to a program, half of what `archive/zip` adds; its own DEFLATE
+  decoder and compressor written from RFC 1951; no file system and no network, only `io.ReaderAt` in and
+  `io.Writer` out.
+- **Evidence, not claims**: 85 numbered requirements, each with a test; every field of the format has a recorded
+  verdict; every number here comes from a tool in the repository and a raw result next to it.
+
+Where it is weaker: klauspost/compress is much faster, 2.5 to 4.7 times when writing and up to 1.5 times when
+reading, at the price of larger archives and, on many small entries, twelve times the memory. Opening an archive takes gozipgo about five times as
+long as the others. In strict mode it refuses real archives that other programs open, above all those with names
+outside ASCII and no UTF-8 flag. It does not repair damaged archives, does not extract to disk, and has no
+encryption, no multi-volume archives and no methods other than Stored and Deflate. gozipgo is new, and its first
+consumer is only starting to use it.
+
+## Contents
+
+- [Why gozipgo](#why-gozipgo) · [Usage](#usage) · [Other programs](#other-programs) · [Status](#status) ·
+  [The test corpus](#the-test-corpus) · [How the comparison was measured](#how-the-comparison-was-measured) ·
+  [Documentation](#documentation) · [License](#license)
+- [All tables](docs/comparison.md): every archive, every reader, speed, memory, sizes
+- [Error codes](docs/errors.md)
+
+## Usage
 
 Reading:
 
@@ -42,71 +133,118 @@ import "github.com/polestorm/gozipgo/zipwriter"
 w := zipwriter.New(out) // io.Writer; never seeks, never reads the clock
 err := w.Add(zipwriter.Header{Name: "word/document.xml", Method: zipwriter.Deflate}, content)
 if err != nil {
-	return err // *zipwriter.Error with Code, Entry, Name; names the reader would reject are refused
+	return err // *zipwriter.Error with Code, Entry, Name; names the reader would refuse are refused
 }
 entry, err := w.Create(zipwriter.Header{Name: "big.bin", Method: zipwriter.Deflate}) // content of unknown length
 // ... entry.Write(...) any number of times, then entry.Close()
 err = w.Close() // central directory and end records
 ```
 
-The same calls give the same bytes on every system and with every Go version: the compressor has one fixed
-algorithm, the date of an entry is the one in its header (1980-01-01 when none is given), and nothing else varies.
-`AddRaw` copies an entry from `zipreader.Reader.OpenRaw` without compressing it again, checking it on the way.
+`AddRaw` copies an entry from `zipreader.Reader.OpenRaw` without compressing it again and checks it on the way.
 
-What it is for:
+Strict reading is the default and the only mode that needs no decision from the caller. Each relaxation is a
+named option, off by default, and every use of one is reported by `Reader.Relaxed`: `UnflaggedNames` (the
+encoding of names without the UTF-8 flag), `AllowPrefix` (a self-extracting archive), `AllowVersionHostByte` and
+`AllowUnusedZip64` (two habits of real writers, found in office documents). What each one admits and why it is
+not the default: [docs/differences.md](docs/differences.md).
 
-- **archives from outside**: office documents (DOCX, XLSX are ZIP packages), uploaded bundles, anything where the
-  file may have been built to confuse the reader;
-- **one reading or none**: a ZIP archive describes each file twice (central directory and local header) and can
-  hold data no directory entry points to. Different programs resolve the disagreements differently, which is how
-  a file can show one content to a scanner and another to the user. gozipgo accepts an archive only when all of
-  its structures agree, and rejects it with a fixed error code otherwise;
-- **limits on by default**: number of entries, total and per-entry uncompressed size, compression ratio, name
-  length; reading never delivers more than an entry declares, so header fields cannot be used to get around them;
-- **no file system, no network**: the library reads from an `io.ReaderAt` and gives back readers; it never
-  extracts to disk;
-- **the same result every time**, on every platform and with every Go version, for reading and for the bytes
-  the writer produces.
+## Other programs
 
-Not in scope: encryption, multi-volume archives, compression methods other than Stored and Deflate, repairing
-damaged archives, extracting to disk.
+The same archives go through four programs that are not Go libraries. "Hostile archives read" is not a merit,
+and the row is not a ranking: an extraction program has defences of its own, such as stripping `../`.
 
-## Measured
+| | gozipgo | 7-Zip 26.01 | Python 3.9 `zipfile` | Info-ZIP UnZip 6.00 (Apple) | bsdtar 3.5.3 |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Archives of real programs read with the recorded content, of 25 | 15 strict, 25 with options | 25 | 25 | 21[^apple] | 24[^apple] |
+| Hostile archives read, of 40 | 0 | 19 | 25 | 22 | 20 |
+| Archives written by gozipgo read back, of 7 | 7 | 7 | 7 | 6[^apple] | 7 |
 
-Every number below comes from a tool of this repository and a raw result kept in
-[docs/results](docs/results/); the tables with every archive are in [docs/comparison.md](docs/comparison.md) and
-the method, versions and commands in [docs/methodology.md](docs/methodology.md). Measured on macOS, Apple M4.
+[^apple]: Faults of these builds, not of the archives: Apple's UnZip cannot create a file whose name is outside
+    ASCII, and bsdtar on macOS merges `__MACOSX` entries into the files they describe. On Linux both read every
+    archive ([docs/differences.md](docs/differences.md)).
 
-| Archives | gozipgo, strict | gozipgo, relaxed [1] | `archive/zip` | 7-Zip | Python `zipfile` |
-|---|---|---|---|---|---|
-| made by real programs (25): read with the recorded content | 15 | 25 | 25 | 25 | 25 |
-| hostile (40): read at all [2] | 0 | not measured | 24 | 19 | 25 |
-| written by gozipgo (7): read back unchanged | 7 | 7 | 7 | 7 | 7 |
+One row of the full table shows what "two readings" means in practice. The archive `two-ends-comment-trailing`
+holds a second archive in the comment of the first: 7-Zip extracts the two files of the outer archive;
+`archive/zip`, klauspost/compress, Python, UnZip and bsdtar extract the one file of the inner archive; gozipgo
+refuses the file. This case was found by gozipgo's own fuzzer and fixed in v0.1.1.
 
-| Speed against `archive/zip` on the same data [3] | time, gozipgo / `archive/zip` |
-|---|---|
-| reading content (Deflate and Stored, 32 MiB each) | 0.75 to 1.31 |
-| opening an archive of 100,000 entries [4] | about 5 |
-| writing (Deflate, 32 MiB each, and 100,000 small entries) | 0.57 to 0.85 |
+## Status
 
-1. Relaxed means named options, off by default, each reported in the result (`Reader.Relaxed`). The ten archives
-   that need one store names outside ASCII without the UTF-8 flag (`zip` and `ditto` of macOS, 7-Zip on Windows):
-   the archive does not say which encoding the name is in, so strict reading refuses to guess, and the caller
-   names the encoding. In strict mode gozipgo reads fewer archives than other programs, on purpose; with the
-   options it reads what they read. Why each archive is refused: [docs/differences.md](docs/differences.md).
-2. A hostile archive is one built so that two programs read different content from the same file, or so that
-   reading it exhausts memory. Reading it is not a merit. The column is not a ranking: see the notes under the
-   table in [docs/comparison.md](docs/comparison.md).
-3. A ratio below 1 means gozipgo is faster. Median of 7 runs.
-4. Opening is slower because of what makes the reader safe: before it returns, `zipreader.New` reads every local
-   header and checks it against the central directory, so that a file with two readings is refused before any
-   content is delivered. `archive/zip` reads the directory only. The cost is about half a microsecond per entry
-   and disappears when the content is read as well.
+Version 0.1.1 has the reader; the writer and the compressor are on the main branch and will be in 0.2.0, after a
+24-hour fuzzing campaign that is running. The API may still change before 1.0. Requires Go 1.26 or newer.
 
-Info-ZIP UnZip and bsdtar are measured too; their numbers on macOS reflect two faults of those builds and are in
-the full tables.
+- Format inventory: 219 of 219 records, fields, flag bits and methods of the specification have a verdict
+  (handled, or refused with a named code) and an archive that shows it.
+- Requirements: 85 of 85 have a test; the public API and the strict verdict for 568 public test archives are
+  pinned, so neither changes without a recorded decision.
+- Hostile corpus: 40 of 40 refused, each in under a millisecond and under 110 KiB of memory. A ZIP64 archive of
+  4.3 GB is read with 130 KiB allocated.
+- Not yet done: the 24-hour fuzzing campaign on the release candidate, the check against the documents of the
+  first consumer (a DOCX reader of the same family), and an archive made by Java in the corpus.
 
-Error codes: [docs/errors.md](docs/errors.md). What the reader rejects that other programs open, and why:
-[docs/differences.md](docs/differences.md).
+## The test corpus
 
-Licence: Apache 2.0.
+Every archive used in a table can be obtained by anyone:
+
+- **Archives of real programs** (25): small archives with invented content, in
+  [`testdata/interop`](testdata/interop/), with a manifest that records the program, its version, the system, the
+  command, and the SHA-256 of the archive and of every entry. Made by Info-ZIP Zip (7 variants), 7-Zip (5), macOS
+  `ditto` (2), Python `zipfile` (4), Go `archive/zip` (3), Windows 11 Explorer, LibreOffice (2) and Microsoft Word.
+- **Hostile archives** (40, in 14 families): not stored. A test of the repository builds them record by record,
+  the same bytes on every system; the repository keeps the recipe, the expected error code and the SHA-256 of each
+  ([`testdata/hostile.json`](testdata/hostile.json)). One command writes them to a directory, for use with any
+  other program. No bomb and no malformed file sits in the repository.
+- **Archives written by gozipgo** (7): built by the comparison tool from generated data, every way of writing an
+  entry, with the size and SHA-256 of each archive recorded.
+- **Data for speed and size**: generated by the measuring tool with a fixed generator: 32 MiB of markup with a
+  small vocabulary, of numeric rows, of bytes that do not compress and of zeros, and 100,000 entries of 1 to 4 KiB.
+- **Public test sets** (568 files from nine projects, among them libzip, CPython, Go and Apache POI): fetched by a
+  tool from pinned commits with checksums, not copied into the repository; used for development and for the
+  pinned verdicts, not for the numbers above.
+
+Details, sources and licences: [`testdata/README.md`](testdata/README.md).
+
+## How the comparison was measured
+
+Two tools of the repository, each a separate module, so that the library itself has no dependencies:
+
+```sh
+go -C tools/compare run . -root ../..   # what every reader does with every archive
+go -C tools/bench run . -root ../..     # speed, memory, archive size, program size
+```
+
+They write the tables of [docs/comparison.md](docs/comparison.md) and the raw results in
+[docs/results](docs/results/); tests of the repository check the recorded results, so a number in this file can
+be traced to a row there. Versions, settings, commands, statistics and known sources of noise are in
+[docs/methodology.md](docs/methodology.md). In short:
+
+- The three Go libraries run in one process on the same bytes, through their public API. gozipgo reads with its
+  defaults except where the table says otherwise; reading content includes opening the archive and, for all
+  three, checking the CRC-32.
+- The four programs extract into a scratch directory; a reader counts as giving the recorded content when the
+  SHA-256 of the files it produced are exactly those of the manifest.
+- For speed, one warm-up run and then 7 runs, median; memory is the number of bytes allocated during a run, not
+  the peak. One machine, data in memory.
+- For writing, every library gets the content in pieces of 32 KiB and writes to a destination that only counts.
+  The archives for the reading rows are written by `archive/zip`, so all readers read the same file.
+- The measurements are dated and name the commit; they are repeated with the same tools when the code, the data
+  or a candidate changes, never edited by hand.
+
+What the numbers do not show: one laptop, one Go version, generated data; throughput on real documents differs.
+klauspost/compress has several compression levels and was measured as it ships, like `archive/zip`.
+
+## Documentation
+
+- [docs/errors.md](docs/errors.md): every error code and the rule behind it.
+- [docs/comparison.md](docs/comparison.md) and [docs/methodology.md](docs/methodology.md): all tables and how
+  they were made.
+- [docs/provenance.md](docs/provenance.md): the specifications the code is written from and the clean-room rules.
+- [docs/CHANGELOG.md](docs/CHANGELOG.md): releases; tags are signed.
+- In Polish: [docs/differences.md](docs/differences.md) (what gozipgo refuses that other programs open, and why),
+  [docs/testing.md](docs/testing.md) (tests and dated measurements), [docs/fuzzing.md](docs/fuzzing.md),
+  [requirements/](requirements/) (numbered requirements), [docs/adr/](docs/adr/) (decisions),
+  [docs/roadmap.md](docs/roadmap.md).
+
+## License
+
+Apache 2.0.

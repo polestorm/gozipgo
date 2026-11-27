@@ -1,4 +1,4 @@
-package gozipgo
+package project
 
 import (
 	"io/fs"
@@ -92,7 +92,7 @@ func TestRequirementsCovered(t *testing.T) {
 	for _, f := range sources {
 		for _, line := range strings.Split(read(f), "\n") {
 			i := strings.Index(line, "REQ:")
-			if i < 0 || f == "requirements_test.go" && !strings.Contains(line, "// REQ:") {
+			if i < 0 || filepath.Base(f) == "requirements_test.go" && !strings.Contains(line, "// REQ:") {
 				continue
 			}
 			// Testy tools/evidence mają w danych testowych zmyślone wymagania; prawdziwe odwołania to wiersze

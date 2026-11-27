@@ -1,4 +1,4 @@
-package gozipgo
+package project
 
 import (
 	"os"
@@ -83,8 +83,8 @@ func TestCompareRecorded(t *testing.T) {
 func TestBenchRecorded(t *testing.T) {
 	times := map[string]map[string][]float64{}
 	for _, r := range rawRows(t, "docs/results/bench.tsv") {
-		if len(r) < 6 {
-			continue
+		if len(r) < 6 || r[0] == "program size" {
+			continue // rozmiar programu nie jest pomiarem czasu
 		}
 		ns, err := strconv.ParseFloat(r[3], 64)
 		if err != nil {

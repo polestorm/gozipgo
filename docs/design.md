@@ -17,7 +17,7 @@ zipwriter           pisarz (ADR 0005)
 Z biblioteki standardowej pakiety biblioteki importują tylko to, co nie ma wejścia ani wyjścia poza interfejsami
 `io`: `io`, `errors`, `hash/crc32`, `encoding/binary`, `math/bits`, `unicode/utf8`, `sort`, `strconv`, `strings`,
 `sync`, `sync/atomic`. Nigdy `archive/zip`,
-`os`, `net` ani `fmt` (wciąga `os`); `compress/flate` tylko w testach. Listę trzyma `api_test.go`.
+`os`, `net` ani `fmt` (wciąga `os`); `compress/flate` tylko w testach. Listę trzyma `internal/project/api_test.go`.
 
 ## Czytnik
 

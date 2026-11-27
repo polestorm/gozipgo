@@ -1,4 +1,4 @@
-package gozipgo
+package project
 
 import (
 	"flag"
@@ -24,17 +24,17 @@ const modulePath = "github.com/polestorm/gozipgo"
 var publicPackages = []string{"zipreader", "zipwriter"}
 
 // libraryPackages to wszystkie pakiety biblioteki (bez narzędzi testów): ich importy pilnuje TestNoIOImports.
-var libraryPackages = []string{".", "zipreader", "zipwriter", "internal/format", "internal/inflate", "internal/deflate", "internal/entryname"}
+var libraryPackages = []string{"zipreader", "zipwriter", "internal/format", "internal/inflate", "internal/deflate", "internal/entryname"}
 
 // allowedImports to pakiety biblioteki standardowej, które wolno importować kodowi biblioteki: żaden nie ma
-// wejścia ani wyjścia poza interfejsami io. Nowy pakiet na liście wymaga decyzji (CLAUDE.md, „Zasady”).
+// wejścia ani wyjścia poza interfejsami io. Nowy pakiet na liście wymaga decyzji (.claude/CLAUDE.md, „Zasady”).
 var allowedImports = map[string]bool{
 	"encoding/binary": true, "errors": true, "hash/crc32": true, "io": true, "math/bits": true, "sort": true,
 	"strconv": true, "strings": true, "sync": true, "sync/atomic": true, "unicode/utf8": true,
 }
 
 // TestAPISnapshot mierzy kryterium K4: publiczne API każdego pakietu jest równe wzorcowi api/<pakiet>.txt.
-// Zmiana API wymaga `go test . -run TestAPISnapshot -update`, przeglądu różnicy i wpisu w ADR albo CHANGELOG.md.
+// Zmiana API wymaga `go test ./internal/project -run TestAPISnapshot -update`, przeglądu różnicy i wpisu w ADR albo docs/CHANGELOG.md.
 // REQ: API-001
 func TestAPISnapshot(t *testing.T) {
 	for _, pkg := range publicPackages {
@@ -211,7 +211,7 @@ func TestNoIOImports(t *testing.T) {
 		t.Errorf("only %d library files checked", checked)
 	}
 	// Lista pakietów biblioteki musi być pełna: każdy katalog z kodem Go poza narzędziami testów jest na niej.
-	known := map[string]bool{"internal/testkit": true}
+	known := map[string]bool{"internal/testkit": true, "internal/project": true}
 	for _, p := range libraryPackages {
 		known[p] = true
 	}
@@ -258,7 +258,7 @@ func TestAPIOnlyGrows(t *testing.T) {
 
 // TestStrictVerdictsRatchet: werdykt trybu ścisłego dla każdego pliku zestawów pobranych jest taki jak w v0.1.1
 // (testdata/verdicts/strict-v0.1.1.tsv), chyba że zmiana jest zapisana w testdata/verdicts/changes.tsv z wersją,
-// w której CHANGELOG.md ją opisuje. Domyślne zachowanie wobec archiwum nie zmienia się po cichu.
+// w której docs/CHANGELOG.md ją opisuje. Domyślne zachowanie wobec archiwum nie zmienia się po cichu.
 // REQ: API-007
 func TestStrictVerdictsRatchet(t *testing.T) {
 	table := func(path string, cols int) map[string][]string {
@@ -273,7 +273,7 @@ func TestStrictVerdictsRatchet(t *testing.T) {
 	base := table(filepath.Join("testdata", "verdicts", "strict-v0.1.1.tsv"), 2)
 	now := table(filepath.Join("testdata", "verdicts", "fetched.tsv"), 2)
 	changes := table(filepath.Join("testdata", "verdicts", "changes.tsv"), 4)
-	changelog := readFile(t, "CHANGELOG.md")
+	changelog := readFile(t, "docs/CHANGELOG.md")
 	if len(base) < 500 {
 		t.Fatalf("only %d baseline verdicts", len(base))
 	}
@@ -288,9 +288,9 @@ func TestStrictVerdictsRatchet(t *testing.T) {
 		c, recorded := changes[path]
 		switch {
 		case !recorded || c[0] != was[0] || c[1] != is[0]:
-			t.Errorf("%s: strict verdict was %q in v0.1.1 and is %q; record the change in testdata/verdicts/changes.tsv and in CHANGELOG.md", path, was[0], is[0])
+			t.Errorf("%s: strict verdict was %q in v0.1.1 and is %q; record the change in testdata/verdicts/changes.tsv and in docs/CHANGELOG.md", path, was[0], is[0])
 		case !strings.Contains(changelog, "## "+c[2]) && c[2] != "Unreleased":
-			t.Errorf("%s: changes.tsv names %q, which CHANGELOG.md does not have", path, c[2])
+			t.Errorf("%s: changes.tsv names %q, which docs/CHANGELOG.md does not have", path, c[2])
 		}
 	}
 }
