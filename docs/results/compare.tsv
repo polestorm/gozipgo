@@ -1,6 +1,6 @@
 # gozipgo tools/compare
 # date	2026-11-27
-# commit	d7e69d6 with uncommitted changes
+# commit	c00125e
 # machine	darwin/arm64, Apple M4, macOS 27.0.1
 # candidate	gozipgo	this commit
 # candidate	archive/zip	go1.26.6

@@ -35,12 +35,13 @@ przejrzano z APPNOTE 6.3.10 i RFC 1951 i przyjęto; poniżej decyzje, które prz
    długość 1 dostają dwa symbole. RFC 1951 dopuszcza dla odległości kod z jednym słowem; pełny kod przyjmuje
    każdy dekoder, także nasz, który niepełne kody znaków odrzuca (ADR 0003 pkt 10). Koszt to najwyżej kilka bitów
    na blok.
-6. **Szybkość nie jest kryterium, ale jest zmierzona** (`comparison.md`, 2026-11-27, Apple M4): zapis znaczników
-   21 MB/s wobec 22 MB/s `compress/flate` na poziomie domyślnym i 46 MB/s `archive/zip` w postaci fabrycznej
-   (która, mierzona jako czarna skrzynka, kompresuje słabiej niż poziom domyślny `compress/flate`: archiwum
-   7,27 MB wobec 6,73 MB; nasze 6,87 MB); wiersze liczb 20 MB/s wobec 33 MB/s; dane niekompresowalne 56 MB/s
-   wobec 122 MB/s. Czas schodzi w przeszukiwaniu łańcuchów. Przyspieszenie, które zmienia dobór dopasowań,
-   zmienia bajty, więc podlega pkt 2.
+6. **Szybkość nie jest kryterium, ale jest zmierzona** (`comparison.md`, 2026-11-27, commit `c00125e`, Apple M4):
+   zapis znaczników 22 MB/s wobec 19 MB/s `compress/flate` na poziomie domyślnym i 42 MB/s `archive/zip`
+   w postaci fabrycznej (która, mierzona jako czarna skrzynka, kompresuje słabiej niż poziom domyślny
+   `compress/flate`: archiwum 7,27 MB wobec 6,73 MB; nasze 6,87 MB); wiersze liczb 17 MB/s wobec 28 i 40 MB/s;
+   dane niekompresowalne 55 MB/s wobec 114 i 117 MB/s. Wobec `archive/zip` zapis jest więc około 2 razy
+   wolniejszy. Czas schodzi w przeszukiwaniu łańcuchów. Przyspieszenie, które zmienia dobór dopasowań, zmienia
+   bajty, więc podlega pkt 2.
 
 ### Pisarz (`zipwriter`)
 
