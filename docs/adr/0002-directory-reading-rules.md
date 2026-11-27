@@ -48,7 +48,7 @@ korpus zgodności pokazały coś innego niż szkic.
    opcje wymagałyby reguły pierwszeństwa, czyli zgadywania. **Znalezisko korpusu:** `zip` i `ditto` z macOS
    zapisują nazwy w UTF-8 bez bitu 11 i bez pola Unicode Path; to 9 z 22 archiwów korpusu (każde zawiera plik
    z polskimi literami). W trybie ścisłym są odrzucane kodem `name-encoding`, z `UnflaggedNames: UTF8` czytane
-   zgodnie z manifestem (`differences.md`). **Do decyzji właściciela:** czy domyślne ma zostać `ASCIIOnly`
+   zgodnie z manifestem (`differences.md`). **Decyzja właściciela z 2026-11-27: domyślne zostaje `ASCIIOnly`.** Pytanie brzmiało: czy domyślne ma zostać `ASCIIOnly`
    (rekomendacja: tak, bo nazwa bez bitu 11 ma dwa odczytania i właśnie tak przemyca się różne nazwy do różnych
    programów; konsument, który przyjmuje archiwa z macOS, włącza `UTF8` świadomie i widzi to w `Relaxed()`).
    **Drugie znalezisko (2026-11-26):** 7-Zip na polskim Windows 11 zapisuje nazwy w stronie OEM systemu (CP852,

@@ -78,6 +78,10 @@ Zasady:
   i wyjścia. Test importów pilnuje listy;
 - **biblioteka nie dotyka systemu plików ani sieci**: wejściem jest `io.ReaderAt` z rozmiarem, wyjściem `io.Reader`
   treści wpisu. Rozpakowywanie na dysk nie należy do biblioteki;
+- **na razie tylko tryb ścisły** (decyzja właściciela z 2026-11-27): jest domyślny i jedyny w pełni wspierany.
+  Poluzowania dochodzą pojedynczo, jako nazwane opcje, gdy pokaże je potrzeba konsumenta (ADR 0006); tryb
+  odzyskiwania uszkodzonych plików może dojść w przyszłości jako osobne wejście, jeśli zajdzie potrzeba. Nie
+  budujemy go na zapas;
 - **jedna interpretacja albo odrzucenie**: gdy dwie struktury archiwum mówią co innego (katalog centralny i nagłówek
   lokalny, rozmiar zadeklarowany i rzeczywisty, dwa końce katalogu), archiwum jest odrzucane ze stałym kodem.
   Każde poluzowanie to nazwana opcja, domyślnie wyłączona, a jej użycie zostawia ślad w wyniku;

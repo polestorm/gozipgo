@@ -17,11 +17,12 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go }}
-      - uses: actions/cache@v4
+          cache: false # moduł nie ma zależności, więc nie ma go.sum
+      - uses: actions/cache@v6
         with:
           path: testdata/fetched
           key: fetched-${{ hashFiles('testdata/sources.json') }}
@@ -65,9 +66,10 @@ jobs:
     # w repozytorium (internal/deflate/testdata, zipwriter/testdata)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+          cache: false
       - run: go version
       - run: go test ./internal/deflate ./zipwriter -run 'TestGolden|TestSplitIndependence|TestSmallestArchive' -count=1 -v

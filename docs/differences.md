@@ -64,7 +64,7 @@ dla archiwów z macOS, `CodePage` z tablicą CP852 dla archiwum 7-Zipa z polskie
 |---|---|---|
 | `infozip-default.zip`, `infozip-stored.zip`, `infozip-best.zip`, `infozip-comment.zip`, `infozip-stream.zip`, `infozip-zip64.zip`, `infozip-noextra.zip` | Info-ZIP Zip 3.0 (July 5th 2008) z modyfikacjami Apple, macOS 27.0.1 | nazwa „zażółć gęślą jaźń.txt” zapisana w UTF-8 bez bitu 11 i bez pola Unicode Path |
 | `macos-ditto.zip`, `macos-ditto-rsrc.zip` | `ditto` z macOS 27.0.1 | to samo |
-| `windows11-7zip.zip` | 7-Zip na polskim Windows 11 (wersja niezapisana) | nazwy z polskimi literami zapisane w stronie OEM systemu (CP852) bez bitu 11; nazwa w UTF-8 jest tylko w polu Unicode Path nagłówka lokalnego, katalog centralny jej nie ma. Jako CP437 archiwum też się czyta, ale daje inne znaki („Agresêaw”). `TestSameFolderTwoWriters` porównuje wynik z archiwum Eksploratora tego samego folderu |
+| `windows11-7zip.zip` | 7-Zip 25.01 (arm64) na polskim Windows 11 Pro 25H2 (kompilacja 26200.9974) | nazwy z polskimi literami zapisane w stronie OEM systemu (CP852) bez bitu 11; nazwa w UTF-8 jest tylko w polu Unicode Path nagłówka lokalnego, katalog centralny jej nie ma. Jako CP437 archiwum też się czyta, ale daje inne znaki („Agresêaw”). `TestSameFolderTwoWriters` porównuje wynik z archiwum Eksploratora tego samego folderu |
 
 ## Korpus zgodności: różnice między czarnymi skrzynkami (K3)
 

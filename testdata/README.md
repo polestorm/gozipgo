@@ -8,9 +8,9 @@
 | `verdicts/fetched.tsv` | werdykt czytnika dla każdego pliku z zestawów pobranych (wzorzec `TestFetchedArchives`) | `go test ./zipreader -run TestFetchedArchives -update` | tak |
 | `<pakiet>/testdata/fuzz/` | wejścia regresji fuzzingu | znaleziska kampanii | tak |
 
-## Korpus zgodności: stan z 2026-11-26
+## Korpus zgodności: stan z 2026-11-27
 
-22 archiwa w `interop/`: 20 zbudowanych poleceniem `go -C tools/corpus run . -make` na macOS 27.0.1 (arm64):
+25 archiwów w `interop/`. Pierwsze 22 (2026-11-26): 20 zbudowanych poleceniem `go -C tools/corpus run . -make` na macOS 27.0.1 (arm64):
 Info-ZIP Zip 3.0 w wydaniu Apple (7 wariantów), 7-Zip 26.01 (4), `ditto` (2), Python 3.9.6 `zipfile` (4),
 Go 1.26.6 `archive/zip` (3), oraz dwa dodane przez właściciela (`-add`), z tym samym folderem plików o polskich
 nazwach spakowanym na polskim Windows 11: `windows11-explorer.zip` (Eksplorator, „Kompresuj do pliku ZIP”)
@@ -24,8 +24,13 @@ z plikami źródłowymi, które narzędzie samo generuje. `go -C tools/corpus ru
 z manifestem. Ponowne `-make` nie daje tych samych bajtów (programy zapisują identyfikatory użytkownika i czasy
 dostępu), więc zastępuje korpus; archiwa w repozytorium są korpusem.
 
-**Brakuje** (programów nie ma na maszynie budującej): Java (`jar`), Microsoft Word,
-LibreOffice. Właściciel dodaje je poleceniem
+Dodane 2026-11-27 (`-add`), razem 25 archiwów: `libreoffice-docx.docx` i `libreoffice-odt.odt` (LibreOffice
+26.8.3.1, `soffice --headless --convert-to …` z pliku tekstowego o wymyślonej treści: procedura P-01 z polskimi
+znakami) oraz `word-docx.docx` (Microsoft Word dla Mac 16.109.3: dokument LibreOffice otwarty i zapisany ponownie
+jako .docx z włączonym usuwaniem informacji osobistych). Wszystkie trzy czytnik przyjmuje ściśle. Metadane
+dokumentów nie zawierają nazwiska ani nazwy użytkownika (pola autora są puste).
+
+**Brakuje** (programu nie ma na maszynie budującej): Java (`jar`). Właściciel dodaje je poleceniem
 `go -C tools/corpus run . -add PLIK -id ID -program P -version V -system S -command C`.
 Wariant „Go ZIP64” pominięto: `archive/zip` zapisuje ZIP64 tylko dla ponad 65 535 wpisów albo 4 GB, czyli poza
 rozmiarem korpusu; ZIP64 pokrywają `infozip-zip64.zip` i `python-zip64.zip`.

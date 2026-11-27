@@ -1460,6 +1460,184 @@
       }
     },
     {
+      "id": "libreoffice-docx",
+      "file": "libreoffice-docx.docx",
+      "program": "LibreOffice",
+      "version": "26.8.3.1",
+      "system": "macOS 27.0.1 (arm64)",
+      "command": "soffice --headless --convert-to docx:\"MS Word 2007 XML\" \"procedura zażółć.txt\" (the text is in testdata/README.md)",
+      "made": "2026-11-27",
+      "sha256": "41df1923e57a1e0351917ed75161b42d26b3bd11f9482d5b41fee4dd701a0b29",
+      "size": 5332,
+      "entries": [
+        {
+          "name": "docProps/core.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 567,
+          "crc32": "c0b53d6f",
+          "sha256": "d4c5a5dceb9f1a11f27830736bae03877653b5f02a4fe03b6dd8cd84c076a400"
+        },
+        {
+          "name": "docProps/app.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 443,
+          "crc32": "d00ba30b",
+          "sha256": "86477a6b89536d7ef08f4ab42ed49f1c5d157c2cfb04265fd669d6cb87e8891a"
+        },
+        {
+          "name": "_rels/.rels",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 573,
+          "crc32": "2301d0e8",
+          "sha256": "3bbb0ec7bcb9b27df1c2300b883c5a63fe80fb27f00f2abee6b911de6f767c26"
+        },
+        {
+          "name": "word/_rels/document.xml.rels",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 663,
+          "crc32": "6daa6476",
+          "sha256": "096af0fdf086896e8ec49c5eea3138066af1b8698932c4150b1bf324a6d1d6bb"
+        },
+        {
+          "name": "word/styles.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 2700,
+          "crc32": "09d61b61",
+          "sha256": "eefdba5d6ec2dc0b8bc5e1977cc4d14682e1647d7354c0208fe3db85aa5fcfe7"
+        },
+        {
+          "name": "word/fontTable.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 1000,
+          "crc32": "dbf8a5a8",
+          "sha256": "e222a6161fe8040784adc6292f4c386c69a04a5171596ee60296e3758127f27e"
+        },
+        {
+          "name": "word/theme/theme1.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 2257,
+          "crc32": "8055ffe4",
+          "sha256": "8c817dba7260b1c6e49fc7937dd857b5f42d834bc8c33769d788ea824cb2c29f"
+        },
+        {
+          "name": "word/settings.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 698,
+          "crc32": "99846a4f",
+          "sha256": "2448ac0ccedaecb65235ab4e5e7e337d6e7432295752f33445e97f96fc9ce6f1"
+        },
+        {
+          "name": "word/document.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 3202,
+          "crc32": "0fe87424",
+          "sha256": "6ca724a9d34a7b8cd9840357e85564a82c753ddf93376fd635f63f7e70a3f873"
+        },
+        {
+          "name": "[Content_Types].xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 1327,
+          "crc32": "4aef1556",
+          "sha256": "e4e0b3bb14b99bce56ecda3e32dbb59ab72eb9cca639a9aed537e964ffe03384"
+        }
+      ]
+    },
+    {
+      "id": "libreoffice-odt",
+      "file": "libreoffice-odt.odt",
+      "program": "LibreOffice",
+      "version": "26.8.3.1",
+      "system": "macOS 27.0.1 (arm64)",
+      "command": "soffice --headless --convert-to odt \"procedura zażółć.txt\" (the text is in testdata/README.md)",
+      "made": "2026-11-27",
+      "sha256": "7218bdf584509b580863471276fc75c055cf0619113cf22201d67431a49ed3bb",
+      "size": 12622,
+      "entries": [
+        {
+          "name": "mimetype",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 39,
+          "crc32": "0c32c65e",
+          "sha256": "714dbe370b0a7063669217d91b287566fe8babbc8599b629b24476ff81b83593"
+        },
+        {
+          "name": "manifest.rdf",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 899,
+          "crc32": "d268f7b4",
+          "sha256": "aeb297984b26a30bd9a26f304b39bc7d91a2645749b35e7bf3f44c4b9511dc75"
+        },
+        {
+          "name": "Configurations2/",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 0,
+          "crc32": "00000000",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "Thumbnails/thumbnail.png",
+          "utf8_flag": true,
+          "method": 0,
+          "size": 5047,
+          "crc32": "9565fbf9",
+          "sha256": "32e0ce8873320d5ef589ac37893424de20f72d96de2ebf39ccc5c2d4aa089535"
+        },
+        {
+          "name": "settings.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 13456,
+          "crc32": "2831907d",
+          "sha256": "069129250e35d38518b20464fa02675fdbff1589c8f5b337bdab210d91c318fa"
+        },
+        {
+          "name": "meta.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 793,
+          "crc32": "eb201f67",
+          "sha256": "bf8877da8c50f4681e36fa9f89e9ca1f8c63edc136f5a2d7fed304b4f3d688d5"
+        },
+        {
+          "name": "styles.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 13665,
+          "crc32": "b5a170f8",
+          "sha256": "5b960a0766c1c3985ec972a5acd3775a77f1c410cb4226d94563f92a6b8e1c19"
+        },
+        {
+          "name": "content.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 4541,
+          "crc32": "11e7f4f0",
+          "sha256": "79647d78e9f0de495003121503f6164b4dd5ef7641355973613c0841e895f1f4"
+        },
+        {
+          "name": "META-INF/manifest.xml",
+          "utf8_flag": true,
+          "method": 8,
+          "size": 1061,
+          "crc32": "c72820a2",
+          "sha256": "58aa599c54c27efc9a1162ee5e5257292be97e0fceefc39412383753b78ceeab"
+        }
+      ]
+    },
+    {
       "id": "macos-ditto",
       "file": "macos-ditto.zip",
       "program": "macOS ditto",
@@ -2035,8 +2213,8 @@
       "id": "windows11-7zip",
       "file": "windows11-7zip.zip",
       "program": "7-Zip",
-      "version": "7-Zip for Windows; version not recorded",
-      "system": "Windows 11 (Polish)",
+      "version": "25.01 (arm64)",
+      "system": "Windows 11 Pro 25H2 (Polish), build 26200.9974, ARM64",
       "command": "7-Zip File Manager or context menu: Add to archive, format zip",
       "made": "2026-11-26",
       "sha256": "0c161d2bb5f4d2af99c38fb049aabf9f1a97186b88ce1900bdde6265367d5ab8",
@@ -2141,8 +2319,8 @@
       "id": "windows11-explorer",
       "file": "windows11-explorer.zip",
       "program": "Windows File Explorer",
-      "version": "Windows 11 (Polish); exact build not recorded",
-      "system": "Windows 11",
+      "version": "Windows 11 Pro 25H2 (Polish), build 26200.9974",
+      "system": "Windows 11 Pro 25H2, ARM64",
       "command": "File Explorer: select the folder, context menu, Compress to > ZIP file",
       "made": "2026-11-26",
       "sha256": "692ca65e0619024b482d300ad7631246830b20c3578b0d2657e9baa7f920bd67",
@@ -2227,6 +2405,107 @@
           "size": 146,
           "crc32": "ee2029cc",
           "sha256": "37b7a756caddb0d6c9768d8d8e7ff4f99bc77a8c89009a4a213489dfd90a82ac"
+        }
+      ]
+    },
+    {
+      "id": "word-docx",
+      "file": "word-docx.docx",
+      "program": "Microsoft Word for Mac",
+      "version": "16.109.3",
+      "system": "macOS 27.0.1 (arm64)",
+      "command": "Open libreoffice-docx.docx, set \"remove personal information\" on, save as Word Document (.docx); done through AppleScript",
+      "made": "2026-11-27",
+      "sha256": "a09fd06e2543ddf5f66a3abe64315cbd5212002c8cbb1aa0191d5ef311dcc293",
+      "size": 11623,
+      "entries": [
+        {
+          "name": "[Content_Types].xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 1312,
+          "crc32": "6cd2a4df",
+          "sha256": "dfa90f373b8fd8147ee3e4bfe1ee059e536cc1b068f7ec140c3fc0e6554f331a"
+        },
+        {
+          "name": "_rels/.rels",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 590,
+          "crc32": "b71a911e",
+          "sha256": "e19238d7a71fa7a2490776252686f70e2de6238c87cd509b5e3a3cc07c2ea4df"
+        },
+        {
+          "name": "word/document.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 5237,
+          "crc32": "a2cb81f6",
+          "sha256": "4720a49499edb0b7c90b1a0fbf2e74741714d1652c447bd526e1de04eeaa2612"
+        },
+        {
+          "name": "word/_rels/document.xml.rels",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 817,
+          "crc32": "51b364d6",
+          "sha256": "b725d5476e76f555fc24ecb908474fd29b671687336e5e1177a5c4c35cb5939f"
+        },
+        {
+          "name": "word/theme/theme1.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 1975,
+          "crc32": "6e6e0e08",
+          "sha256": "925cdab6025fdc5c49b7a865d38ac91ee4e51b11c27eed647f02c3b76cb9c1b6"
+        },
+        {
+          "name": "word/settings.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 2748,
+          "crc32": "150735f2",
+          "sha256": "fefd1ccdba3540961b0cd6b4feeb3ab85aca6927cb2660a34938d224c0c58845"
+        },
+        {
+          "name": "word/styles.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 31051,
+          "crc32": "83481856",
+          "sha256": "3b3a4b2c02d01cdb5204853e11a5cc8b3c0bf8a7c2c4006fb3ec95aa099856cd"
+        },
+        {
+          "name": "word/webSettings.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 1018,
+          "crc32": "96fd0a3b",
+          "sha256": "3346314c93078070b454a95d0485bf9721dade13d89cfaa579cc32645fa7edef"
+        },
+        {
+          "name": "word/fontTable.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 2553,
+          "crc32": "4e648e3d",
+          "sha256": "cb7194d394d64e9ad26456f92e099506086a163a36aeb1dc6e5a110d56c3a8a1"
+        },
+        {
+          "name": "docProps/core.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 732,
+          "crc32": "6c722273",
+          "sha256": "289fd609333e29e887bb9572a607f9617eaf3628c04d2fd544b356df7946b7e7"
+        },
+        {
+          "name": "docProps/app.xml",
+          "utf8_flag": false,
+          "method": 8,
+          "size": 714,
+          "crc32": "447bb694",
+          "sha256": "43909bfda2d502b0983e4486a5c05e762c6e75157dee58fed010cd833b197ba3"
         }
       ]
     }

@@ -99,3 +99,17 @@ Wszystkie muszą być spełnione jednocześnie, zmierzone i zapisane z datą w `
 − czytnik ścisły odrzuci archiwa, które inne programy otwierają (z danymi przed archiwum, z lukami, z nazwami
   w CP437): każde takie znalezisko w korpusie to wpis w `../differences.md` i decyzja, czy dodać opcję;
 − własna dekompresja może być wolniejsza od biblioteki standardowej; K7 wyznacza granicę.
+
+## Uzupełnienia z 2026-11-27 (decyzje właściciela)
+
+- **K3 liczy program, nie jedno jego wydanie z wadą.** Gdy czarna skrzynka nie oddaje treści archiwum z powodu
+  własnej wady, której inne wydanie tego samego programu nie ma, a treść czytana przez `gozipgo` zgadza się
+  z manifestem, różnica jest opisywana w `differences.md` i nie rozstrzyga kryterium. Przypadek, który to wywołał:
+  UnZip 6.00 w wydaniu Apple nie tworzy plików o nazwach spoza ASCII (18 z 22 na macOS), a w wydaniu Debiana czyta
+  wszystkie. To samo dotyczy scalania wpisów `__MACOSX` przez bsdtar na macOS.
+- **Wersja 1.0 obejmuje czytnik i pisarza.** Pisarz powstał przed odbiorem (etap 4), więc nie ma powodu wydawać go
+  osobno w 1.1.
+- **Tryb ścisły jest jedynym trybem domyślnym.** Poluzowania dochodzą jako nazwane opcje wtedy, gdy pokaże je
+  potrzeba konsumenta (ADR 0006); tryb odzyskiwania uszkodzonych archiwów nie jest dziś w zakresie i może dojść
+  w przyszłości jako osobne wejście, jeśli zajdzie potrzeba.
+

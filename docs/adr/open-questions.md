@@ -2,7 +2,7 @@
 
 Kolejność według etapu, w którym pytanie blokuje pracę. Rozstrzygnięte w etapie 1 (ADR 0002, do potwierdzenia przez
 właściciela): 4, 5, 8, 11 i część 9 dotycząca katalogu. Rozstrzygnięte w etapie 2: 1 (decyzja właściciela
-z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, do potwierdzenia przez właściciela). **Nowe z etapu 1:** czy domyślne `UnflaggedNames` ma zostać
+z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, do potwierdzenia przez właściciela). **Rozstrzygnięte 2026-11-27 (właściciel): domyślne `UnflaggedNames` zostaje `ASCIIOnly`.** Pytanie z etapu 1: czy domyślne `UnflaggedNames` ma zostać
 `ASCIIOnly`, skoro `zip` i `ditto` z macOS zapisują nazwy UTF-8 bez bitu 11 (ADR 0002 pkt 6; rekomendacja: tak).
 
 1. **Dekompresja DEFLATE: własna czy `compress/flate` (przed etapem 2).** Właściciel zdecydował o własnym
@@ -47,8 +47,8 @@ z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, do potwierdze
    wpisu 1 000:1 liczony dopiero powyżej 1 MiB wyjścia (DEFLATE nie przekracza ok. 1 032:1, więc limit łapie
    bomby warstwowe i kłamiące nagłówki; arkusze z powtarzalną treścią miewają ponad 100:1). Konsumenci OPC
    ustawią ciaśniej.
-10. **Czy pisarz wchodzi do 1.0.** Pisarz powstał w etapie 4 (2026-11-27) przed odbiorem, więc 1.0 obejmie oba
-    pakiety, o ile właściciel nie zdecyduje inaczej. Patrz `../roadmap.md`: rekomendacja to 1.0 dla czytnika po etapach 0–3 i 5,
+10. **Czy pisarz wchodzi do 1.0.** Rozstrzygnięte 2026-11-27 (właściciel): 1.0 obejmuje czytnik i pisarza
+    (ADR 0001, uzupełnienia). Patrz `../roadmap.md`: rekomendacja to 1.0 dla czytnika po etapach 0–3 i 5,
     pisarz w 1.1, o ile wcześniej nie pojawi się piszący konsument.
 11. **Najniższa wersja Go.** Rozstrzygnięte 2026-11-26 (właściciel): bieżące wydanie, bez wspierania starszych
     (ADR 0002 pkt 13).
