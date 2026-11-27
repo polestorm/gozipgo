@@ -177,6 +177,13 @@ func TestBlockForms(t *testing.T) {
 	if _, bt := firstBlock(compress(t, []byte("abc"))); bt != 1 {
 		t.Errorf("three bytes: first block type %d, want fixed", bt)
 	}
+	// Po długim odcinku bez dopasowań (koder przeskakuje wtedy pozycje bez szukania) dane ściśliwe są nadal
+	// kompresowane: przeskok jest ograniczony, a pierwsze trafienie go zeruje.
+	markup := sample(2, 200000)
+	mixed := len(compress(t, append(sample(1, 1<<20), markup...)))
+	if limit := len(compress(t, sample(1, 1<<20))) + len(compress(t, markup))*105/100; mixed > limit {
+		t.Errorf("markup after noise: %d bytes, want at most %d", mixed, limit)
+	}
 	// Stosunek kompresji nie przekracza 1000:1, więc domyślny limit czytnika (MaxRatio) przyjmuje wynik kodera.
 	zeros := sample(0, 8<<20)
 	if c := compress(t, zeros); len(zeros)/len(c) >= 1000 || len(zeros)/len(c) < 800 {

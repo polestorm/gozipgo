@@ -12,14 +12,23 @@ przejrzano z APPNOTE 6.3.10 i RFC 1951 i przyjęto; poniżej decyzje, które prz
 
 ### Kompresor (`internal/deflate`)
 
-1. **Jeden algorytm, stałe parametry, żadnych poziomów.** Dopasowania przez łańcuchy skrótów trzech bajtów
-   w oknie 32 KiB z odroczonym wyborem, tak jak opisuje to rozdział 4 RFC 1951. Parametry dobrane pomiarem na
-   danych generowanych (znaczniki, wiersze liczb, powtórzenia, dokumenty tego repozytorium): najwyżej 128
-   kandydatów na pozycję, ćwierć tego, gdy odroczone dopasowanie ma już 16 bajtów; dopasowanie długości 3 dalej
-   niż 4096 bajtów jest pomijane. Mniejszy łańcuch (64) dawał o 4% większy wynik na znacznikach, większy (256)
-   dwa razy dłuższy czas.
+1. **Jeden algorytm, stałe parametry, żadnych poziomów.** Dopasowania przez łańcuchy skrótów w oknie 32 KiB
+   z odroczonym wyborem, tak jak opisuje to rozdział 4 RFC 1951. Parametry z pomiaru na danych generowanych
+   (znaczniki, wiersze liczb, szum, powtórzenia, zera), zmienione 2026-11-27 decyzją właściciela tak, żeby zapis
+   nie był wolniejszy niż w `archive/zip` (pkt 6):
+   - skrót z czterech bajtów, nie z trzech: łańcuch nie zbiera przypadkowych trafień; dopasowań długości 3
+     prawie nie szukamy;
+   - najwyżej 32 kandydatów na pozycję, ćwierć tego, gdy odroczone dopasowanie ma już 8 bajtów; dopasowanie od
+     64 bajtów jest wydawane bez sprawdzania następnej pozycji; dopasowanie długości 3 dalej niż 4096 bajtów
+     jest pomijane;
+   - z pozycji objętych dopasowaniem do łańcuchów trafiają tylko 64 ostatnie;
+   - na danych bez dopasowań po każdych 32 kolejnych pozycjach bez trafienia o jedną pozycję więcej idzie
+     literałem bez szukania, najwyżej 8 naraz; pierwsze trafienie zeruje licznik. Przeskok jest stanem kodera
+     zależnym tylko od danych, więc nie narusza pkt 2.
+   Pierwsza wersja (skrót z trzech bajtów, 128 kandydatów, każda pozycja w łańcuchu) dawała wynik o 5,6% mniejszy
+   na znacznikach, ale zapis 2,2 raza wolniejszy niż `archive/zip`.
 2. **Bajty wyjścia są kontraktem.** Zależą tylko od danych: nie od podziału na wywołania `Write` (pozycja jest
-   kodowana, gdy ma przed sobą 262 bajty albo strumień się kończy), nie od tego, co koder kodował przed `Reset`,
+   kodowana, gdy ma przed sobą 263 bajty albo strumień się kończy), nie od tego, co koder kodował przed `Reset`,
    nie od kolejności map ani od architektury. Wzorce skrótów (`internal/deflate/testdata/golden.tsv`,
    `zipwriter/testdata/golden.tsv`) są wspólne dla wszystkich systemów. Zmiana parametru albo reguły remisu jest
    zmianą wyniku biblioteki: wymaga decyzji, `-update-golden` i wpisu w `CHANGELOG.md`.
@@ -35,50 +44,57 @@ przejrzano z APPNOTE 6.3.10 i RFC 1951 i przyjęto; poniżej decyzje, które prz
    długość 1 dostają dwa symbole. RFC 1951 dopuszcza dla odległości kod z jednym słowem; pełny kod przyjmuje
    każdy dekoder, także nasz, który niepełne kody znaków odrzuca (ADR 0003 pkt 10). Koszt to najwyżej kilka bitów
    na blok.
-6. **Szybkość nie jest kryterium, ale jest zmierzona** (`comparison.md`, 2026-11-27, commit `c00125e`, Apple M4):
-   zapis znaczników 22 MB/s wobec 19 MB/s `compress/flate` na poziomie domyślnym i 42 MB/s `archive/zip`
-   w postaci fabrycznej (która, mierzona jako czarna skrzynka, kompresuje słabiej niż poziom domyślny
-   `compress/flate`: archiwum 7,27 MB wobec 6,73 MB; nasze 6,87 MB); wiersze liczb 17 MB/s wobec 28 i 40 MB/s;
-   dane niekompresowalne 55 MB/s wobec 114 i 117 MB/s. Wobec `archive/zip` zapis jest więc około 2 razy
-   wolniejszy. Czas schodzi w przeszukiwaniu łańcuchów. Przyspieszenie, które zmienia dobór dopasowań, zmienia
-   bajty, więc podlega pkt 2.
+6. **Szybkość nie jest kryterium, ale jest zmierzona i ma cel: nie wolniej niż `archive/zip`.** Pomiar
+   `tools/bench` (`comparison.md`): czas zapisu od 0,57 do 0,85 czasu `archive/zip` w postaci fabrycznej na danych
+   kompresowanych (znaczniki 73 MB/s wobec 49 MB/s, wiersze liczb 55 wobec 47, szum 204 wobec 116, zera 1156
+   wobec 823, 100 000 małych wpisów 90 wobec 70). Rozmiar: archiwum znaczników praktycznie równe temu
+   z `archive/zip` (7,26 MB wobec 7,27 MB) i 1,078 wyniku `compress/flate` na poziomie domyślnym, przy progu 1,1
+   z ZW-006; wiersze liczb 1,045. `archive/zip`, mierzone jako czarna skrzynka, kompresuje słabiej niż poziom
+   domyślny `compress/flate`, stąd dwa punkty odniesienia.
+7. **Gdyby rozmiar stał się ważniejszy niż szybkość**, dochodzi nazwany poziom kompresji jako pole `Header`
+   (np. `Level: zipwriter.Smaller`), a wartość zerowa zostaje dzisiejszym algorytmem. Każdy poziom to stały
+   zestaw parametrów z własnym wzorcem skrótów, więc pkt 2 obowiązuje dla każdego z osobna, a istniejące archiwa
+   i wzorce się nie zmieniają. Zmierzone możliwości: łańcuch 128 ze skrótem z czterech bajtów daje na znacznikach
+   1,002 wyniku `compress/flate` przy czasie około 2 razy dłuższym niż `archive/zip`; dalej idzie już tylko
+   dobór dopasowań z wyprzedzeniem (analiza kosztu całego bloku); to szacunek, nie pomiar: kilka razy wolniej,
+   kilka procent mniej. Nie dodajemy tego, dopóki konsument nie poprosi.
 
 ### Pisarz (`zipwriter`)
 
-7. **API: `New(w)`, `Add`, `Create`, `AddRaw`, `Close`.** Bez struktury opcji: nie ma dziś czego ustawiać. `Add`
+8. **API: `New(w)`, `Add`, `Create`, `AddRaw`, `Close`.** Bez struktury opcji: nie ma dziś czego ustawiać. `Add`
    bierze całą treść i zapisuje rozmiary oraz CRC-32 w nagłówku lokalnym; `Create` zwraca `io.WriteCloser`
    i zapisuje je w deskryptorze danych z sygnaturą. Tak rozstrzygamy pytanie ze szkicu projektu, co jest
    domyślne: wybiera wywołujący przez wybór metody. Pierwszy wpis `mimetype` pakietów ODF i EPUB (Stored, bez
    deskryptora i bez pól dodatkowych) zapisuje `Add`.
-8. **Wpis z `Create` zamyka się jawnie.** Następny wpis albo `Close` pisarza przy otwartym wpisie to
+9. **Wpis z `Create` zamyka się jawnie.** Następny wpis albo `Close` pisarza przy otwartym wpisie to
    `write-entry-open`. Pisarz nie zgaduje, że treść jest skończona: błąd w połowie strumienia nie zamieni się
    po cichu w krótszy plik.
-9. **Stored z deskryptorem danych jest dozwolony** (`Create` z metodą Stored), bo nasz czytnik i wszystkie
+10. **Stored z deskryptorem danych jest dozwolony** (`Create` z metodą Stored), bo nasz czytnik i wszystkie
    zmierzone programy czytają go poprawnie. Programy czytające archiwum strumieniem, bez katalogu, nie potrafią
    wyznaczyć końca takich danych; dokumentacja pakietu to mówi i wskazuje `Add`.
-10. **ZIP64 tylko tam, gdzie trzeba.** W katalogu pole ZIP64 zawiera dokładnie wartości, które nie mieszczą się
+11. **ZIP64 tylko tam, gdzie trzeba.** W katalogu pole ZIP64 zawiera dokładnie wartości, które nie mieszczą się
     w 32 bitach; rekord i lokalizator końca katalogu pojawiają się od 65 535 wpisów albo 4 GiB. Nagłówek lokalny
     wpisu strumieniowego powstaje, zanim znany jest rozmiar, więc o jego postaci decyduje `Header.Zip64`
     (rozmiary graniczne, pole z dwoma zerami, deskryptor 64-bitowy). Bez niego wpis, który osiąga 4 GiB − 1
     bajtów, kończy się `write-entry-size` zamiast archiwum, którego część programów nie przeczyta. `Add`
     i `AddRaw` znają rozmiary i wybierają postać same.
-11. **Pola stałe.** „Version made by” 4.5 i system 0 (MS-DOS), wersja wymagana według 4.4.3.2, atrybuty zerowe
+12. **Pola stałe.** „Version made by” 4.5 i system 0 (MS-DOS), wersja wymagana według 4.4.3.2, atrybuty zerowe
     poza bitem katalogu, żadnych komentarzy, żadnych pól dodatkowych poza ZIP64. Uprawnień uniksowych nie
     zapisujemy; dojdą jako pole nagłówka, gdy poprosi o nie konsument.
-12. **Data wpisu: z nagłówka albo 1980-01-01 00:00:00.** Nieparzysta sekunda i data spoza zakresu formatu to
+13. **Data wpisu: z nagłówka albo 1980-01-01 00:00:00.** Nieparzysta sekunda i data spoza zakresu formatu to
     `write-timestamp`, nie ciche zaokrąglenie.
-13. **Nazwy: te same reguły i kody co w czytniku**, ze wspólnego pakietu `internal/entryname`; konflikty nazw
+14. **Nazwy: te same reguły i kody co w czytniku**, ze wspólnego pakietu `internal/entryname`; konflikty nazw
     (ta sama nazwa, plik w miejscu katalogu) wykrywane przy wywołaniu, przez wyszukiwanie w zbiorach, bez
     iteracji po mapie. Porównania bez względu na wielkość liter pisarz nie robi: to reguła warstwy OPC
     u konsumenta.
-14. **`AddRaw` sprawdza to, co kopiuje.** Strumień DEFLATE jest dekodowany w trakcie kopiowania, a rozmiar
+15. **`AddRaw` sprawdza to, co kopiuje.** Strumień DEFLATE jest dekodowany w trakcie kopiowania, a rozmiar
     i CRC-32 treści porównywane z opisem; inaczej pisarz mógłby zapisać archiwum, którego czytnik nie przyjmie.
     Koszt to czas dekompresji (kilkaset MB/s), bez dodatkowej pamięci.
-15. **Dwa rodzaje błędów.** Wykryty przed pierwszym bajtem wpisu (nazwa, metoda, data, stan) nie zmienia stanu
+16. **Dwa rodzaje błędów.** Wykryty przed pierwszym bajtem wpisu (nazwa, metoda, data, stan) nie zmienia stanu
     pisarza i nie zostawia śladu w archiwum. Wykryty później (błąd celu zapisu, `write-entry-size`,
     `write-raw-content`) jest trwały: archiwum jest niedokończone i każde następne wywołanie zwraca ten sam błąd.
     Błąd `io.Writer` wraca niezmieniony, tak jak błąd `io.ReaderAt` w czytniku.
-16. **K8 dla pisarza mierzą wzorce skrótów.** `TestGolden` w obu pakietach na trzech systemach CI z bieżącym
+17. **K8 dla pisarza mierzą wzorce skrótów.** `TestGolden` w obu pakietach na trzech systemach CI z bieżącym
     wydaniem Go oraz zadanie `bytes` na wersji z `go.mod`. Lokalnie sprawdzone 2026-11-27 na go1.26.0, go1.26.6
     i go1.27.0 (darwin/arm64): te same skróty.
 

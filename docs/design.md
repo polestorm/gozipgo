@@ -126,9 +126,10 @@ err = w.Close()
 
 RFC 1951, rozdziały 3 i 4. Jeden algorytm, stałe parametry, żadnych poziomów:
 
-- dopasowania przez łańcuchy skrótów trzech bajtów w oknie 32 KiB, najwyżej 128 kandydatów na pozycję, z odroczonym
-  wyborem (dopasowanie jest wydawane dopiero, gdy następna pozycja nie daje dłuższego);
-- pozycja jest kodowana, gdy ma przed sobą 262 bajty danych albo strumień się kończy, więc wynik nie zależy od
+- dopasowania przez łańcuchy skrótów czterech bajtów w oknie 32 KiB, najwyżej 32 kandydatów na pozycję, z odroczonym
+  wyborem (dopasowanie krótsze niż 64 bajty jest wydawane dopiero, gdy następna pozycja nie daje dłuższego);
+  na danych bez dopasowań koder przeskakuje do 8 pozycji bez szukania (parametry i ich pomiar: ADR 0005 pkt 1);
+- pozycja jest kodowana, gdy ma przed sobą 263 bajty danych albo strumień się kończy, więc wynik nie zależy od
   podziału danych na zapisy;
 - blok kończy się po 16 384 symbolach albo 65 535 bajtach wejścia i dostaje najtańszą z trzech postaci
   (niezakodowana, kody stałe, kody dynamiczne), liczoną dokładnie w bitach;

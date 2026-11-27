@@ -16,7 +16,8 @@ Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
 - DEFLATE is compressed by the module's own compressor (`internal/deflate`), written from RFC 1951. It has one
   algorithm with constant parameters: the same content gives the same bytes on every system and with every
   version of Go, whatever the way the content is split into writes. Checksums of its output are kept in the
-  repository and compared on every system of the CI and with two versions of Go.
+  repository and compared on every system of the CI and with two versions of Go. Writing is not slower than
+  with `archive/zip` and the archives are about the same size (`docs/comparison.md`).
 - `tools/compare` also gives the archives `zipwriter` writes to the other readers, and `tools/bench` measures
   writing against `archive/zip`.
 - The reader is unchanged; its rules for names moved to a package shared with the writer.

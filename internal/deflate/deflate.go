@@ -24,7 +24,8 @@ const (
 
 	bufSize  = 4 * windowSize // bufor wejścia: okno, bieżący blok i dane do przodu
 	hashBits = 15
-	hashMul  = 0x9E3779B1 // 2^32 / złoty podział: mnożnik skrótu trzech bajtów
+	hashLen  = 4          // skrót liczymy z czterech bajtów: łańcuch nie zbiera przypadkowych trafień na trzech
+	hashMul  = 0x9E3779B1 // 2^32 / złoty podział: mnożnik skrótu
 
 	// Blok kończy się po maxTokens symbolach albo gdy następny symbol mógłby wyprowadzić go ponad maxBlockBytes
 	// bajtów wejścia. Dzięki temu blok mieści się w jednym bloku niezakodowanym, a jego dane są jeszcze w buforze.
@@ -32,12 +33,19 @@ const (
 	maxBlockBytes = 65535
 
 	// Pozycja jest kodowana, gdy ma przed sobą tyle bajtów (albo strumień się kończy): najdłuższe dopasowanie
-	// i trzy bajty skrótu ostatniej pozycji, którą ono obejmuje.
-	lookahead = maxMatch + minMatch + 1
+	// i bajty skrótu ostatniej pozycji, którą ono obejmuje.
+	lookahead = maxMatch + hashLen + 1
 
-	maxChain   = 128  // ile kandydatów z łańcucha skrótu sprawdzamy
-	goodLength = 16   // od tej długości odroczonego dopasowania szukamy lepszego już tylko w ćwierci łańcucha
+	maxChain   = 32   // ile kandydatów z łańcucha skrótu sprawdzamy
+	goodLength = 8    // od tej długości odroczonego dopasowania szukamy lepszego już tylko w ćwierci łańcucha
+	lazyLength = 64   // od tej długości dopasowanie jest wydawane bez sprawdzenia następnej pozycji
 	farLimit   = 4096 // dopasowanie długości 3 dalej niż tyle kosztuje więcej niż trzy literały
+	tailInsert = 64   // z pozycji objętych dopasowaniem do łańcuchów trafia tylko tyle ostatnich
+
+	// Dane bez dopasowań: po każdych 2^missShift kolejnych pozycjach bez trafienia o jedną pozycję więcej idzie
+	// literałem bez szukania, najwyżej maxSkip naraz. Pierwsze trafienie zeruje licznik.
+	missShift = 5
+	maxSkip   = 8
 
 	endOfBlock  = 256
 	numLitLen   = 286
@@ -225,6 +233,8 @@ type Writer struct {
 
 	// Odroczone dopasowanie znalezione na pozycji pos−1.
 	pending           bool
+	misses            int // kolejne pozycje bez dopasowania
+	skipping          int // ile następnych pozycji idzie literałem bez szukania
 	pendLen, pendDist int
 
 	tokens   []uint32 // literał: bajt; dopasowanie: 1<<31 | (długość−3)<<16 | (odległość−1)
@@ -260,7 +270,7 @@ func (w *Writer) Reset(dst io.Writer) {
 	w.dst, w.err = dst, nil
 	w.n, w.pos, w.blockStart, w.blockLen = 0, 0, 0, 0
 	clear(w.head) // prev jest czytane tylko dla pozycji osiągniętych z head, więc nie wymaga czyszczenia
-	w.pending = false
+	w.pending, w.misses, w.skipping = false, 0, 0
 	w.tokens = w.tokens[:0]
 	w.litFreq, w.distFreq = [numLitLen]int32{}, [numDist]int32{}
 	w.acc, w.nbits, w.out = 0, 0, w.out[:0]
@@ -324,8 +334,7 @@ func (w *Writer) slide() {
 }
 
 func (w *Writer) hash(p int) uint32 {
-	b := w.buf[p : p+3 : p+3]
-	return (uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16) * hashMul >> (32 - hashBits)
+	return binary.LittleEndian.Uint32(w.buf[p:]) * hashMul >> (32 - hashBits)
 }
 
 // insert dopisuje pozycję p do łańcucha jej skrótu.
@@ -344,13 +353,19 @@ func (w *Writer) compress(final bool) {
 		if !final && avail < lookahead {
 			return
 		}
+		if w.skipping > 0 {
+			w.skipping--
+			w.literal(w.buf[p])
+			w.pos++
+			continue
+		}
 		length, dist := 0, 0
-		if avail >= minMatch {
+		if avail >= hashLen {
 			floor := minMatch - 1
 			if w.pending {
 				floor = w.pendLen
 			}
-			if floor < min(avail, maxMatch) {
+			if floor < min(avail, maxMatch) && floor < lazyLength {
 				length, dist = w.longest(p, min(avail, maxMatch), floor)
 			}
 			w.insert(p)
@@ -366,22 +381,27 @@ func (w *Writer) compress(final bool) {
 			w.match(w.pendLen, w.pendDist)
 			w.pending = false
 			w.skip(p+1, end)
-		case length >= maxMatch: // dłuższego nie ma, więc nie ma na co czekać
+		case length >= lazyLength:
 			w.match(length, dist)
 			w.skip(p+1, p+length)
 		case length >= minMatch:
 			w.pending, w.pendLen, w.pendDist = true, length, dist
+			w.misses = 0
 			w.pos++
 		default:
 			w.literal(w.buf[p])
 			w.pos++
+			w.misses++
+			w.skipping = min(w.misses>>missShift, maxSkip)
 		}
 	}
 }
 
-// skip dopisuje do łańcuchów pozycje [from, end) objęte dopasowaniem i ustawia bieżącą pozycję na end.
+// skip dopisuje do łańcuchów ostatnie pozycje z [from, end) objęte dopasowaniem i ustawia bieżącą pozycję na end.
 func (w *Writer) skip(from, end int) {
-	for q := from; q < end && q+minMatch <= w.n; q++ {
+	w.misses = 0
+	from = max(from, end-tailInsert)
+	for q := from; q < end && q+hashLen <= w.n; q++ {
 		w.insert(q)
 	}
 	w.pos = end
