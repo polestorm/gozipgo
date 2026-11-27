@@ -5,13 +5,7 @@ Versions follow semantic versioning. In 0.x the API may grow; an incompatible ch
 
 ## Unreleased
 
-Security fix in the reader (found by `FuzzReader` on 2026-11-27, present in v0.1.0): an archive whose comment
-holds the signature of an end of central directory record was accepted even when the record starting there did not
-end with the file. `archive/zip`, Python `zipfile`, UnZip and bsdtar start from the last signature without that
-check, so a second archive followed by one more byte in the comment of the first made them read other files than
-gozipgo did. Such an archive is now rejected with `zip-multiple-directory-ends`; so is an end record with the
-signature inside its own fields. The set of archives accepted in strict mode narrows by exactly these
-(`docs/adr/0002-directory-reading-rules.md`, point 3).
+Includes the security fix released as v0.1.1 (below).
 
 Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
 
@@ -39,6 +33,18 @@ Stage 3 of the plan: hardening and measurements.
 - Hostile corpus (`testdata/hostile.json`, 39 archives built by the tests), `tools/compare` and `tools/bench`
   with their raw results in `docs/results/`, and `docs/comparison.md` written by the tools.
 - No change to the API or to which archives are accepted.
+
+## v0.1.1 (2026-11-27)
+
+Released from the branch `release-0.1`: v0.1.0 and this fix only.
+
+Security fix in the reader, found by `FuzzReader`: an archive whose comment holds the signature of an end of
+central directory record was accepted even when the record starting there did not end with the file.
+`archive/zip`, Python `zipfile`, UnZip and bsdtar start from the last signature without that check, so a second
+archive followed by one more byte in the comment of the first made them read other files than gozipgo did. Such an
+archive is now rejected with `zip-multiple-directory-ends`; so is an end record with the signature inside its own
+fields. The set of archives accepted in strict mode narrows by exactly these
+(`docs/adr/0002-directory-reading-rules.md`, point 3). No change to the API.
 
 ## v0.1.0 (2026-11-27)
 
