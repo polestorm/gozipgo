@@ -71,8 +71,40 @@ What it is for:
 Not in scope: encryption, multi-volume archives, compression methods other than Stored and Deflate, repairing
 damaged archives, extracting to disk.
 
-What other programs do with the same hostile archives and with the archives gozipgo writes, and measured speed
-and size: [docs/comparison.md](docs/comparison.md).
+## Measured
+
+Every number below comes from a tool of this repository and a raw result kept in
+[docs/results](docs/results/); the tables with every archive are in [docs/comparison.md](docs/comparison.md) and
+the method, versions and commands in [docs/methodology.md](docs/methodology.md). Measured on macOS, Apple M4.
+
+| Archives | gozipgo, strict | gozipgo, relaxed [1] | `archive/zip` | 7-Zip | Python `zipfile` |
+|---|---|---|---|---|---|
+| made by real programs (25): read with the recorded content | 15 | 25 | 25 | 25 | 25 |
+| hostile (40): read at all [2] | 0 | not measured | 24 | 19 | 25 |
+| written by gozipgo (7): read back unchanged | 7 | 7 | 7 | 7 | 7 |
+
+| Speed against `archive/zip` on the same data [3] | time, gozipgo / `archive/zip` |
+|---|---|
+| reading content (Deflate and Stored, 32 MiB each) | 0.75 to 1.31 |
+| opening an archive of 100,000 entries [4] | about 5 |
+| writing (Deflate, 32 MiB each, and 100,000 small entries) | 0.57 to 0.85 |
+
+1. Relaxed means named options, off by default, each reported in the result (`Reader.Relaxed`). The ten archives
+   that need one store names outside ASCII without the UTF-8 flag (`zip` and `ditto` of macOS, 7-Zip on Windows):
+   the archive does not say which encoding the name is in, so strict reading refuses to guess, and the caller
+   names the encoding. In strict mode gozipgo reads fewer archives than other programs, on purpose; with the
+   options it reads what they read. Why each archive is refused: [docs/differences.md](docs/differences.md).
+2. A hostile archive is one built so that two programs read different content from the same file, or so that
+   reading it exhausts memory. Reading it is not a merit. The column is not a ranking: see the notes under the
+   table in [docs/comparison.md](docs/comparison.md).
+3. A ratio below 1 means gozipgo is faster. Median of 7 runs.
+4. Opening is slower because of what makes the reader safe: before it returns, `zipreader.New` reads every local
+   header and checks it against the central directory, so that a file with two readings is refused before any
+   content is delivered. `archive/zip` reads the directory only. The cost is about half a microsecond per entry
+   and disappears when the content is read as well.
+
+Info-ZIP UnZip and bsdtar are measured too; their numbers on macOS reflect two faults of those builds and are in
+the full tables.
 
 Error codes: [docs/errors.md](docs/errors.md). What the reader rejects that other programs open, and why:
 [docs/differences.md](docs/differences.md).

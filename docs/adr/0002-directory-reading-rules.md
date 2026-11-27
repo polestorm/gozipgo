@@ -1,6 +1,6 @@
 # 0002 Reguły czytania katalogu (etap 1)
 
-Status: przyjęta (robocza, do potwierdzenia przez właściciela) · 2026-11-26
+Status: przyjęta · 2026-11-26 (potwierdzona przez właściciela 2026-11-27)
 
 ## Kontekst
 

@@ -14,9 +14,10 @@ Przyjęte w etapie 1 w zakresie `New` (katalog), w etapie 2 (2026-11-27) w zakre
 | SAFE-005 | Czas liniowy (z dokładnością do sortowania): podwojenie liczby wpisów, długości nazw, liczby pól dodatkowych albo rozmiaru danych zwiększa czas `New` i odczytu najwyżej 2,5×. |
 | SAFE-006 | Pamięć `New` zależy od liczby wpisów i długości ich nazw i pól, nie od rozmiaru danych; pamięć odczytu wpisu jest stała. Żadna alokacja nie ma rozmiaru wziętego z pola archiwum bez wcześniejszego porównania z limitem i z rozmiarem pliku. |
 
-Status: szkic
+Status: przyjęte
 
-Reguła procesu; test razem z pakietem dowodów (etap 5).
+Reguła procesu, przyjęta w etapie 5 (2026-11-27). Test `TestNoPrivatePaths` pilnuje śladów maszyny w plikach
+repozytorium; pakiet dowodów nie czyta danych spoza repozytorium (EVD-005).
 
 | Id | Wymaganie |
 |---|---|

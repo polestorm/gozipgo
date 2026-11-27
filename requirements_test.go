@@ -78,8 +78,7 @@ func TestRequirementsCovered(t *testing.T) {
 		}
 		if d.IsDir() {
 			// pobrane dane i katalogi robocze nie są źródłem odwołań
-			// testy tools/evidence mają własne, zmyślone wymagania w danych testowych
-			if p == filepath.Join("testdata", "fetched") || p == filepath.Join("tools", "evidence") || p == "out" || p == "ref" || (strings.HasPrefix(d.Name(), ".") && p != ".") {
+			if p == filepath.Join("testdata", "fetched") || p == "out" || p == "ref" || (strings.HasPrefix(d.Name(), ".") && p != ".") {
 				return filepath.SkipDir
 			}
 			return nil
@@ -94,6 +93,11 @@ func TestRequirementsCovered(t *testing.T) {
 		for _, line := range strings.Split(read(f), "\n") {
 			i := strings.Index(line, "REQ:")
 			if i < 0 || f == "requirements_test.go" && !strings.Contains(line, "// REQ:") {
+				continue
+			}
+			// Testy tools/evidence mają w danych testowych zmyślone wymagania; prawdziwe odwołania to wiersze
+			// komentarza nad funkcją, zaczynające się od wymagania pakietu dowodów.
+			if strings.HasPrefix(filepath.ToSlash(f), "tools/evidence/") && !strings.HasPrefix(line, "// REQ: EVD-") {
 				continue
 			}
 			for _, id := range anyID.FindAllString(line[i:], -1) {

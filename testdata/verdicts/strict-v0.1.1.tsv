@@ -1,0 +1,568 @@
+corkami-zip/zip/NT.zip	ok
+corkami-zip/zip/NTFS.zip	ok
+corkami-zip/zip/PPMd.zip	ok, entries with unsupported-method
+corkami-zip/zip/aes.zip	ok, entries with unsupported-encryption
+corkami-zip/zip/bz2.zip	ok, entries with unsupported-method
+corkami-zip/zip/corkami.zip	unsupported-multi-volume
+corkami-zip/zip/deflate64.zip	ok, entries with unsupported-method
+corkami-zip/zip/directory.zip	ok
+corkami-zip/zip/drive.zip	ok
+corkami-zip/zip/dual.zip	name-duplicate
+corkami-zip/zip/empty.zip	ok
+corkami-zip/zip/filecomment.zip	ok
+corkami-zip/zip/gynvael/THI_2018_files.zip	name-encoding
+corkami-zip/zip/implode.zip	ok, entries with unsupported-method
+corkami-zip/zip/implodeV3.zip	ok, entries with unsupported-method
+corkami-zip/zip/jpeg.zip	ok, entries with unsupported-method
+corkami-zip/zip/lzma.zip	ok, entries with unsupported-method
+corkami-zip/zip/reduced1.zip	ok, entries with unsupported-method
+corkami-zip/zip/reduced2.zip	ok, entries with unsupported-method
+corkami-zip/zip/reduced3.zip	ok, entries with unsupported-method
+corkami-zip/zip/reduced4.zip	ok, entries with unsupported-method
+corkami-zip/zip/shrunk.zip	zip-local-header-mismatch
+corkami-zip/zip/simple.zip	ok
+corkami-zip/zip/store.zip	ok
+corkami-zip/zip/unicode.zip	name-unicode-path
+corkami-zip/zip/unicode2.zip	ok
+corkami-zip/zip/unix.zip	ok
+corkami-zip/zip/unixdesc.zip	ok
+corkami-zip/zip/volume.zip.001	zip-no-directory-end
+corkami-zip/zip/volume.zip.002	zip-directory-out-of-bounds
+corkami-zip/zip/volumecomment.zip	ok
+corkami-zip/zip/wavpack.zip	ok, entries with unsupported-method
+corkami-zip/zip/zip64.zip	ok
+corkami-zip/zip/zipcrypto.zip	ok, entries with unsupported-encryption
+corkami-zip/zip/zopfli.zip	ok
+cpython-zip/exe_with_z64	zip64-inconsistent
+cpython-zip/exe_with_zip	zip-directory-out-of-bounds
+cpython-zip/zip_cp437_header.zip	name-encoding
+cpython-zip/zipdir.zip	ok
+cpython-zip/zipdir_backslash.zip	name-backslash
+fifield-zipbomb/zbsm.zip	zip-entries-overlap
+go-archive-zip/comment-truncated.zip	zip-trailing-data
+go-archive-zip/crc32-not-streamed.zip	ok
+go-archive-zip/dd.zip	ok
+go-archive-zip/dupdir.zip	name-duplicate
+go-archive-zip/go-with-datadesc-sig.zip	ok
+go-archive-zip/readme.zip	zip-trailing-data
+go-archive-zip/subdir.zip	ok
+go-archive-zip/symlink.zip	ok
+go-archive-zip/test-badbase.zip	zip-directory-out-of-bounds
+go-archive-zip/test-baddirsz.zip	zip-directory-out-of-bounds
+go-archive-zip/test-prefix.zip	zip-trailing-data
+go-archive-zip/test-trailing-junk.zip	zip-trailing-data
+go-archive-zip/test.zip	ok
+go-archive-zip/time-22738.zip	ok
+go-archive-zip/time-7zip.zip	ok
+go-archive-zip/time-go.zip	ok
+go-archive-zip/time-infozip.zip	ok
+go-archive-zip/time-osx.zip	ok
+go-archive-zip/time-win7.zip	ok
+go-archive-zip/time-winrar.zip	ok
+go-archive-zip/time-winzip.zip	ok
+go-archive-zip/unix.zip	ok
+go-archive-zip/utf8-7zip.zip	ok
+go-archive-zip/utf8-infozip.zip	ok
+go-archive-zip/utf8-osx.zip	name-encoding
+go-archive-zip/utf8-winrar.zip	ok
+go-archive-zip/utf8-winzip.zip	ok
+go-archive-zip/winxp.zip	ok
+go-archive-zip/zip64-2.zip	ok
+go-archive-zip/zip64.zip	ok
+libzip-regress/regress/data/aaaaaaaa-stored.zip	ok
+libzip-regress/regress/data/bigstored.zh	zip-trailing-data
+libzip-regress/regress/data/bigzero-zip.zip	ok
+libzip-regress/regress/data/broken.zip	ok, entries with unsupported-encryption, content: zip-checksum
+libzip-regress/regress/data/changing-size-muchl.zip	ok
+libzip-regress/regress/data/changing-size-muchlo.zip	ok
+libzip-regress/regress/data/changing-size-muchlonger.zip	ok
+libzip-regress/regress/data/changing-size.zip	ok
+libzip-regress/regress/data/cm-default-aes256-noentropy.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/cm-default.zip	ok
+libzip-regress/regress/data/descriptor-signature.zip	ok
+libzip-regress/regress/data/descriptor-zip64-nosig.zip	ok
+libzip-regress/regress/data/descriptor-zip64.zip	ok
+libzip-regress/regress/data/descriptor.zip	ok
+libzip-regress/regress/data/empty-badmac-aes256.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/empty-pkware.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-1234.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-aes128-noentropy.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-aes128.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-aes192-noentropy.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-aes192.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-aes256-noentropy.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-aes256.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-none.zip	ok
+libzip-regress/regress/data/encrypt-pkware-noentropy-2.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt-pkware-noentropy.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt_plus_extra-2.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt_plus_extra.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt_plus_extra_modified_c.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/encrypt_plus_extra_modified_l.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/extra_field_align_1-0.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_1-ef_00.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_1-ef_ff.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_1-ff.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_2-0.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_2-ef_00.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_2-ef_ff.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_2-ff.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_3-0.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_3-ef_00.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_3-ef_ff.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_3-ff.zip	zip-extra-field
+libzip-regress/regress/data/extra_field_align_4-ff.zip	ok
+libzip-regress/regress/data/filename_duplicate.zip	name-duplicate
+libzip-regress/regress/data/filename_duplicate_empty.zip	name-empty
+libzip-regress/regress/data/filename_empty.zip	name-empty
+libzip-regress/regress/data/fileorder.zip	ok
+libzip-regress/regress/data/firstsecond-split-deflated.zip	ok
+libzip-regress/regress/data/firstsecond-split-stored.zip	ok
+libzip-regress/regress/data/firstsecond.zip	ok
+libzip-regress/regress/data/foo-stored.zip	ok
+libzip-regress/regress/data/gap-add.zip	zip-unreferenced-data
+libzip-regress/regress/data/gap-delete.zip	zip-unreferenced-data
+libzip-regress/regress/data/gap-replace.zip	zip-unreferenced-data
+libzip-regress/regress/data/gap.zip	zip-unreferenced-data
+libzip-regress/regress/data/hmac-error.zip	ok, entries with unsupported-encryption
+libzip-regress/regress/data/incons-archive-comment-longer.zip	zip-no-directory-end
+libzip-regress/regress/data/incons-archive-comment-shorter.zip	zip-trailing-data
+libzip-regress/regress/data/incons-cdoffset.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/incons-cdsize-large.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/incons-cdsize-small.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/incons-central-compression-method.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-central-compsize-larger-toolarge.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-central-compsize-larger.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-central-compsize-smaller.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-central-crc.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-central-date.zip	ok
+libzip-regress/regress/data/incons-central-file-comment-longer.zip	zip-directory-truncated
+libzip-regress/regress/data/incons-central-file-comment-shorter.zip	zip-directory-count-mismatch
+libzip-regress/regress/data/incons-central-file-comment-utf8-ascii.zip	ok
+libzip-regress/regress/data/incons-central-magic-bad.zip	zip-directory-signature
+libzip-regress/regress/data/incons-central-magic-bad2.zip	zip-directory-signature
+libzip-regress/regress/data/incons-central-size-larger.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-data.zip	ok, content: zip-checksum
+libzip-regress/regress/data/incons-descriptor-overlap.zip	zip-descriptor-mismatch
+libzip-regress/regress/data/incons-ef-central-size-wrong.zip	zip-extra-field
+libzip-regress/regress/data/incons-ef-local-dupe-utf8comment.zip	ok
+libzip-regress/regress/data/incons-ef-local-dupe-utf8name.zip	name-unicode-path
+libzip-regress/regress/data/incons-ef-local-dupe-zip64-v1.zip	zip64-inconsistent
+libzip-regress/regress/data/incons-ef-local-dupe-zip64-v2.zip	zip64-inconsistent
+libzip-regress/regress/data/incons-ef-local-id-size.zip	zip-extra-field
+libzip-regress/regress/data/incons-ef-local-id.zip	ok
+libzip-regress/regress/data/incons-ef-local-size.zip	zip-extra-field
+libzip-regress/regress/data/incons-ef-local-utf8name-ascii.zip	name-unicode-path
+libzip-regress/regress/data/incons-entry-overlaps-cd.zip	zip-entries-overlap
+libzip-regress/regress/data/incons-eocd-magic-bad.zip	zip-no-directory-end
+libzip-regress/regress/data/incons-eocd64-gap.zip	zip64-inconsistent
+libzip-regress/regress/data/incons-eocd64.zip	zip64-inconsistent
+libzip-regress/regress/data/incons-file-count-high.zip	zip-directory-count-mismatch
+libzip-regress/regress/data/incons-file-count-low.zip	zip-directory-count-mismatch
+libzip-regress/regress/data/incons-file-count-overflow.zip	zip64-inconsistent
+libzip-regress/regress/data/incons-filename-nul-byte.zip	name-nul
+libzip-regress/regress/data/incons-gap-before-cd.zip	zip-unreferenced-data
+libzip-regress/regress/data/incons-gap-before-eocd-after-eocd64loc.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/incons-gap-before-eocd.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/incons-gap-before-eocd64.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/incons-gap-before-eocd64loc.zip	zip64-inconsistent
+libzip-regress/regress/data/incons-gap-before-local.zip	zip-unreferenced-data
+libzip-regress/regress/data/incons-gap-entries.zip	zip-unreferenced-data
+libzip-regress/regress/data/incons-gap-start.zip	zip-unreferenced-data
+libzip-regress/regress/data/incons-local-compression-method.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-compsize-larger.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-compsize-smaller.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-crc.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-filename-long.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-filename-missing.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-filename-short.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-filename.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-magic-bad.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-local-size-larger.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-nonzero-disk.zip	unsupported-multi-volume
+libzip-regress/regress/data/incons-overlap-shared-data.zip	zip-unreferenced-data
+libzip-regress/regress/data/incons-overlap.zip	zip-entries-overlap
+libzip-regress/regress/data/incons-stored-data-shorter.zip	zip-size-mismatch
+libzip-regress/regress/data/incons-stored-size.zip	zip-size-mismatch
+libzip-regress/regress/data/incons-streamed-2.zip	zip-descriptor-mismatch
+libzip-regress/regress/data/incons-streamed.zip	zip-descriptor-mismatch
+libzip-regress/regress/data/incons-trailing-garbage.zip	zip-local-header-mismatch
+libzip-regress/regress/data/incons-utf8-name-surrogate.zip	name-encoding
+libzip-regress/regress/data/incons-utf8-nul-in-name.zip	name-unicode-path
+libzip-regress/regress/data/incons-zip64-checkcons-overflow.zip	zip-entries-overlap
+libzip-regress/regress/data/junk-at-end.zip	zip-trailing-data
+libzip-regress/regress/data/junk-at-start.zip	zip-directory-out-of-bounds
+libzip-regress/regress/data/lzma-no-eos.zip	ok, entries with unsupported-method
+libzip-regress/regress/data/manyfiles-zip.zip	ok
+libzip-regress/regress/data/mtime-default.zip	ok
+libzip-regress/regress/data/mtime-dstpoint-deflated.zip	ok
+libzip-regress/regress/data/mtime-dstpoint.zip	ok
+libzip-regress/regress/data/mtime-post-dstpoint-deflated.zip	ok
+libzip-regress/regress/data/mtime-post-dstpoint.zip	ok
+libzip-regress/regress/data/mtime-pre-dstpoint-deflated.zip	ok
+libzip-regress/regress/data/mtime-pre-dstpoint.zip	ok
+libzip-regress/regress/data/multidisk.zip	unsupported-multi-volume
+libzip-regress/regress/data/rename_ok.zip	ok
+libzip-regress/regress/data/stored-no-eos.zip	ok
+libzip-regress/regress/data/streamed-zip64.zip	ok
+libzip-regress/regress/data/streamed.zip	ok
+libzip-regress/regress/data/test-cp437-comment-utf-8.zip	name-control-character
+libzip-regress/regress/data/test-cp437-fc-utf-8-filename.zip	name-encoding
+libzip-regress/regress/data/test-cp437-fc.zip	ok
+libzip-regress/regress/data/test-cp437.zip	name-control-character
+libzip-regress/regress/data/test-utf8-unmarked.zip	name-encoding
+libzip-regress/regress/data/test-utf8.zip	ok
+libzip-regress/regress/data/test.zip	ok
+libzip-regress/regress/data/test2.zip	ok
+libzip-regress/regress/data/test_open_multiple.zip	ok, entries with unsupported-version
+libzip-regress/regress/data/testbuffer.zip	ok
+libzip-regress/regress/data/testbuffer_reopen.zip	ok
+libzip-regress/regress/data/testbzip2.zip	ok, entries with unsupported-method
+libzip-regress/regress/data/testbzip2broken.zip	ok, entries with unsupported-method
+libzip-regress/regress/data/testchanged.zip	ok
+libzip-regress/regress/data/testchangedlocal.zip	ok
+libzip-regress/regress/data/testcomment.zip	ok
+libzip-regress/regress/data/testcomment13.zip	ok
+libzip-regress/regress/data/testcommentremoved.zip	ok
+libzip-regress/regress/data/testdeflated.zip	ok
+libzip-regress/regress/data/testdeflated2.zip	ok
+libzip-regress/regress/data/testdir.zip	ok
+libzip-regress/regress/data/testempty.zip	ok
+libzip-regress/regress/data/testextrabytes.zip	zip-trailing-data
+libzip-regress/regress/data/testfile-UTF8.zip	ok
+libzip-regress/regress/data/testfile-cp437.zip	name-encoding
+libzip-regress/regress/data/testfile-ef.zip	ok
+libzip-regress/regress/data/testfile-long-comment.zip	ok
+libzip-regress/regress/data/testfile-lzma.zip	ok, entries with unsupported-method
+libzip-regress/regress/data/testfile-plus-extra.zip	ok
+libzip-regress/regress/data/testfile-stored-dos.zip	ok
+libzip-regress/regress/data/testfile-torrentzip-modified.zip	ok
+libzip-regress/regress/data/testfile-torrentzip.zip	ok
+libzip-regress/regress/data/testfile-truncated.zip	zip-no-directory-end
+libzip-regress/regress/data/testfile-xz.zip	ok, entries with unsupported-method
+libzip-regress/regress/data/testfile-zstd.zip	ok, entries with unsupported-method
+libzip-regress/regress/data/testfile.zip	ok
+libzip-regress/regress/data/testfile0.zip	ok
+libzip-regress/regress/data/testfile1980.zip	ok
+libzip-regress/regress/data/testfile2014.zip	ok
+libzip-regress/regress/data/testfile2107.zip	ok
+libzip-regress/regress/data/teststdin.zip	ok
+libzip-regress/regress/data/teststored.zip	ok
+libzip-regress/regress/data/utf-8-standardization-input.zip	name-encoding
+libzip-regress/regress/data/utf-8-standardization-output.zip	ok
+libzip-regress/regress/data/zip-in-archive-comment.zip	zip-multiple-directory-ends
+libzip-regress/regress/data/zip64-3mf.zip	ok
+libzip-regress/regress/data/zip64-in-archive-comment.zip	zip-multiple-directory-ends
+libzip-regress/regress/data/zip64-local-both-sizes.zip	ok, content: limit-entry-size
+libzip-regress/regress/data/zip64.zip	ok
+libzip-regress/regress/data/zipcmp_zip_dir.zip	ok
+poi-opc/test-data/document/45690.docm	ok
+poi-opc/test-data/document/47304.doc	zip-trailing-data
+poi-opc/test-data/document/47950_lower.doc	zip-trailing-data
+poi-opc/test-data/document/47950_normal.doc	zip-trailing-data
+poi-opc/test-data/document/47950_upper.doc	zip-trailing-data
+poi-opc/test-data/document/51921-Word-Crash067.docx	ok
+poi-opc/test-data/document/52288.docx	ok
+poi-opc/test-data/document/52420.doc	zip-trailing-data
+poi-opc/test-data/document/52449.docx	ok
+poi-opc/test-data/document/55733.docx	ok
+poi-opc/test-data/document/55966.docx	ok
+poi-opc/test-data/document/56392.docx	ok
+poi-opc/test-data/document/57312.docx	ok
+poi-opc/test-data/document/57603-seven_columns.doc	zip-trailing-data
+poi-opc/test-data/document/58067.docx	ok
+poi-opc/test-data/document/58618.docx	ok
+poi-opc/test-data/document/58804.doc	zip-trailing-data
+poi-opc/test-data/document/58804_1.doc	zip-trailing-data
+poi-opc/test-data/document/59030.docx	ok
+poi-opc/test-data/document/59322.doc	zip-trailing-data
+poi-opc/test-data/document/59378.docx	ok
+poi-opc/test-data/document/60158.docm	ok
+poi-opc/test-data/document/60293.docx	ok
+poi-opc/test-data/document/60316.docx	ok
+poi-opc/test-data/document/60316.dotx	ok
+poi-opc/test-data/document/60316b.dotx	ok
+poi-opc/test-data/document/60329.docx	ok
+poi-opc/test-data/document/61470.docx	ok
+poi-opc/test-data/document/61490.doc	zip-trailing-data
+poi-opc/test-data/document/61586.doc	zip-trailing-data
+poi-opc/test-data/document/61745.docx	ok
+poi-opc/test-data/document/61787.docx	ok
+poi-opc/test-data/document/61911.doc	zip-trailing-data
+poi-opc/test-data/document/61991.docx	ok
+poi-opc/test-data/document/65099.docx	ok
+poi-opc/test-data/document/Bug46610_1.doc	zip-trailing-data
+poi-opc/test-data/document/Bug46610_2.doc	zip-trailing-data
+poi-opc/test-data/document/Bug48065.doc	zip-trailing-data
+poi-opc/test-data/document/Bug48075.doc	zip-trailing-data
+poi-opc/test-data/document/Bug49820.doc	zip-trailing-data
+poi-opc/test-data/document/Bug49908.doc	zip-trailing-data
+poi-opc/test-data/document/Bug49919.doc	zip-trailing-data
+poi-opc/test-data/document/Bug50075.doc	zip-trailing-data
+poi-opc/test-data/document/Bug51170.docx	ok
+poi-opc/test-data/document/Bug51604.doc	zip-trailing-data
+poi-opc/test-data/document/Bug51686.doc	zip-trailing-data
+poi-opc/test-data/document/Bug51834.doc	zip-trailing-data
+poi-opc/test-data/document/Bug52311.doc	zip-trailing-data
+poi-opc/test-data/document/Bug52583.doc	zip-trailing-data
+poi-opc/test-data/document/Bug53380_2.doc	zip-trailing-data
+poi-opc/test-data/document/Bug53380_4.doc	zip-trailing-data
+poi-opc/test-data/document/Bug53453Section.doc	zip-trailing-data
+poi-opc/test-data/document/Bug54771a.docx	ok
+poi-opc/test-data/document/Bug54771b.docx	ok
+poi-opc/test-data/document/Bug54849.docx	ok
+poi-opc/test-data/document/Bug55142.docx	ok
+poi-opc/test-data/document/Bug60337.docx	ok
+poi-opc/test-data/document/Bug60341.docx	ok
+poi-opc/test-data/document/Bug61268.doc	zip-no-directory-end
+poi-opc/test-data/document/Bug62859.docx	ok
+poi-opc/test-data/document/Bug64561.docx	ok
+poi-opc/test-data/document/Bug66263-paragraph.docx	ok
+poi-opc/test-data/document/Bug66263-table.docx	ok
+poi-opc/test-data/document/Bug66988.docx	ok
+poi-opc/test-data/document/ChronologicalResume.dotx	ok
+poi-opc/test-data/document/ComplexNumberedLists.docx	ok
+poi-opc/test-data/document/DiffFirstPageHeadFoot.doc	zip-trailing-data
+poi-opc/test-data/document/DiffFirstPageHeadFoot.docx	ok
+poi-opc/test-data/document/EmbeddedDocument.docx	ok
+poi-opc/test-data/document/EmptyDocumentWithHeaderFooter.docx	ok
+poi-opc/test-data/document/EnforcedWith.docx	ok
+poi-opc/test-data/document/ExternalEntityInText.docx	ok
+poi-opc/test-data/document/FancyFoot.doc	zip-trailing-data
+poi-opc/test-data/document/FancyFoot.docx	ok
+poi-opc/test-data/document/FieldCodes.docx	ok
+poi-opc/test-data/document/FldSimple.docx	ok
+poi-opc/test-data/document/HeaderFooterUnicode.doc	zip-trailing-data
+poi-opc/test-data/document/HeaderFooterUnicode.docx	ok
+poi-opc/test-data/document/HeaderWithMacros.doc	zip-trailing-data
+poi-opc/test-data/document/Headers.docx	ok
+poi-opc/test-data/document/IllustrativeCases.docx	ok
+poi-opc/test-data/document/Lists.doc	zip-trailing-data
+poi-opc/test-data/document/MultipleBodyBug.docx	ok
+poi-opc/test-data/document/NoHeadFoot.doc	zip-trailing-data
+poi-opc/test-data/document/NoHeadFoot.docx	ok
+poi-opc/test-data/document/Numbering.docx	ok
+poi-opc/test-data/document/NumberingWOverrides.docx	ok
+poi-opc/test-data/document/NumberingWithOutOfOrderId.docx	ok
+poi-opc/test-data/document/PageSpecificHeadFoot.doc	zip-trailing-data
+poi-opc/test-data/document/PageSpecificHeadFoot.docx	ok
+poi-opc/test-data/document/Picture_Alternative_Text.doc	zip-trailing-data
+poi-opc/test-data/document/SampleDoc.doc	zip-trailing-data
+poi-opc/test-data/document/SampleDoc.docx	ok
+poi-opc/test-data/document/SimpleHeadThreeColFoot.doc	zip-trailing-data
+poi-opc/test-data/document/SimpleHeadThreeColFoot.docx	ok
+poi-opc/test-data/document/SimpleMacro.doc	zip-trailing-data
+poi-opc/test-data/document/SimpleMacro.docm	ok
+poi-opc/test-data/document/Styles.docx	ok
+poi-opc/test-data/document/TestDocument.docx	ok
+poi-opc/test-data/document/TestPoiXMLDocumentCorePropertiesGetKeywords.docx	ok
+poi-opc/test-data/document/TestTableCellAlign.docx	ok
+poi-opc/test-data/document/TestTableColumns.docx	ok
+poi-opc/test-data/document/ThreeColFoot.doc	zip-trailing-data
+poi-opc/test-data/document/ThreeColFoot.docx	ok
+poi-opc/test-data/document/ThreeColHead.doc	zip-trailing-data
+poi-opc/test-data/document/ThreeColHead.docx	ok
+poi-opc/test-data/document/ThreeColHeadFoot.doc	zip-trailing-data
+poi-opc/test-data/document/ThreeColHeadFoot.docx	ok
+poi-opc/test-data/document/Tika-792.docx	ok
+poi-opc/test-data/document/VariousPictures.docx	ok
+poi-opc/test-data/document/WithGIF.docx	ok
+poi-opc/test-data/document/WithTabs.docx	ok
+poi-opc/test-data/document/WordWithAttachments.docx	ok
+poi-opc/test-data/document/au.edu.utas.www___data_assets_word_doc_0003_154335_International-Travel-Approval-Request-Form.doc	zip-trailing-data
+poi-opc/test-data/document/bib-chernigovka.netdo.ru_download_docs_17459.docx	ok
+poi-opc/test-data/document/bookmarks.docx	ok
+poi-opc/test-data/document/bug-paragraph-alignment.docx	ok
+poi-opc/test-data/document/bug56075-changeTracking_off.docx	ok
+poi-opc/test-data/document/bug56075-changeTracking_on.docx	ok
+poi-opc/test-data/document/bug56076.docx	ok
+poi-opc/test-data/document/bug57031.docx	ok
+poi-opc/test-data/document/bug59058.docx	ok
+poi-opc/test-data/document/bug65255.doc	zip-trailing-data
+poi-opc/test-data/document/bug65649.docx	ok
+poi-opc/test-data/document/bug65738.docx	ok
+poi-opc/test-data/document/bug66312.docx	ok
+poi-opc/test-data/document/bug69628.docx	ok
+poi-opc/test-data/document/capitalized.doc	zip-trailing-data
+poi-opc/test-data/document/capitalized.docx	ok
+poi-opc/test-data/document/chartex.docx	ok
+poi-opc/test-data/document/checkboxes.docx	ok
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIFuzzer-6709287337197568.docx	zip-directory-out-of-bounds
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIHWPFFuzzer-4951943183990784.doc	zip-trailing-data
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-4791943399604224.docx	zip-trailing-data
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-4959857092198400.docx	zip-directory-out-of-bounds
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-4961551840247808.docx	zip-no-directory-end
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-5166796835258368.docx	zip-directory-out-of-bounds
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-5313273089884160.docx	zip-no-directory-end
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-5564805011079168.docx	zip-no-directory-end
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-5569740188549120.docx	zip-no-directory-end
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6061520554164224.docx	zip-no-directory-end
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6120975439364096.docx	zip-directory-out-of-bounds
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6442791109263360.docx	zip-directory-out-of-bounds
+poi-opc/test-data/document/clusterfuzz-testcase-minimized-POIXWPFFuzzer-6733884933668864.docx	zip-local-header-mismatch
+poi-opc/test-data/document/comment.docx	ok
+poi-opc/test-data/document/crash-517626e815e0afa9decd0ebb6d1dee63fb9907dd.docx	zip-no-directory-end
+poi-opc/test-data/document/deep-table-cell.docx	ok
+poi-opc/test-data/document/delins.docx	ok
+poi-opc/test-data/document/documentProperties.docx	ok
+poi-opc/test-data/document/documentProtection_comments_no_password.docx	ok
+poi-opc/test-data/document/documentProtection_forms_no_password.docx	ok
+poi-opc/test-data/document/documentProtection_no_protection.docx	ok
+poi-opc/test-data/document/documentProtection_no_protection_tag_existing.docx	ok
+poi-opc/test-data/document/documentProtection_readonly_no_password.docx	ok
+poi-opc/test-data/document/documentProtection_trackedChanges_no_password.docx	ok
+poi-opc/test-data/document/drawing.docx	ok
+poi-opc/test-data/document/emptyPPr.docx	ok
+poi-opc/test-data/document/endnotes.docx	ok
+poi-opc/test-data/document/equation.doc	zip-trailing-data
+poi-opc/test-data/document/footnotes.docx	ok
+poi-opc/test-data/document/form_footnotes.docx	ok
+poi-opc/test-data/document/gh-issue-1126.doc	zip-trailing-data
+poi-opc/test-data/document/headerFooter.docx	ok
+poi-opc/test-data/document/headerPic.docx	ok
+poi-opc/test-data/document/header_footer_replace.doc	zip-trailing-data
+poi-opc/test-data/document/header_image.doc	zip-trailing-data
+poi-opc/test-data/document/heading123.docx	ok
+poi-opc/test-data/document/issue_51265_1.docx	ok
+poi-opc/test-data/document/issue_51265_2.docx	ok
+poi-opc/test-data/document/issue_51265_3.docx	ok
+poi-opc/test-data/document/protected_sample.docx	ok
+poi-opc/test-data/document/rtl.docx	ok
+poi-opc/test-data/document/sample.docx	ok
+poi-opc/test-data/document/saut_page.docx	ok
+poi-opc/test-data/document/shapes-with-text.docx	ok
+poi-opc/test-data/document/simple-table2.doc	zip-trailing-data
+poi-opc/test-data/document/smarttag-snippet.docx	ok
+poi-opc/test-data/document/table-alignment.docx	ok
+poi-opc/test-data/document/table-indent.docx	ok
+poi-opc/test-data/document/table_footnotes.docx	ok
+poi-opc/test-data/document/test-fields.doc	zip-trailing-data
+poi-opc/test-data/document/test.dotx	ok
+poi-opc/test-data/document/testComment.docx	ok
+poi-opc/test-data/document/testCroppedPictures.doc	zip-trailing-data
+poi-opc/test-data/document/tika-3388.docx	ok
+poi-opc/test-data/document/tika-3816.docx	ok
+poi-opc/test-data/document/truncated62886.docx	zip-no-directory-end
+poi-opc/test-data/document/unicode-path.docx	name-unicode-path
+poi-opc/test-data/document/word_with_embeded.doc	zip-trailing-data
+poi-opc/test-data/document/word_with_embeded_ooxml.doc	zip-trailing-data
+poi-opc/test-data/document/zero-length.docx	ok
+poi-opc/test-data/openxml4j/50154.xlsx	ok
+poi-opc/test-data/openxml4j/51444.xlsx	ok
+poi-opc/test-data/openxml4j/53282.xlsx	ok
+poi-opc/test-data/openxml4j/62592.thmx	ok
+poi-opc/test-data/openxml4j/64473.xlsx	ok
+poi-opc/test-data/openxml4j/ContentTypeHasEntities.ooxml	zip-extra-field
+poi-opc/test-data/openxml4j/ContentTypeHasParameters.ooxml	ok
+poi-opc/test-data/openxml4j/CorePropertiesHasEntities.ooxml	zip-extra-field
+poi-opc/test-data/openxml4j/ExcelWithHyperlinks.xlsx	ok
+poi-opc/test-data/openxml4j/MultipleCoreProperties.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_AlternateTimezones.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_DCTermsNamespaceLimitedUseFAIL.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_DoNotUseCompatibilityMarkupFAIL.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_LimitedXSITypeAttribute_NotPresentFAIL.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_LimitedXSITypeAttribute_PresentWithUnauthorizedValueFAIL.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_OnlyOneCorePropertiesPart.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_OnlyOneCorePropertiesPartFAIL.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_SUCCESS.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_CoreProperties_UnauthorizedXMLLangAttributeFAIL.docx	ok
+poi-opc/test-data/openxml4j/OPCCompliance_DerivedPartNameFAIL.docx	name-duplicate
+poi-opc/test-data/openxml4j/OPCCompliance_NoCoreProperties.xlsx	ok
+poi-opc/test-data/openxml4j/PackageRelsHasEntities.ooxml	zip-extra-field
+poi-opc/test-data/openxml4j/TestCreatePackageOUTPUT.docx	ok
+poi-opc/test-data/openxml4j/TestOpenPackageINPUT.docx	ok
+poi-opc/test-data/openxml4j/TestOpenPackageOUTPUT.docx	ok
+poi-opc/test-data/openxml4j/TestPackageCommon.docx	ok
+poi-opc/test-data/openxml4j/TestPackageCoreProperiesGetters.docx	ok
+poi-opc/test-data/openxml4j/TestPackageCoreProperiesSetters.docx	ok
+poi-opc/test-data/openxml4j/TestPackageThumbnail.docx	ok
+poi-opc/test-data/openxml4j/at.pzp.www_uploads_media_PP_Scheinecker-jdk6error.pptx	ok
+poi-opc/test-data/openxml4j/dcterms_bug_56479.zip	ok
+poi-opc/test-data/openxml4j/invalid.xlsx	ok
+poi-opc/test-data/openxml4j/sample.docx	ok
+poi-opc/test-data/openxml4j/sample.xlsx	ok
+rc-zip/testdata/archive-oob.zip	unsupported-multi-volume
+rc-zip/testdata/cp-437.zip	name-encoding
+rc-zip/testdata/crc32-not-streamed.zip	ok
+rc-zip/testdata/dd.zip	ok
+rc-zip/testdata/found-me-bzip2.zip	ok, entries with unsupported-method
+rc-zip/testdata/found-me-deflate64.zip	ok, entries with unsupported-method
+rc-zip/testdata/found-me-lzma.zip	ok, entries with unsupported-method
+rc-zip/testdata/found-me-zstd.zip	ok, entries with unsupported-method
+rc-zip/testdata/go-no-datadesc-sig.zip	ok
+rc-zip/testdata/go-with-datadesc-sig.zip	ok
+rc-zip/testdata/info-zip-unix-extra.zip	ok
+rc-zip/testdata/meta.zip	ok, entries with unsupported-version
+rc-zip/testdata/readme.trailingzip	zip-trailing-data
+rc-zip/testdata/readme.zip	zip-trailing-data
+rc-zip/testdata/shift-jis.zip	name-encoding
+rc-zip/testdata/symlink.zip	ok
+rc-zip/testdata/test-trailing-junk.zip	zip-trailing-data
+rc-zip/testdata/test.zip	ok
+rc-zip/testdata/time-22738.zip	ok
+rc-zip/testdata/time-7zip.zip	ok
+rc-zip/testdata/time-go.zip	ok
+rc-zip/testdata/time-infozip.zip	ok
+rc-zip/testdata/time-osx.zip	ok
+rc-zip/testdata/time-win7.zip	ok
+rc-zip/testdata/time-winrar.zip	ok
+rc-zip/testdata/time-winzip.zip	ok
+rc-zip/testdata/unix.zip	ok
+rc-zip/testdata/utf8-7zip.zip	ok
+rc-zip/testdata/utf8-infozip.zip	ok
+rc-zip/testdata/utf8-osx.zip	name-encoding
+rc-zip/testdata/utf8-winrar.zip	ok
+rc-zip/testdata/utf8-winzip.zip	ok
+rc-zip/testdata/winxp.zip	ok
+rc-zip/testdata/zip64-2.zip	ok
+rc-zip/testdata/zip64.zip	ok
+rc-zip/testdata/zipslip.zip	ok
+yauzl/test/failure/End of central directory record signature not found Either not a zip file or file is truncated.zip	zip-no-directory-end
+yauzl/test/failure/Invalid comment length Expected 1 Found 0 Are there extra bytes at the end of the file Or is the end of central dir signature PK in the com.zip	zip-trailing-data
+yauzl/test/failure/absolute path C xt.zip	name-absolute
+yauzl/test/failure/absolute path atxt.zip	name-absolute
+yauzl/test/failure/compressed uncompressed size mismatch for stored file 2147483647 5.zip	zip-local-header-mismatch
+yauzl/test/failure/extra field length exceeds extra field buffer size.zip	zip-extra-field
+yauzl/test/failure/file data overflows file bounds 63 2147483647 308.zip	zip-local-header-mismatch
+yauzl/test/failure/invalid central directory file header signature 0x1014b50.zip	zip-directory-signature
+yauzl/test/failure/invalid characters in fileName a txt.zip	name-backslash
+yauzl/test/failure/invalid code lengths set.zip	ok, content: inflate-code-lengths
+yauzl/test/failure/invalid local file header signature 0x3034b50.zip	zip-local-header-mismatch
+yauzl/test/failure/invalid relative path xt.zip	name-traversal
+yauzl/test/failure/invalid zip64 end of central directory record signature.zip	zip64-inconsistent
+yauzl/test/failure/multi-disk zip files are not supported found disk number 1.zip	unsupported-multi-volume
+yauzl/test/failure/not enough bytes in the stream expected 2048576 got only 1000000.zip	zip-local-header-mismatch
+yauzl/test/failure/strong encryption is not supported.zip	zip-local-header-mismatch
+yauzl/test/failure/too many bytes in the stream expected 82496 got at least 98304.zip	zip-local-header-mismatch
+yauzl/test/failure/too many length or distance symbols.zip	ok, content: inflate-code-lengths
+yauzl/test/failure/unexpected EOF.zip	zip64-inconsistent
+yauzl/test/failure/unsupported compression method 1.zip	zip-local-header-mismatch
+yauzl/test/failure/zip64 extended information extra field does not include compressed size.zip	zip-extra-field
+yauzl/test/failure/zip64 extended information extra field does not include relative header offset.zip	zip-extra-field
+yauzl/test/failure/zip64 extended information extra field does not include uncompressed size.zip	zip-extra-field
+yauzl/test/success/NtfsTimestamp.zip	ok
+yauzl/test/success/big-compression.zip	ok
+yauzl/test/success/big-uncompressed.zip	ok
+yauzl/test/success/bogus-compression-method.zip	ok, entries with unsupported-method
+yauzl/test/success/cygwin-info-zip.zip	ok
+yauzl/test/success/deflate.zip	ok
+yauzl/test/success/directories.zip	ok
+yauzl/test/success/empty.zip	ok
+yauzl/test/success/everything.zip	ok
+yauzl/test/success/linux-info-zip.zip	ok
+yauzl/test/success/sloppy-filenames.zip	name-backslash
+yauzl/test/success/streaming.zip	ok
+yauzl/test/success/traditional-encryption-and-compression.zip	ok, entries with unsupported-encryption
+yauzl/test/success/traditional-encryption-and-compression_deprecated.zip	ok, entries with unsupported-encryption
+yauzl/test/success/traditional-encryption.zip	ok, entries with unsupported-encryption
+yauzl/test/success/traditional-encryption_deprecated.zip	ok, entries with unsupported-encryption
+yauzl/test/success/unicode-path-extra-field.zip	name-nul
+yauzl/test/success/unicode.zip	ok
+yauzl/test/success/unix-epoch.zip	ok
+yauzl/test/success/windows-7-zip.zip	ok
+yauzl/test/success/windows-compressed-folder.zip	ok
+yauzl/test/success/zip64.zip	ok
+yauzl/test/wrong-entry-sizes/wrong-entry-sizes.zip	zip-directory-entry-size
+zip-slip/archives/zip-slip-win.zip	name-backslash
+zip-slip/archives/zip-slip.zip	name-traversal

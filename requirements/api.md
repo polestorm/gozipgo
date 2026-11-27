@@ -10,9 +10,11 @@ Status: przyjęte
 | API-005 | Każdy eksportowany identyfikator ma komentarz dokumentacyjny po angielsku; każdy pakiet ma `Example*` dla głównej drogi użycia, sprawdzany przez `go test`. |
 | API-006 | Moduł główny nie ma sekcji `require` i buduje się z `CGO_ENABLED=0`; najniższa wersja Go z `go.mod` jest w macierzy CI. |
 
-Status: szkic
+Status: przyjęte
 
-Reguły procesu wydań; obowiązują od v0.1.0 i dostają test razem z pierwszym wydaniem (wzorzec API poprzedniej wersji, zapadka werdyktów).
+Reguły procesu wydań, przyjęte w etapie 5 (2026-11-27). Odniesieniem jest v0.1.1: wzorzec API
+`api/baseline/zipreader-v0.1.1.txt` (`TestAPIOnlyGrows`) i werdykty trybu ścisłego
+`testdata/verdicts/strict-v0.1.1.tsv` ze zmianami w `testdata/verdicts/changes.tsv` (`TestStrictVerdictsRatchet`).
 
 | Id | Wymaganie |
 |---|---|

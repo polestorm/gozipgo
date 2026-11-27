@@ -1,8 +1,9 @@
 # Wymagania: pakiet dowodów
 
-Status: szkic
+Status: przyjęte
 
-Kryterium K9 (ADR 0001). Narzędzie `tools/evidence` przenosimy z rodziny i dostosowujemy.
+Kryterium K9 (ADR 0001). Przyjęte w etapie 5 (2026-11-27); narzędzie `tools/evidence` przeniesione z rodziny
+i dostosowane, testy w `tools/evidence/evidence_test.go`.
 
 | Id | Wymaganie |
 |---|---|

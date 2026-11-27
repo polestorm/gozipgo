@@ -1,0 +1,198 @@
+package github.com/polestorm/gozipgo/zipreader
+
+const (
+	ASCIIOnly NameEncoding = iota
+
+	CP437
+
+	UTF8
+
+	CodePage
+)
+
+const (
+	CodeNoDirectoryEnd         = "zip-no-directory-end"
+	CodeMultipleDirectoryEnds  = "zip-multiple-directory-ends"
+	CodeTrailingData           = "zip-trailing-data"
+	CodeDirectoryOutOfBounds   = "zip-directory-out-of-bounds"
+	CodeDirectoryCountMismatch = "zip-directory-count-mismatch"
+	CodeDirectoryTruncated     = "zip-directory-truncated"
+	CodeDirectorySignature     = "zip-directory-signature"
+	CodeExtraField             = "zip-extra-field"
+	CodeDirectoryEntrySize     = "zip-directory-entry-size"
+	CodeCommentEncoding        = "zip-comment-encoding"
+	CodeZip64Inconsistent      = "zip64-inconsistent"
+	CodeLocalHeaderMismatch    = "zip-local-header-mismatch"
+	CodeDescriptorMismatch     = "zip-descriptor-mismatch"
+	CodeEntriesOverlap         = "zip-entries-overlap"
+	CodeUnreferencedData       = "zip-unreferenced-data"
+	CodeSizeMismatch           = "zip-size-mismatch"
+	CodeChecksum               = "zip-checksum"
+
+	CodeInflateBlockType    = "inflate-block-type"
+	CodeInflateStoredLength = "inflate-stored-length"
+	CodeInflateCodeLengths  = "inflate-code-lengths"
+	CodeInflateDistance     = "inflate-distance"
+	CodeInflateTruncated    = "inflate-truncated"
+	CodeInflateTrailingData = "inflate-trailing-data"
+
+	CodeNameEmpty       = "name-empty"
+	CodeNameNUL         = "name-nul"
+	CodeNameEncoding    = "name-encoding"
+	CodeNameControl     = "name-control-character"
+	CodeNameBackslash   = "name-backslash"
+	CodeNameAbsolute    = "name-absolute"
+	CodeNameTraversal   = "name-traversal"
+	CodeNameDuplicate   = "name-duplicate"
+	CodeNameUnicodePath = "name-unicode-path"
+
+	CodeLimitEntries       = "limit-entries"
+	CodeLimitDirectorySize = "limit-directory-size"
+	CodeLimitNameLength    = "limit-name-length"
+	CodeLimitCommentLength = "limit-comment-length"
+	CodeLimitExtraLength   = "limit-extra-length"
+
+	CodeLimitEntrySize = "limit-entry-size"
+	CodeLimitTotalSize = "limit-total-size"
+	CodeLimitRatio     = "limit-ratio"
+
+	CodeUnsupportedEncryption       = "unsupported-encryption"
+	CodeUnsupportedMethod           = "unsupported-method"
+	CodeUnsupportedMultiVolume      = "unsupported-multi-volume"
+	CodeUnsupportedVersion          = "unsupported-version"
+	CodeUnsupportedPatch            = "unsupported-patch"
+	CodeUnsupportedFlag             = "unsupported-flag"
+	CodeUnsupportedDigitalSignature = "unsupported-digital-signature"
+	CodeUnsupportedZip64Data        = "unsupported-zip64-data"
+)
+
+const (
+	DefaultMaxEntries       = 65536
+	DefaultMaxDirectorySize = 64 << 20
+	DefaultMaxNameLength    = 4096
+	DefaultMaxCommentLength = 65535
+	DefaultMaxExtraLength   = 65535
+	DefaultMaxEntrySize     = 1 << 30
+	DefaultMaxTotalSize     = 4 << 30
+	DefaultMaxRatio         = 1000
+)
+
+var ErrClosed = errors.New("zipreader: read after Close")
+
+var ErrNoEntry = errors.New("zipreader: not an entry of this reader")
+
+type Entry struct {
+	Index int
+
+	Name string
+
+	IsDir bool
+
+	Method uint16
+
+	Flags uint16
+
+	CRC32 uint32
+
+	CompressedSize   uint64
+	UncompressedSize uint64
+
+	Modified Timestamp
+
+	Comment string
+
+	Extra []byte
+
+	VersionMadeBy uint16
+	VersionNeeded uint16
+	InternalAttrs uint16
+	ExternalAttrs uint32
+
+	LocalHeaderOffset uint64
+
+	DataOffset uint64
+
+	DirectoryOffset int64
+
+	Unsupported string
+	// contains filtered or unexported fields
+}
+
+type Error struct {
+	Code string
+
+	Entry int
+
+	Other int
+
+	Name string
+
+	Offset int64
+
+	Message string
+}
+
+type NameEncoding int
+
+type Options struct {
+	MaxEntries int
+
+	MaxDirectorySize int64
+
+	MaxNameLength int
+
+	MaxCommentLength int
+
+	MaxExtraLength int
+
+	MaxEntrySize int64
+
+	MaxTotalSize int64
+
+	MaxRatio int64
+
+	AllowPrefix bool
+
+	UnflaggedNames NameEncoding
+
+	CodePage *[128]rune
+
+	FoldCase bool
+}
+
+type Reader struct {
+	// contains filtered or unexported fields
+}
+
+type Relaxation struct {
+	Option string
+	Entry  int
+}
+
+type Timestamp struct {
+	Year, Month, Day int
+
+	Hour, Minute, Second int
+
+	Valid bool
+}
+
+func New(ra io.ReaderAt, size int64, opts Options) (*Reader, error)
+
+func (e *Error) Error() string
+
+func (r *Reader) Comment() string
+
+func (r *Reader) Entries() []Entry
+
+func (r *Reader) Open(e Entry) (io.ReadCloser, error)
+
+func (r *Reader) OpenRaw(e Entry) (io.Reader, error)
+
+func (r *Reader) Relaxed() []Relaxation
+
+func (c *contentReader) Close() error
+
+func (c *contentReader) Read(p []byte) (int, error)
+
+func (s *rawReader) Read(p []byte) (int, error)

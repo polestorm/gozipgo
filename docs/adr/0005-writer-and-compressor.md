@@ -1,6 +1,6 @@
 # 0005 Pisarz i kompresor (etap 4)
 
-Status: przyjęta (robocza, do potwierdzenia przez właściciela) · 2026-11-27
+Status: przyjęta · 2026-11-27 (potwierdzona przez właściciela 2026-11-27)
 
 ## Kontekst
 

@@ -1,6 +1,6 @@
 # 0001 Zakres i kryteria gotowości
 
-Status: przyjęta (robocza) · 2026-11-26
+Status: przyjęta · 2026-11-26 (potwierdzona przez właściciela 2026-11-27)
 
 ## Kontekst
 

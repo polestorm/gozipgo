@@ -228,3 +228,103 @@ func TestNoIOImports(t *testing.T) {
 		return nil
 	})
 }
+
+// TestAPIOnlyGrows: API czytnika wydane w v0.1.1 (api/baseline/zipreader-v0.1.1.txt, wzorzec z tagu) jest nadal
+// częścią bieżącego wzorca: żadna stała, pole, typ, funkcja ani metoda nie zniknęły i nie zmieniły zapisu. Zmiana
+// niezgodna wymaga ADR i nowego wzorca odniesienia. Odstępy są pomijane, bo nowe pola zmieniają wyrównanie.
+// REQ: API-002
+func TestAPIOnlyGrows(t *testing.T) {
+	lines := func(path string) map[string]bool {
+		out := map[string]bool{}
+		for _, l := range strings.Split(strings.ReplaceAll(readFile(t, path), "\r\n", "\n"), "\n") {
+			if l = strings.Join(strings.Fields(l), " "); l != "" {
+				out[l] = true
+			}
+		}
+		return out
+	}
+	now := lines(filepath.Join("api", "zipreader.txt"))
+	var gone []string
+	for l := range lines(filepath.Join("api", "baseline", "zipreader-v0.1.1.txt")) {
+		if !now[l] {
+			gone = append(gone, l)
+		}
+	}
+	sort.Strings(gone)
+	for _, l := range gone {
+		t.Errorf("released in v0.1.1 and no longer in the API: %s", l)
+	}
+}
+
+// TestStrictVerdictsRatchet: werdykt trybu ścisłego dla każdego pliku zestawów pobranych jest taki jak w v0.1.1
+// (testdata/verdicts/strict-v0.1.1.tsv), chyba że zmiana jest zapisana w testdata/verdicts/changes.tsv z wersją,
+// w której CHANGELOG.md ją opisuje. Domyślne zachowanie wobec archiwum nie zmienia się po cichu.
+// REQ: API-007
+func TestStrictVerdictsRatchet(t *testing.T) {
+	table := func(path string, cols int) map[string][]string {
+		out := map[string][]string{}
+		for _, l := range strings.Split(strings.ReplaceAll(readFile(t, path), "\r\n", "\n"), "\n") {
+			if f := strings.Split(l, "\t"); l != "" && !strings.HasPrefix(l, "#") && len(f) >= cols {
+				out[f[0]] = f[1:]
+			}
+		}
+		return out
+	}
+	base := table(filepath.Join("testdata", "verdicts", "strict-v0.1.1.tsv"), 2)
+	now := table(filepath.Join("testdata", "verdicts", "fetched.tsv"), 2)
+	changes := table(filepath.Join("testdata", "verdicts", "changes.tsv"), 4)
+	changelog := readFile(t, "CHANGELOG.md")
+	if len(base) < 500 {
+		t.Fatalf("only %d baseline verdicts", len(base))
+	}
+	for path, was := range base {
+		is, ok := now[path]
+		if !ok {
+			continue // plik wypadł z zestawu pobieranego: zmiana danych, nie zachowania
+		}
+		if is[0] == was[0] {
+			continue
+		}
+		c, recorded := changes[path]
+		switch {
+		case !recorded || c[0] != was[0] || c[1] != is[0]:
+			t.Errorf("%s: strict verdict was %q in v0.1.1 and is %q; record the change in testdata/verdicts/changes.tsv and in CHANGELOG.md", path, was[0], is[0])
+		case !strings.Contains(changelog, "## "+c[2]) && c[2] != "Unreleased":
+			t.Errorf("%s: changes.tsv names %q, which CHANGELOG.md does not have", path, c[2])
+		}
+	}
+}
+
+// TestNoPrivatePaths: pliki repozytorium nie zawierają ścieżek katalogów domowych, czyli śladu maszyny, na której
+// powstały (dane prywatne nie trafiają do repozytorium). Pobrane dane i katalogi robocze są poza repozytorium.
+// REQ: SAFE-008
+func TestNoPrivatePaths(t *testing.T) {
+	home := regexp.MustCompile(`/(Users|home)/[A-Za-z][A-Za-z0-9._-]+/|[A-Z]:\\Users\\[A-Za-z]`)
+	allowed := regexp.MustCompile(`/home/runner/|/Users/runner/|/home/user/|/Users/me/`)
+	checked := 0
+	filepath.WalkDir(".", func(p string, d os.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+		if d.IsDir() {
+			if p == "out" || p == "ref" || p == filepath.Join("testdata", "fetched") || strings.HasPrefix(d.Name(), ".") && p != "." {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		b, err := os.ReadFile(p)
+		if err != nil {
+			return nil
+		}
+		checked++
+		for _, m := range home.FindAll(b, -1) {
+			if !allowed.Match(m) {
+				t.Errorf("%s holds a home directory path: %s", p, m)
+			}
+		}
+		return nil
+	})
+	if checked < 100 {
+		t.Errorf("only %d files checked", checked)
+	}
+}

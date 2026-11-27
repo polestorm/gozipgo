@@ -1,6 +1,6 @@
 # 0006 Dwa poluzowania po próbie na korpusie pierwszego konsumenta
 
-Status: przyjęta · 2026-11-27 (decyzja właściciela: opcje, domyślnie wyłączone)
+Status: przyjęta · 2026-11-27 (potwierdzona przez właściciela 2026-11-27)
 
 ## Kontekst
 

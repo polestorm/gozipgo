@@ -134,6 +134,13 @@ rejects although others read them are listed, with the reason, in [differences.m
 
 ## Speed and memory
 
+Opening an archive takes gozipgo several times longer than `archive/zip` (the row "open an archive"), and that is
+deliberate: `zipreader.New` reads every local header and data descriptor and checks them against the central
+directory and against each other before it returns, so that a file with two readings is rejected before any content
+is delivered. `archive/zip` reads the central directory only. The cost is about half a microsecond per entry and
+disappears when the content is read as well (the row "open and read all"). Details:
+[methodology.md](methodology.md), "Opening is not reading".
+
 <!-- bench:begin -->
 Measured on 2026-11-27 at commit `435fc4e` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
 gozipgo is faster. Reading includes opening the archive and, for both readers, checking the CRC-32.
