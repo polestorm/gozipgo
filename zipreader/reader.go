@@ -63,6 +63,20 @@ type Options struct {
 	// position of the central directory. Its use is reported by Reader.Relaxed with entry -1.
 	AllowPrefix bool
 
+	// AllowVersionHostByte accepts an entry whose "version needed to extract" has a non-zero upper byte, as
+	// written by programs that put the number of the host system there, the way "version made by" has it: only
+	// the lower byte is then taken as the version. Without it such an entry has Entry.Unsupported set to
+	// unsupported-version whenever the whole field is above 4.5. Each entry it was applied to is reported by
+	// Reader.Relaxed.
+	AllowVersionHostByte bool
+
+	// AllowUnusedZip64 accepts a local header that has a ZIP64 extra field holding nothing but zeros next to
+	// sizes that are not the 0xFFFFFFFF marker: a placeholder the writing program reserved and did not need.
+	// The sizes of the header are used. Without it the archive is rejected with zip64-inconsistent, because a
+	// program that reads the ZIP64 field whenever it is present would see an entry of size zero. Each entry it
+	// was applied to is reported by Reader.Relaxed.
+	AllowUnusedZip64 bool
+
 	// UnflaggedNames says how to read a name that has bytes outside ASCII in an entry without the UTF-8 flag
 	// (bit 11). The default, ASCIIOnly, rejects such a name with name-encoding. Each entry another setting was
 	// applied to is reported by Reader.Relaxed.

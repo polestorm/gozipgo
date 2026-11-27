@@ -153,6 +153,10 @@ type Options struct {
 
 	AllowPrefix bool
 
+	AllowVersionHostByte bool
+
+	AllowUnusedZip64 bool
+
 	UnflaggedNames NameEncoding
 
 	CodePage *[128]rune

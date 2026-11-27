@@ -44,7 +44,8 @@ func FuzzReader(f *testing.F) {
 		// Limity treści trzymają czas jednego wykonania w ryzach; są częścią każdego zestawu opcji.
 		const entryLimit, totalLimit = 1 << 20, 4 << 20
 		for _, opts := range []Options{{MaxEntrySize: entryLimit, MaxTotalSize: totalLimit},
-			{UnflaggedNames: UTF8, FoldCase: true, AllowPrefix: true, MaxEntrySize: entryLimit, MaxTotalSize: totalLimit},
+			{UnflaggedNames: UTF8, FoldCase: true, AllowPrefix: true, AllowVersionHostByte: true, AllowUnusedZip64: true,
+				MaxEntrySize: entryLimit, MaxTotalSize: totalLimit},
 			{UnflaggedNames: CP437, MaxEntries: 3, MaxEntrySize: entryLimit, MaxTotalSize: totalLimit}} {
 			r, err := open(data, opts)
 			if err != nil {

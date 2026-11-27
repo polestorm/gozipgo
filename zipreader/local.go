@@ -82,6 +82,7 @@ func (r *Reader) checkLayout(dir directory, opts Options) error {
 		prefixed = true
 	}
 	s := &span{ra: r.ra, limit: int64(dirStart)}
+	var unusedZip64 []int // wpisy, do których zastosowano AllowUnusedZip64
 	for k, i := range order {
 		e := &r.entries[i]
 		off := e.LocalHeaderOffset
@@ -159,10 +160,16 @@ func (r *Reader) checkLayout(dir directory, opts Options) error {
 				return fail(CodeZip64Inconsistent, "the ZIP64 extra field of the local header does not hold exactly the two sizes")
 			}
 			zusize, zcsize := binary.LittleEndian.Uint64(x.zip64), binary.LittleEndian.Uint64(x.zip64[8:])
-			if usize != format.Sentinel32 && usize != zusize || csize != format.Sentinel32 && csize != zcsize {
+			switch {
+			case (usize == format.Sentinel32 || usize == zusize) && (csize == format.Sentinel32 || csize == zcsize):
+				usize, csize = zusize, zcsize
+			case opts.AllowUnusedZip64 && !sentinel && zusize == 0 && zcsize == 0:
+				// Pole zarezerwowane i niewypełnione: obowiązują rozmiary z nagłówka (APPNOTE 4.5.3 każe czytać
+				// pole tylko przy wartości granicznej). Poluzowanie jest raportowane.
+				unusedZip64 = append(unusedZip64, i)
+			default:
 				return fail(CodeZip64Inconsistent, "the ZIP64 extra field of the local header differs from its size fields")
 			}
-			usize, csize = zusize, zcsize
 		}
 		descriptor := flags&format.FlagDataDescriptor != 0
 		// Bez bitu 3 pola równają się katalogowi; z bitem 3 są zerowe albo równe katalogowi (APPNOTE 4.4.4).
@@ -220,6 +227,11 @@ func (r *Reader) checkLayout(dir directory, opts Options) error {
 	}
 	if prefixed {
 		r.relaxed = append(r.relaxed, Relaxation{Option: "AllowPrefix", Entry: -1})
+	}
+	// Wpisy były sprawdzane w kolejności położenia; lista poluzowań idzie w kolejności katalogu.
+	sort.Ints(unusedZip64)
+	for _, i := range unusedZip64 {
+		r.relaxed = append(r.relaxed, Relaxation{Option: "AllowUnusedZip64", Entry: i})
 	}
 	return nil
 }

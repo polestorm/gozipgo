@@ -109,7 +109,7 @@ func TestFetchedArchives(t *testing.T) {
 	for _, p := range paths {
 		data := archives[p]
 		r, strict := verdict(data, Options{})
-		_, relaxed := verdict(data, Options{UnflaggedNames: UTF8, AllowPrefix: true})
+		_, relaxed := verdict(data, Options{UnflaggedNames: UTF8, AllowPrefix: true, AllowVersionHostByte: true, AllowUnusedZip64: true})
 		for _, v := range []string{strict, relaxed} {
 			if strings.HasPrefix(v, "PANIC") || strings.HasPrefix(v, "ERROR") {
 				t.Errorf("%s: %s", p, v)
@@ -150,7 +150,7 @@ func TestFetchedArchives(t *testing.T) {
 		lines = append(lines, p+"\t"+strict+"\t"+relaxed+"\t"+oracle)
 	}
 	golden := filepath.Join("..", "testdata", "verdicts", "fetched.tsv")
-	text := "# path under testdata/fetched\tstrict\twith UnflaggedNames: UTF8 and AllowPrefix\tarchive/zip of the Go that wrote this file\n" +
+	text := "# path under testdata/fetched\tstrict\twith UnflaggedNames: UTF8, AllowPrefix, AllowVersionHostByte and AllowUnusedZip64\tarchive/zip of the Go that wrote this file\n" +
 		strings.Join(lines, "\n") + "\n"
 	if *updateVerdicts {
 		if err := os.MkdirAll(filepath.Dir(golden), 0o755); err != nil {

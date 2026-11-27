@@ -210,7 +210,13 @@ func (r *Reader) readDirectory(dir directory, opts Options) error {
 		case e.Method != format.MethodStored && e.Method != format.MethodDeflate:
 			e.Unsupported = CodeUnsupportedMethod
 		case e.VersionNeeded > format.VersionZip64:
-			e.Unsupported = CodeUnsupportedVersion
+			// Starszy bajt pola nie ma znaczenia w specyfikacji (APPNOTE 4.4.3); część programów zapisuje tam
+			// numer systemu. Z opcją liczy się tylko młodszy bajt, a jej zadziałanie jest raportowane.
+			if opts.AllowVersionHostByte && e.VersionNeeded&0xFF <= format.VersionZip64 {
+				r.relaxed = append(r.relaxed, Relaxation{Option: "AllowVersionHostByte", Entry: i})
+			} else {
+				e.Unsupported = CodeUnsupportedVersion
+			}
 		}
 		e.Extra = append([]byte(nil), extra...)
 		e.Comment = string(comment)

@@ -1,4 +1,4 @@
-# path under testdata/fetched	strict	with UnflaggedNames: UTF8 and AllowPrefix	archive/zip of the Go that wrote this file
+# path under testdata/fetched	strict	with UnflaggedNames: UTF8, AllowPrefix, AllowVersionHostByte and AllowUnusedZip64	archive/zip of the Go that wrote this file
 corkami-zip/zip/NT.zip	ok	ok	accepts
 corkami-zip/zip/NTFS.zip	ok	ok	accepts
 corkami-zip/zip/PPMd.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
@@ -216,7 +216,7 @@ libzip-regress/regress/data/test-utf8-unmarked.zip	name-encoding	ok	accepts
 libzip-regress/regress/data/test-utf8.zip	ok	ok	accepts
 libzip-regress/regress/data/test.zip	ok	ok	accepts
 libzip-regress/regress/data/test2.zip	ok	ok	accepts
-libzip-regress/regress/data/test_open_multiple.zip	ok, entries with unsupported-version	ok, entries with unsupported-version	accepts
+libzip-regress/regress/data/test_open_multiple.zip	ok, entries with unsupported-version	ok	accepts
 libzip-regress/regress/data/testbuffer.zip	ok	ok	accepts
 libzip-regress/regress/data/testbuffer_reopen.zip	ok	ok	accepts
 libzip-regress/regress/data/testbzip2.zip	ok, entries with unsupported-method	ok, entries with unsupported-method	accepts
@@ -494,7 +494,7 @@ rc-zip/testdata/found-me-zstd.zip	ok, entries with unsupported-method	ok, entrie
 rc-zip/testdata/go-no-datadesc-sig.zip	ok	ok	accepts
 rc-zip/testdata/go-with-datadesc-sig.zip	ok	ok	accepts
 rc-zip/testdata/info-zip-unix-extra.zip	ok	ok	accepts
-rc-zip/testdata/meta.zip	ok, entries with unsupported-version	ok, entries with unsupported-version	accepts
+rc-zip/testdata/meta.zip	ok, entries with unsupported-version	ok	accepts
 rc-zip/testdata/readme.trailingzip	zip-trailing-data	zip-trailing-data	accepts
 rc-zip/testdata/readme.zip	zip-trailing-data	zip-trailing-data	accepts
 rc-zip/testdata/shift-jis.zip	name-encoding	name-encoding	accepts

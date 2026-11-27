@@ -7,6 +7,12 @@ Versions follow semantic versioning. In 0.x the API may grow; an incompatible ch
 
 Includes the security fix released as v0.1.1 (below).
 
+Two new options of the reader, both off by default and reported by `Reader.Relaxed`
+(`docs/adr/0006-relaxations-from-the-first-consumer.md`): `AllowVersionHostByte` takes only the lower byte of
+"version needed to extract", for archives whose writer put the host system in the upper byte, and
+`AllowUnusedZip64` accepts a local header with a ZIP64 extra field of zeros next to real sizes. Strict reading is
+unchanged.
+
 Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
 
 - New package `zipwriter`: `New`, `Writer.Add` (whole content, sizes in the local header), `Writer.Create`

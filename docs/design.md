@@ -30,6 +30,7 @@ r.Relaxed() []Relaxation       // które poluzowania zadziałały (puste w trybi
 // Options.CodePage) zamiast AllowCP437; Options.FoldCase;
 // Entry.Unsupported: kod, który zwróci Open dla wpisu z cechą spoza zakresu
 // etap 2 (ADR 0003): Options.MaxEntrySize, MaxTotalSize, MaxRatio, AllowPrefix; Entry.DataOffset;
+// ADR 0006: Options.AllowVersionHostByte, AllowUnusedZip64 (domyślnie wyłączone, raportowane przez Relaxed)
 // ErrNoEntry dla wpisu spoza czytnika, ErrClosed dla odczytu po Close
 rc, err := r.Open(e)           // io.ReadCloser treści wpisu
 raw, err := r.OpenRaw(e)       // dane skompresowane, bez dekompresji (kopiowanie wpisu do innego archiwum)
