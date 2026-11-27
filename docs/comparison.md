@@ -12,7 +12,7 @@ go -C tools/bench run . -root ../..       # speed, memory, sizes; raw: docs/resu
 ## Behaviour
 
 <!-- compare:begin -->
-Measured on 2026-11-27 at commit `1d5412e` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
+Measured on 2026-11-27 at commit `2aa8721` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
 
 - gozipgo: this commit
 - archive/zip: go1.26.6
@@ -143,19 +143,19 @@ disappears when the content is read as well (the row "open and read all"). Detai
 [methodology.md](methodology.md), "Opening is not reading".
 
 <!-- bench:begin -->
-Measured on 2026-11-27 at commit `1d5412e` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
+Measured on 2026-11-27 at commit `2aa8721` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
 gozipgo is faster. Reading includes opening the archive and, for every reader, checking the CRC-32.
-The largest ratio for reading content is 1.32; criterion K7 allows 1.5.
+The largest ratio for reading content is 1.09; criterion K7 allows 1.5.
 
 | Case | gozipgo | archive/zip | klauspost/compress | time, gozipgo / archive/zip | allocated, gozipgo | allocated, archive/zip | allocated, klauspost/compress |
 |---|---|---|---|---|---|---|---|
-| Deflate, xml, 32 MiB (7266999 bytes compressed) | 525 MB/s | 397 MB/s | 566 MB/s | 0.76 | 130 KiB | 120 KiB | 49 KiB |
-| Deflate, table, 32 MiB (13028297 bytes compressed) | 268 MB/s | 239 MB/s | 353 MB/s | 0.89 | 130 KiB | 118 KiB | 49 KiB |
-| Deflate, random, 32 MiB (33564807 bytes compressed) | 8141 MB/s | 8932 MB/s | 8915 MB/s | 1.10 | 82 KiB | 51 KiB | 46 KiB |
-| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3926 MB/s | 5200 MB/s | 5352 MB/s | 1.32 | 90 KiB | 51 KiB | 11 KiB |
-| Stored, 32 MiB | 9923 MB/s | 10005 MB/s | 10059 MB/s | 1.01 | 80 KiB | 6 KiB | 6 KiB |
-| open an archive of 100000 entries (81 MiB) | 42.8 ms (428 ns per entry) | 11.3 ms (113 ns per entry) | 11.1 ms (111 ns per entry) | 3.80 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) | 26.7 MiB (280 bytes per entry) |
-| open and read all 100000 entries | 753.0 ms (7530 ns per entry) | 785.4 ms (7854 ns per entry) | 524.3 ms (5243 ns per entry) | 0.96 | 36.3 MiB (381 bytes per entry) | 53.5 MiB (561 bytes per entry) | 451.7 MiB (4736 bytes per entry) |
+| Deflate, xml, 32 MiB (7266999 bytes compressed) | 720 MB/s | 395 MB/s | 562 MB/s | 0.55 | 130 KiB | 120 KiB | 49 KiB |
+| Deflate, table, 32 MiB (13028297 bytes compressed) | 423 MB/s | 237 MB/s | 354 MB/s | 0.56 | 130 KiB | 118 KiB | 11 KiB |
+| Deflate, random, 32 MiB (33564807 bytes compressed) | 7662 MB/s | 8157 MB/s | 8167 MB/s | 1.06 | 130 KiB | 51 KiB | 11 KiB |
+| Deflate, zeros, 32 MiB (32750 bytes compressed) | 4534 MB/s | 4940 MB/s | 5269 MB/s | 1.09 | 90 KiB | 51 KiB | 48 KiB |
+| Stored, 32 MiB | 9079 MB/s | 9184 MB/s | 9238 MB/s | 1.01 | 80 KiB | 6 KiB | 6 KiB |
+| open an archive of 100000 entries (81 MiB) | 44.2 ms (442 ns per entry) | 11.3 ms (113 ns per entry) | 11.3 ms (113 ns per entry) | 3.91 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) | 26.7 MiB (280 bytes per entry) |
+| open and read all 100000 entries | 559.4 ms (5594 ns per entry) | 784.4 ms (7844 ns per entry) | 524.0 ms (5240 ns per entry) | 0.71 | 36.3 MiB (380 bytes per entry) | 53.5 MiB (561 bytes per entry) | 451.7 MiB (4736 bytes per entry) |
 <!-- bench:end -->
 
 ## Writing
@@ -175,12 +175,12 @@ The largest size ratio on markup and tabular data is 1.069; ZW-006 allows 1.1.
 
 | Case | gozipgo | gozipgo, no self-check | archive/zip | compress/flate, default level | klauspost/compress | archive, gozipgo | archive, archive/zip | archive, compress/flate default | archive, klauspost/compress | size, gozipgo / compress/flate default |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Deflate, xml, 32 MiB | 180 MB/s | 272 MB/s | 49 MB/s | 22 MB/s | 335 MB/s | 7194779 | 7266999 | 6731617 | 7584649 | 1.069 |
-| Deflate, table, 32 MiB | 85 MB/s | 116 MB/s | 47 MB/s | 33 MB/s | 140 MB/s | 13094212 | 13028297 | 12960172 | 13955637 | 1.010 |
-| Deflate, random, 32 MiB | 429 MB/s | 478 MB/s | 118 MB/s | 120 MB/s | 6893 MB/s | 33564857 | 33564807 | 33564807 | 33557129 | 1.000 |
-| Deflate, zeros, 32 MiB | 1262 MB/s | 1936 MB/s | 824 MB/s | 823 MB/s | 4774 MB/s | 39110 | 32750 | 32750 | 33315 | 1.194 |
-| Stored, 32 MiB | 11180 MB/s | 10693 MB/s | 10853 MB/s | 10843 MB/s | 10847 MB/s | 33554562 | 33554562 | 33554562 | 33554562 | 1.000 |
-| Deflate, 100000 entries of 1 to 4 KiB | 107 MB/s | 158 MB/s | 71 MB/s | 65 MB/s | 301 MB/s | 87518284 | 85916923 | 85845743 | 90028225 | 1.019 |
+| Deflate, xml, 32 MiB | 196 MB/s | 268 MB/s | 49 MB/s | 22 MB/s | 337 MB/s | 7194779 | 7266999 | 6731617 | 7584649 | 1.069 |
+| Deflate, table, 32 MiB | 97 MB/s | 127 MB/s | 46 MB/s | 33 MB/s | 139 MB/s | 13094212 | 13028297 | 12960172 | 13955637 | 1.010 |
+| Deflate, random, 32 MiB | 424 MB/s | 464 MB/s | 118 MB/s | 121 MB/s | 6855 MB/s | 33564857 | 33564807 | 33564807 | 33557129 | 1.000 |
+| Deflate, zeros, 32 MiB | 1309 MB/s | 1933 MB/s | 824 MB/s | 824 MB/s | 4788 MB/s | 39110 | 32750 | 32750 | 33315 | 1.194 |
+| Stored, 32 MiB | 10719 MB/s | 10710 MB/s | 10714 MB/s | 10682 MB/s | 10712 MB/s | 33554562 | 33554562 | 33554562 | 33554562 | 1.000 |
+| Deflate, 100000 entries of 1 to 4 KiB | 117 MB/s | 155 MB/s | 70 MB/s | 63 MB/s | 260 MB/s | 87518284 | 85916923 | 85845743 | 90028225 | 1.019 |
 <!-- bench-write:end -->
 
 ## Size of a program
@@ -196,7 +196,7 @@ first has no ZIP library and only copies its input.
 | Library | program | added by the library |
 |---|---|---|
 | no ZIP library | 1471266 bytes | — |
-| gozipgo | 1674658 bytes | 203 kB |
+| gozipgo | 1674674 bytes | 203 kB |
 | archive/zip | 1878578 bytes | 407 kB |
 | klauspost/compress | 2012946 bytes | 541 kB |
 <!-- bench-size:end -->

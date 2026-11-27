@@ -69,8 +69,20 @@ testy pisane przez autora zmiany nie zastąpiły tu fuzzera, który porównuje �
 
 ## Pomiar
 
-`tools/bench`, Apple M4, mediana z 7 przebiegów; liczby i surowy wynik w `docs/comparison.md` i `docs/results/`.
-Uzupełnione po pomiarze na commicie z tą zmianą: patrz wiersz w `docs/testing.md`.
+`tools/bench` na commicie `2aa8721`, Apple M4, mediana z 7 przebiegów; surowy wynik w `docs/results/`, tabele
+w `docs/comparison.md`. Przed zmianą (`1d5412e`) / po / `klauspost/compress` / `archive/zip`:
+
+| Przypadek | Przed | Po | `klauspost/compress` | `archive/zip` |
+|---|---|---|---|---|
+| odczyt, znaczniki | 525 MB/s | 720 MB/s | 562 MB/s | 395 MB/s |
+| odczyt, wiersze liczb | 268 MB/s | 423 MB/s | 354 MB/s | 237 MB/s |
+| odczyt, zera | 3926 MB/s | 4534 MB/s | 5269 MB/s | 4940 MB/s |
+| odczyt 100 000 małych wpisów z otwarciem | 753 ms | 559 ms | 524 ms | 784 ms |
+| zapis z samokontrolą, znaczniki | 180 MB/s | 196 MB/s | 337 MB/s | 49 MB/s |
+| zapis z samokontrolą, wiersze liczb | 85 MB/s | 97 MB/s | 139 MB/s | 46 MB/s |
+
+K7: czas odczytu treści względem `archive/zip` od 0,55 do 1,09 (było od 0,76 do 1,32; próg 1,5). Samokontrola
+pisarza kosztuje teraz około jednej czwartej szybkości zapisu (bez niej 268 i 127 MB/s).
 
 ## Skutki
 

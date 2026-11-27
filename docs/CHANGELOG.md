@@ -17,7 +17,7 @@ Faster reading (`docs/adr/0008-decoder-fast-path.md`): the DEFLATE decoder has a
 that runs while it has eight bytes of input and room for the longest match in its window, and checks neither on
 every symbol. It reports no errors: anything but a literal, a match or the end of the block goes back to the
 existing path, so output, error codes and offsets are unchanged, which the tests and the fuzzer compare on every
-input. Markup and numeric rows are read about 40 to 55 percent faster (`docs/comparison.md`).
+input. Markup and numeric rows are read about 35 to 60 percent faster (`docs/comparison.md`).
 
 Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
 
