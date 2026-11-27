@@ -1,326 +1,368 @@
 # gozipgo tools/bench
 # date	2026-11-27
-# commit	44fb143
+# commit	1d5412e
 # go	go1.26.6
 # machine	darwin/arm64, Apple M4, macOS 27.0.1
 # runs	7
 case	reader	run	nanoseconds	bytes of content or entries	bytes allocated	bytes written
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	1	64304042	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	2	64009416	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	3	63895750	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	4	64862583	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	5	63966208	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	6	63897583	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	7	63943084	33554432	133216	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	1	84598334	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	2	84528250	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	3	84451250	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	4	84617875	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	5	84774917	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	6	84636666	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	7	84470250	33554432	123544	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	1	59387833	33554432	50496	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	2	59696333	33554432	50496	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	3	59497125	33554432	50496	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	4	59620958	33554432	50496	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	5	59619791	33554432	50496	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	6	59735584	33554432	50496	
-Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	7	59590625	33554432	50496	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	1	124382875	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	2	124492875	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	3	124501916	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	4	124431708	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	5	124353500	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	6	124550709	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	7	124133083	33554432	133216	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	1	139941542	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	2	140067167	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	3	140329042	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	4	140732292	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	5	140570500	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	6	140704042	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	7	140028167	33554432	121672	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	1	94514792	33554432	50240	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	2	95017292	33554432	50240	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	3	95099334	33554432	50240	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	4	94898708	33554432	50240	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	5	95066084	33554432	50240	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	6	94173333	33554432	50240	
-Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	7	94649083	33554432	50240	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	1	4388459	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	2	4373000	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	3	4351625	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	4	4425250	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	5	4466125	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	6	4422708	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	7	4385667	33554432	84064	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	1	4085500	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	2	4179916	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	3	4065500	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	4	4078042	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	5	4086541	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	6	4110709	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	7	4073125	33554432	52312	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	1	4042167	33554432	47880	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	2	4084459	33554432	47880	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	3	4080458	33554432	47880	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	4	4068791	33554432	47880	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	5	4036958	33554432	47880	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	6	4018750	33554432	47880	
-Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	7	4073292	33554432	47880	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	1	8722291	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	2	8738375	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	3	8554709	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	4	8503625	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	5	8736833	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	6	8779208	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	7	8619416	33554432	43104	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	1	6714208	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	2	6608375	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	3	6580708	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	4	6592583	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	5	6612208	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	6	6640042	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	7	6693709	33554432	7640	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	1	6391792	33554432	11848	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	2	6535375	33554432	11848	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	3	6560834	33554432	11848	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	4	6516417	33554432	11848	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	5	6888917	33554432	11848	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	6	6787333	33554432	11848	
-Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	7	6468000	33554432	11848	
-Stored, 32 MiB	gozipgo	1	3685167	33554432	82648	
-Stored, 32 MiB	gozipgo	2	3674375	33554432	82648	
-Stored, 32 MiB	gozipgo	3	3762000	33554432	82648	
-Stored, 32 MiB	gozipgo	4	3678959	33554432	82648	
-Stored, 32 MiB	gozipgo	5	3593292	33554432	82648	
-Stored, 32 MiB	gozipgo	6	3625666	33554432	82648	
-Stored, 32 MiB	gozipgo	7	3590458	33554432	82648	
-Stored, 32 MiB	archive/zip	1	3571292	33554432	6216	
-Stored, 32 MiB	archive/zip	2	3581500	33554432	6216	
-Stored, 32 MiB	archive/zip	3	3540458	33554432	6216	
-Stored, 32 MiB	archive/zip	4	3631708	33554432	6216	
-Stored, 32 MiB	archive/zip	5	3646625	33554432	6216	
-Stored, 32 MiB	archive/zip	6	3615125	33554432	6216	
-Stored, 32 MiB	archive/zip	7	3622750	33554432	6216	
-Stored, 32 MiB	klauspost/compress	1	3755625	33554432	6232	
-Stored, 32 MiB	klauspost/compress	2	3652250	33554432	6232	
-Stored, 32 MiB	klauspost/compress	3	3566417	33554432	6232	
-Stored, 32 MiB	klauspost/compress	4	3455208	33554432	6232	
-Stored, 32 MiB	klauspost/compress	5	3556875	33554432	6232	
-Stored, 32 MiB	klauspost/compress	6	3569875	33554432	6232	
-Stored, 32 MiB	klauspost/compress	7	3611375	33554432	6232	
-open an archive of 100000 entries (81 MiB)	gozipgo	1	47284208	100000	26755240	
-open an archive of 100000 entries (81 MiB)	gozipgo	2	45978542	100000	26755240	
-open an archive of 100000 entries (81 MiB)	gozipgo	3	45508083	100000	26755240	
-open an archive of 100000 entries (81 MiB)	gozipgo	4	44766083	100000	26755240	
-open an archive of 100000 entries (81 MiB)	gozipgo	5	42550084	100000	26755240	
-open an archive of 100000 entries (81 MiB)	gozipgo	6	43001292	100000	26755240	
-open an archive of 100000 entries (81 MiB)	gozipgo	7	45384500	100000	26755240	
-open an archive of 100000 entries (81 MiB)	archive/zip	1	9132292	100000	28008616	
-open an archive of 100000 entries (81 MiB)	archive/zip	2	9101875	100000	28008616	
-open an archive of 100000 entries (81 MiB)	archive/zip	3	9259334	100000	28008616	
-open an archive of 100000 entries (81 MiB)	archive/zip	4	9387416	100000	28008616	
-open an archive of 100000 entries (81 MiB)	archive/zip	5	9090875	100000	28008616	
-open an archive of 100000 entries (81 MiB)	archive/zip	6	9112709	100000	28008616	
-open an archive of 100000 entries (81 MiB)	archive/zip	7	9191917	100000	28008616	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	1	9022375	100000	28008632	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	2	9140417	100000	28008632	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	3	9125417	100000	28008632	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	4	9094750	100000	28008632	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	5	9043167	100000	28008632	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	6	8960709	100000	28008632	
-open an archive of 100000 entries (81 MiB)	klauspost/compress	7	9274500	100000	28008632	
-open and read all 100000 entries	gozipgo	1	746501584	100000	38105808	
-open and read all 100000 entries	gozipgo	2	749861625	100000	38105808	
-open and read all 100000 entries	gozipgo	3	748860042	100000	38105808	
-open and read all 100000 entries	gozipgo	4	747273083	100000	38105808	
-open and read all 100000 entries	gozipgo	5	747692334	100000	38105808	
-open and read all 100000 entries	gozipgo	6	749616875	100000	38105808	
-open and read all 100000 entries	gozipgo	7	747793417	100000	38105808	
-open and read all 100000 entries	archive/zip	1	799545584	100000	56116032	
-open and read all 100000 entries	archive/zip	2	793735875	100000	56116032	
-open and read all 100000 entries	archive/zip	3	801745167	100000	56116032	
-open and read all 100000 entries	archive/zip	4	803270208	100000	56116032	
-open and read all 100000 entries	archive/zip	5	799246500	100000	56116032	
-open and read all 100000 entries	archive/zip	6	828710000	100000	56116032	
-open and read all 100000 entries	archive/zip	7	827029084	100000	56116032	
-open and read all 100000 entries	klauspost/compress	1	539903750	100000	473649896	
-open and read all 100000 entries	klauspost/compress	2	536824833	100000	473649896	
-open and read all 100000 entries	klauspost/compress	3	538544917	100000	473649896	
-open and read all 100000 entries	klauspost/compress	4	545633209	100000	473649896	
-open and read all 100000 entries	klauspost/compress	5	528933000	100000	473649896	
-open and read all 100000 entries	klauspost/compress	6	519899959	100000	473649896	
-open and read all 100000 entries	klauspost/compress	7	521112167	100000	473649896	
-write Deflate, xml, 32 MiB	gozipgo	1	461505542	33554432	497152	7257414
-write Deflate, xml, 32 MiB	gozipgo	2	466453416	33554432	497152	7257414
-write Deflate, xml, 32 MiB	gozipgo	3	465779584	33554432	497152	7257414
-write Deflate, xml, 32 MiB	gozipgo	4	463103125	33554432	497152	7257414
-write Deflate, xml, 32 MiB	gozipgo	5	467243125	33554432	497152	7257414
-write Deflate, xml, 32 MiB	gozipgo	6	466184334	33554432	497152	7257414
-write Deflate, xml, 32 MiB	gozipgo	7	474048833	33554432	497152	7257414
-write Deflate, xml, 32 MiB	archive/zip	1	684557875	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip	2	683366917	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip	3	706302541	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip	4	709660875	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip	5	708501250	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip	6	684607459	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip	7	684273292	33554432	6168	7266999
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	1	1507126959	33554432	818640	6731617
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	2	1502555458	33554432	818640	6731617
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	3	1507927875	33554432	818640	6731617
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	4	1503489125	33554432	818640	6731617
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	5	1508795250	33554432	818640	6731617
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	6	1499519666	33554432	818640	6731617
-write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	7	1508000791	33554432	818640	6731617
-write Deflate, xml, 32 MiB	klauspost/compress	1	100699375	33554432	1096264	7584649
-write Deflate, xml, 32 MiB	klauspost/compress	2	100380958	33554432	1096264	7584649
-write Deflate, xml, 32 MiB	klauspost/compress	3	99934083	33554432	1096264	7584649
-write Deflate, xml, 32 MiB	klauspost/compress	4	100233208	33554432	1096264	7584649
-write Deflate, xml, 32 MiB	klauspost/compress	5	99760917	33554432	1096264	7584649
-write Deflate, xml, 32 MiB	klauspost/compress	6	99507041	33554432	1096264	7584649
-write Deflate, xml, 32 MiB	klauspost/compress	7	99882083	33554432	1096264	7584649
-write Deflate, table, 32 MiB	gozipgo	1	609626833	33554432	497152	13546825
-write Deflate, table, 32 MiB	gozipgo	2	616123833	33554432	497152	13546825
-write Deflate, table, 32 MiB	gozipgo	3	609845792	33554432	497152	13546825
-write Deflate, table, 32 MiB	gozipgo	4	610451416	33554432	497152	13546825
-write Deflate, table, 32 MiB	gozipgo	5	615312000	33554432	497152	13546825
-write Deflate, table, 32 MiB	gozipgo	6	595957834	33554432	497152	13546825
-write Deflate, table, 32 MiB	gozipgo	7	618369333	33554432	497152	13546825
-write Deflate, table, 32 MiB	archive/zip	1	702609583	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip	2	724045750	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip	3	714913958	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip	4	711461250	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip	5	724186625	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip	6	711715583	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip	7	719368084	33554432	819864	13028297
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	1	1013905833	33554432	818640	12960172
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	2	1020961666	33554432	818640	12960172
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	3	1002464917	33554432	818640	12960172
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	4	1023742417	33554432	818640	12960172
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	5	1019098917	33554432	818640	12960172
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	6	1011225583	33554432	818640	12960172
-write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	7	1020656375	33554432	818640	12960172
-write Deflate, table, 32 MiB	klauspost/compress	1	238620000	33554432	1096264	13955637
-write Deflate, table, 32 MiB	klauspost/compress	2	234944375	33554432	1096264	13955637
-write Deflate, table, 32 MiB	klauspost/compress	3	242473292	33554432	1096264	13955637
-write Deflate, table, 32 MiB	klauspost/compress	4	239416292	33554432	1096264	13955637
-write Deflate, table, 32 MiB	klauspost/compress	5	243304958	33554432	1096264	13955637
-write Deflate, table, 32 MiB	klauspost/compress	6	240595042	33554432	1096264	13955637
-write Deflate, table, 32 MiB	klauspost/compress	7	236144458	33554432	1096264	13955637
-write Deflate, random, 32 MiB	gozipgo	1	161860208	33554432	497152	33564802
-write Deflate, random, 32 MiB	gozipgo	2	161117000	33554432	497152	33564802
-write Deflate, random, 32 MiB	gozipgo	3	162111875	33554432	497152	33564802
-write Deflate, random, 32 MiB	gozipgo	4	160285459	33554432	497152	33564802
-write Deflate, random, 32 MiB	gozipgo	5	161321916	33554432	497152	33564802
-write Deflate, random, 32 MiB	gozipgo	6	161605208	33554432	497152	33564802
-write Deflate, random, 32 MiB	gozipgo	7	160338584	33554432	497152	33564802
-write Deflate, random, 32 MiB	archive/zip	1	286050292	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip	2	281839042	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip	3	291392792	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip	4	281096500	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip	5	299908042	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip	6	281342833	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip	7	285542708	33554432	819864	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	1	289105167	33554432	818640	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	2	276063459	33554432	818640	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	3	275314959	33554432	818640	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	4	286925541	33554432	818640	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	5	285321875	33554432	818640	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	6	286812042	33554432	818640	33564807
-write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	7	294327292	33554432	818640	33564807
-write Deflate, random, 32 MiB	klauspost/compress	1	4912250	33554432	6088	33557129
-write Deflate, random, 32 MiB	klauspost/compress	2	4904959	33554432	6088	33557129
-write Deflate, random, 32 MiB	klauspost/compress	3	4942250	33554432	6088	33557129
-write Deflate, random, 32 MiB	klauspost/compress	4	4992500	33554432	6088	33557129
-write Deflate, random, 32 MiB	klauspost/compress	5	4943917	33554432	6088	33557129
-write Deflate, random, 32 MiB	klauspost/compress	6	4986166	33554432	6088	33557129
-write Deflate, random, 32 MiB	klauspost/compress	7	4958667	33554432	6088	33557129
-write Deflate, zeros, 32 MiB	gozipgo	1	29091291	33554432	497152	39058
-write Deflate, zeros, 32 MiB	gozipgo	2	29307166	33554432	497152	39058
-write Deflate, zeros, 32 MiB	gozipgo	3	28952583	33554432	497152	39058
-write Deflate, zeros, 32 MiB	gozipgo	4	29154458	33554432	497152	39058
-write Deflate, zeros, 32 MiB	gozipgo	5	29082750	33554432	497152	39058
-write Deflate, zeros, 32 MiB	gozipgo	6	29237292	33554432	497152	39058
-write Deflate, zeros, 32 MiB	gozipgo	7	28958083	33554432	497152	39058
-write Deflate, zeros, 32 MiB	archive/zip	1	40824542	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip	2	41007375	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip	3	40741291	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip	4	40821375	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip	5	40984084	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip	6	41187500	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip	7	40863542	33554432	6168	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	1	40889709	33554432	818640	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	2	41172750	33554432	818640	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	3	41076500	33554432	818640	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	4	40824000	33554432	818640	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	5	41009459	33554432	818640	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	6	40731584	33554432	818640	32750
-write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	7	40909250	33554432	818640	32750
-write Deflate, zeros, 32 MiB	klauspost/compress	1	7019917	33554432	1096264	33315
-write Deflate, zeros, 32 MiB	klauspost/compress	2	7017208	33554432	1096264	33315
-write Deflate, zeros, 32 MiB	klauspost/compress	3	6995459	33554432	1096264	33315
-write Deflate, zeros, 32 MiB	klauspost/compress	4	7010125	33554432	1096264	33315
-write Deflate, zeros, 32 MiB	klauspost/compress	5	6993209	33554432	1096264	33315
-write Deflate, zeros, 32 MiB	klauspost/compress	6	7022042	33554432	1096264	33315
-write Deflate, zeros, 32 MiB	klauspost/compress	7	6989708	33554432	1096264	33315
-write Stored, 32 MiB	gozipgo	1	3136166	33554432	768	33554562
-write Stored, 32 MiB	gozipgo	2	3171500	33554432	768	33554562
-write Stored, 32 MiB	gozipgo	3	3183541	33554432	768	33554562
-write Stored, 32 MiB	gozipgo	4	3134833	33554432	768	33554562
-write Stored, 32 MiB	gozipgo	5	3139708	33554432	768	33554562
-write Stored, 32 MiB	gozipgo	6	3146541	33554432	768	33554562
-write Stored, 32 MiB	gozipgo	7	3146792	33554432	768	33554562
-write Stored, 32 MiB	archive/zip	1	3187250	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip	2	3137542	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip	3	3208625	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip	4	3147458	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip	5	3143834	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip	6	3136417	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip	7	3133208	33554432	4752	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	1	3134709	33554432	4960	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	2	3136000	33554432	4960	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	3	3128042	33554432	4960	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	4	3142500	33554432	4960	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	5	3138500	33554432	4960	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	6	3134167	33554432	4960	33554562
-write Stored, 32 MiB	archive/zip with compress/flate at its default level	7	3151167	33554432	4960	33554562
-write Stored, 32 MiB	klauspost/compress	1	3140916	33554432	4672	33554562
-write Stored, 32 MiB	klauspost/compress	2	3133500	33554432	4672	33554562
-write Stored, 32 MiB	klauspost/compress	3	3134167	33554432	4672	33554562
-write Stored, 32 MiB	klauspost/compress	4	3135792	33554432	4672	33554562
-write Stored, 32 MiB	klauspost/compress	5	3142375	33554432	4672	33554562
-write Stored, 32 MiB	klauspost/compress	6	3123750	33554432	4672	33554562
-write Stored, 32 MiB	klauspost/compress	7	3111292	33554432	4672	33554562
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	1	2857962166	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	2	2857326375	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	3	2861207167	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	4	2869127958	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	5	2846580666	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	6	2854598125	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	7	2858794500	254783152	47006560	85674169
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	1	3606250791	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	2	3632705792	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	3	3604899083	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	4	3619203833	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	5	3628510625	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	6	3631802375	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	7	3625936208	254783152	51702304	85916923
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	1	4172497959	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	2	4065678250	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	3	4152217292	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	4	4098560417	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	5	3998120542	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	6	3946485625	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	7	3967567125	254783152	81419706136	85845743
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	1	849855375	254783152	52792400	90028225
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	2	849318250	254783152	52792400	90028225
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	3	851785917	254783152	52792400	90028225
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	4	853226292	254783152	52792400	90028225
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	5	854292500	254783152	52792400	90028225
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	6	853585083	254783152	52792400	90028225
-write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	7	852647375	254783152	52792400	90028225
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	1	63890458	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	2	64635625	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	3	64129459	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	4	64120083	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	5	63829041	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	6	63967000	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	gozipgo	7	63918084	33554432	133216	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	1	84569583	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	2	84577833	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	3	84663708	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	4	84438583	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	5	84413333	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	6	84496958	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	archive/zip	7	84579625	33554432	123544	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	1	59319875	33554432	50496	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	2	59283417	33554432	50496	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	3	59164209	33554432	50496	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	4	59248292	33554432	50496	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	5	59093292	33554432	50496	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	6	59314334	33554432	50496	
+Deflate, xml, 32 MiB (7266999 bytes compressed)	klauspost/compress	7	59198916	33554432	50496	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	1	125233291	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	2	125181041	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	3	125100292	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	4	125012917	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	5	124419500	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	6	124029000	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	gozipgo	7	124503625	33554432	133216	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	1	139875458	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	2	140346084	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	3	140122750	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	4	140931416	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	5	140092875	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	6	140864625	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	archive/zip	7	141329834	33554432	121688	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	1	94701667	33554432	50240	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	2	95360917	33554432	50240	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	3	95093250	33554432	50240	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	4	94662834	33554432	50240	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	5	94936917	33554432	50240	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	6	95215417	33554432	50240	
+Deflate, table, 32 MiB (13028297 bytes compressed)	klauspost/compress	7	94793333	33554432	50240	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	1	4121708	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	2	4149500	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	3	4190291	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	4	4228417	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	5	3990208	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	6	4041292	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	gozipgo	7	4022625	33554432	84064	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	1	3795042	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	2	3741375	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	3	3753833	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	4	3770500	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	5	3756708	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	6	3744167	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	archive/zip	7	3771958	33554432	52312	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	1	3784333	33554432	47880	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	2	3719500	33554432	47880	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	3	3752500	33554432	47880	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	4	3792792	33554432	47880	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	5	3763667	33554432	47880	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	6	3822875	33554432	47880	
+Deflate, random, 32 MiB (33564807 bytes compressed)	klauspost/compress	7	3744709	33554432	47880	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	1	8963875	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	2	8444750	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	3	8558917	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	4	8492458	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	5	8547333	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	6	8593750	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	gozipgo	7	8481166	33554432	92256	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	1	6457250	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	2	6432750	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	3	6452875	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	4	6406750	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	5	6474875	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	6	6689459	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	archive/zip	7	6278959	33554432	52312	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	1	6235458	33554432	11848	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	2	6269375	33554432	11848	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	3	6247708	33554432	11848	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	4	6323916	33554432	11848	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	5	6321375	33554432	11848	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	6	6121458	33554432	11848	
+Deflate, zeros, 32 MiB (32750 bytes compressed)	klauspost/compress	7	6354584	33554432	11848	
+Stored, 32 MiB	gozipgo	1	3393208	33554432	82648	
+Stored, 32 MiB	gozipgo	2	3365916	33554432	82648	
+Stored, 32 MiB	gozipgo	3	3382875	33554432	82648	
+Stored, 32 MiB	gozipgo	4	3363625	33554432	82648	
+Stored, 32 MiB	gozipgo	5	3377375	33554432	82648	
+Stored, 32 MiB	gozipgo	6	3389417	33554432	82648	
+Stored, 32 MiB	gozipgo	7	3381458	33554432	82648	
+Stored, 32 MiB	archive/zip	1	3386208	33554432	6216	
+Stored, 32 MiB	archive/zip	2	3355458	33554432	6216	
+Stored, 32 MiB	archive/zip	3	3345542	33554432	6216	
+Stored, 32 MiB	archive/zip	4	3364709	33554432	6216	
+Stored, 32 MiB	archive/zip	5	3353708	33554432	6216	
+Stored, 32 MiB	archive/zip	6	3317875	33554432	6216	
+Stored, 32 MiB	archive/zip	7	3350417	33554432	6216	
+Stored, 32 MiB	klauspost/compress	1	3332917	33554432	6232	
+Stored, 32 MiB	klauspost/compress	2	3338708	33554432	6232	
+Stored, 32 MiB	klauspost/compress	3	3341166	33554432	6232	
+Stored, 32 MiB	klauspost/compress	4	3329500	33554432	6232	
+Stored, 32 MiB	klauspost/compress	5	3333709	33554432	6232	
+Stored, 32 MiB	klauspost/compress	6	3360250	33554432	6232	
+Stored, 32 MiB	klauspost/compress	7	3335708	33554432	6232	
+open an archive of 100000 entries (81 MiB)	gozipgo	1	43167125	100000	26755240	
+open an archive of 100000 entries (81 MiB)	gozipgo	2	42410291	100000	26755240	
+open an archive of 100000 entries (81 MiB)	gozipgo	3	43017875	100000	26755240	
+open an archive of 100000 entries (81 MiB)	gozipgo	4	41719667	100000	26755240	
+open an archive of 100000 entries (81 MiB)	gozipgo	5	43635667	100000	26755240	
+open an archive of 100000 entries (81 MiB)	gozipgo	6	41679125	100000	26755240	
+open an archive of 100000 entries (81 MiB)	gozipgo	7	42784791	100000	26755240	
+open an archive of 100000 entries (81 MiB)	archive/zip	1	11215500	100000	28008616	
+open an archive of 100000 entries (81 MiB)	archive/zip	2	11271334	100000	28008616	
+open an archive of 100000 entries (81 MiB)	archive/zip	3	11482166	100000	28008616	
+open an archive of 100000 entries (81 MiB)	archive/zip	4	11332958	100000	28008616	
+open an archive of 100000 entries (81 MiB)	archive/zip	5	11204541	100000	28008616	
+open an archive of 100000 entries (81 MiB)	archive/zip	6	11270291	100000	28008616	
+open an archive of 100000 entries (81 MiB)	archive/zip	7	11093625	100000	28008616	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	1	11273875	100000	28008632	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	2	11319084	100000	28008632	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	3	11283625	100000	28008632	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	4	11063167	100000	28008632	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	5	11024125	100000	28008632	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	6	11063750	100000	28008632	
+open an archive of 100000 entries (81 MiB)	klauspost/compress	7	11060416	100000	28008632	
+open and read all 100000 entries	gozipgo	1	752663167	100000	38105808	
+open and read all 100000 entries	gozipgo	2	752975917	100000	38105808	
+open and read all 100000 entries	gozipgo	3	752996666	100000	38105808	
+open and read all 100000 entries	gozipgo	4	751207583	100000	38105808	
+open and read all 100000 entries	gozipgo	5	754050333	100000	38105808	
+open and read all 100000 entries	gozipgo	6	753915208	100000	38105808	
+open and read all 100000 entries	gozipgo	7	754457375	100000	38105808	
+open and read all 100000 entries	archive/zip	1	789715208	100000	56116016	
+open and read all 100000 entries	archive/zip	2	785082083	100000	56116016	
+open and read all 100000 entries	archive/zip	3	785378750	100000	56116016	
+open and read all 100000 entries	archive/zip	4	788408042	100000	56116016	
+open and read all 100000 entries	archive/zip	5	786773250	100000	56116016	
+open and read all 100000 entries	archive/zip	6	780329334	100000	56116016	
+open and read all 100000 entries	archive/zip	7	783850583	100000	56116016	
+open and read all 100000 entries	klauspost/compress	1	532921000	100000	473611464	
+open and read all 100000 entries	klauspost/compress	2	522882875	100000	473611464	
+open and read all 100000 entries	klauspost/compress	3	524016084	100000	473611464	
+open and read all 100000 entries	klauspost/compress	4	525605375	100000	473611464	
+open and read all 100000 entries	klauspost/compress	5	524323167	100000	473611464	
+open and read all 100000 entries	klauspost/compress	6	518238917	100000	473611464	
+open and read all 100000 entries	klauspost/compress	7	525431708	100000	473611464	
+write Deflate, xml, 32 MiB	gozipgo	1	185059958	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	gozipgo	2	186566000	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	gozipgo	3	186865834	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	gozipgo	4	186838541	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	gozipgo	5	186725583	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	gozipgo	6	185139333	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	gozipgo	7	186039209	33554432	2430576	7194779
+write Deflate, xml, 32 MiB	archive/zip	1	679972542	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip	2	680522375	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip	3	686476375	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip	4	681418333	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip	5	685147291	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip	6	681478417	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip	7	683923334	33554432	819864	7266999
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	1	1499202334	33554432	818640	6731617
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	2	1500922000	33554432	818640	6731617
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	3	1494075792	33554432	818640	6731617
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	4	1501451750	33554432	818640	6731617
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	5	1488643792	33554432	818640	6731617
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	6	1498161666	33554432	818640	6731617
+write Deflate, xml, 32 MiB	archive/zip with compress/flate at its default level	7	1497523459	33554432	818640	6731617
+write Deflate, xml, 32 MiB	klauspost/compress	1	100096250	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	klauspost/compress	2	99351583	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	klauspost/compress	3	100422167	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	klauspost/compress	4	100119875	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	klauspost/compress	5	99616667	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	klauspost/compress	6	100225833	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	klauspost/compress	7	99296458	33554432	1096264	7584649
+write Deflate, xml, 32 MiB	gozipgo without the self-check	1	124085875	33554432	1807984	7194779
+write Deflate, xml, 32 MiB	gozipgo without the self-check	2	123480708	33554432	1807984	7194779
+write Deflate, xml, 32 MiB	gozipgo without the self-check	3	123460250	33554432	1807984	7194779
+write Deflate, xml, 32 MiB	gozipgo without the self-check	4	125610125	33554432	1807984	7194779
+write Deflate, xml, 32 MiB	gozipgo without the self-check	5	123517084	33554432	1807984	7194779
+write Deflate, xml, 32 MiB	gozipgo without the self-check	6	123509916	33554432	1807984	7194779
+write Deflate, xml, 32 MiB	gozipgo without the self-check	7	123936834	33554432	1807984	7194779
+write Deflate, table, 32 MiB	gozipgo	1	394375250	33554432	2430576	13094212
+write Deflate, table, 32 MiB	gozipgo	2	393330167	33554432	2430576	13094212
+write Deflate, table, 32 MiB	gozipgo	3	392711542	33554432	2430576	13094212
+write Deflate, table, 32 MiB	gozipgo	4	396088250	33554432	2430576	13094212
+write Deflate, table, 32 MiB	gozipgo	5	395204292	33554432	2430576	13094212
+write Deflate, table, 32 MiB	gozipgo	6	396409708	33554432	2430576	13094212
+write Deflate, table, 32 MiB	gozipgo	7	393892208	33554432	2430576	13094212
+write Deflate, table, 32 MiB	archive/zip	1	715566792	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip	2	711142125	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip	3	723860709	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip	4	710638791	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip	5	724543000	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip	6	710272667	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip	7	716789500	33554432	819864	13028297
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	1	1008764833	33554432	818640	12960172
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	2	1012438458	33554432	818640	12960172
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	3	1027170459	33554432	818640	12960172
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	4	1012902667	33554432	818640	12960172
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	5	1015229542	33554432	818640	12960172
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	6	1001391000	33554432	818640	12960172
+write Deflate, table, 32 MiB	archive/zip with compress/flate at its default level	7	1015664209	33554432	818640	12960172
+write Deflate, table, 32 MiB	klauspost/compress	1	242723042	33554432	1096264	13955637
+write Deflate, table, 32 MiB	klauspost/compress	2	236986375	33554432	1096264	13955637
+write Deflate, table, 32 MiB	klauspost/compress	3	239914708	33554432	1096264	13955637
+write Deflate, table, 32 MiB	klauspost/compress	4	242307042	33554432	1096264	13955637
+write Deflate, table, 32 MiB	klauspost/compress	5	240415208	33554432	1096264	13955637
+write Deflate, table, 32 MiB	klauspost/compress	6	237736042	33554432	1096264	13955637
+write Deflate, table, 32 MiB	klauspost/compress	7	242985458	33554432	1096264	13955637
+write Deflate, table, 32 MiB	gozipgo without the self-check	1	300380667	33554432	1807984	13094212
+write Deflate, table, 32 MiB	gozipgo without the self-check	2	277484583	33554432	1807984	13094212
+write Deflate, table, 32 MiB	gozipgo without the self-check	3	282914958	33554432	1807984	13094212
+write Deflate, table, 32 MiB	gozipgo without the self-check	4	290642625	33554432	1807984	13094212
+write Deflate, table, 32 MiB	gozipgo without the self-check	5	286192000	33554432	1807984	13094212
+write Deflate, table, 32 MiB	gozipgo without the self-check	6	288343375	33554432	1807984	13094212
+write Deflate, table, 32 MiB	gozipgo without the self-check	7	288156709	33554432	1807984	13094212
+write Deflate, random, 32 MiB	gozipgo	1	79103042	33554432	2471552	33564857
+write Deflate, random, 32 MiB	gozipgo	2	78701917	33554432	2471552	33564857
+write Deflate, random, 32 MiB	gozipgo	3	78123125	33554432	2471552	33564857
+write Deflate, random, 32 MiB	gozipgo	4	78418292	33554432	2471552	33564857
+write Deflate, random, 32 MiB	gozipgo	5	78290375	33554432	2471552	33564857
+write Deflate, random, 32 MiB	gozipgo	6	78304500	33554432	2471552	33564857
+write Deflate, random, 32 MiB	gozipgo	7	77794708	33554432	2471552	33564857
+write Deflate, random, 32 MiB	archive/zip	1	286949209	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip	2	282640542	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip	3	274190833	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip	4	331732083	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip	5	563934334	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip	6	284225416	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip	7	278961958	33554432	819864	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	1	274686584	33554432	818640	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	2	265650083	33554432	818640	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	3	292747083	33554432	818640	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	4	288637333	33554432	818640	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	5	286754750	33554432	818640	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	6	272756250	33554432	818640	33564807
+write Deflate, random, 32 MiB	archive/zip with compress/flate at its default level	7	280221375	33554432	818640	33564807
+write Deflate, random, 32 MiB	klauspost/compress	1	4884458	33554432	6088	33557129
+write Deflate, random, 32 MiB	klauspost/compress	2	4900084	33554432	6088	33557129
+write Deflate, random, 32 MiB	klauspost/compress	3	4914375	33554432	6088	33557129
+write Deflate, random, 32 MiB	klauspost/compress	4	4868000	33554432	6088	33557129
+write Deflate, random, 32 MiB	klauspost/compress	5	4808458	33554432	6088	33557129
+write Deflate, random, 32 MiB	klauspost/compress	6	4832708	33554432	6088	33557129
+write Deflate, random, 32 MiB	klauspost/compress	7	4631000	33554432	6088	33557129
+write Deflate, random, 32 MiB	gozipgo without the self-check	1	70536792	33554432	1807984	33564857
+write Deflate, random, 32 MiB	gozipgo without the self-check	2	70376792	33554432	1807984	33564857
+write Deflate, random, 32 MiB	gozipgo without the self-check	3	70159291	33554432	1807984	33564857
+write Deflate, random, 32 MiB	gozipgo without the self-check	4	70161000	33554432	1807984	33564857
+write Deflate, random, 32 MiB	gozipgo without the self-check	5	70146583	33554432	1807984	33564857
+write Deflate, random, 32 MiB	gozipgo without the self-check	6	70195667	33554432	1807984	33564857
+write Deflate, random, 32 MiB	gozipgo without the self-check	7	70134750	33554432	1807984	33564857
+write Deflate, zeros, 32 MiB	gozipgo	1	26729042	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	gozipgo	2	26501083	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	gozipgo	3	26679416	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	gozipgo	4	26418666	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	gozipgo	5	26815375	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	gozipgo	6	26583458	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	gozipgo	7	26491458	33554432	1971824	39110
+write Deflate, zeros, 32 MiB	archive/zip	1	40753833	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip	2	40872500	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip	3	40669917	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip	4	40822667	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip	5	40730625	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip	6	40718458	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip	7	40696417	33554432	819864	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	1	40736292	33554432	818640	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	2	40795958	33554432	818640	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	3	40743500	33554432	818640	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	4	40792417	33554432	818640	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	5	40925958	33554432	818640	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	6	40778000	33554432	818640	32750
+write Deflate, zeros, 32 MiB	archive/zip with compress/flate at its default level	7	40824166	33554432	818640	32750
+write Deflate, zeros, 32 MiB	klauspost/compress	1	7143958	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	klauspost/compress	2	7042875	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	klauspost/compress	3	7052625	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	klauspost/compress	4	7020125	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	klauspost/compress	5	7028208	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	klauspost/compress	6	7015542	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	klauspost/compress	7	6992708	33554432	1096264	33315
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	1	17333917	33554432	1807984	39110
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	2	17473083	33554432	1807984	39110
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	3	17388875	33554432	1807984	39110
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	4	17335708	33554432	1807984	39110
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	5	17372041	33554432	1807984	39110
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	6	17276666	33554432	1807984	39110
+write Deflate, zeros, 32 MiB	gozipgo without the self-check	7	17202791	33554432	1807984	39110
+write Stored, 32 MiB	gozipgo	1	2943667	33554432	880	33554562
+write Stored, 32 MiB	gozipgo	2	2995958	33554432	880	33554562
+write Stored, 32 MiB	gozipgo	3	2889583	33554432	880	33554562
+write Stored, 32 MiB	gozipgo	4	3001250	33554432	880	33554562
+write Stored, 32 MiB	gozipgo	5	3089250	33554432	880	33554562
+write Stored, 32 MiB	gozipgo	6	3084500	33554432	880	33554562
+write Stored, 32 MiB	gozipgo	7	3079208	33554432	880	33554562
+write Stored, 32 MiB	archive/zip	1	3085959	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip	2	3094125	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip	3	3084709	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip	4	3086417	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip	5	3091583	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip	6	3142500	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip	7	3110083	33554432	4752	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	1	3142084	33554432	4960	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	2	3094583	33554432	4960	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	3	3093500	33554432	4960	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	4	3094042	33554432	4960	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	5	3102584	33554432	4960	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	6	3096209	33554432	4960	33554562
+write Stored, 32 MiB	archive/zip with compress/flate at its default level	7	3085166	33554432	4960	33554562
+write Stored, 32 MiB	klauspost/compress	1	3093458	33554432	4672	33554562
+write Stored, 32 MiB	klauspost/compress	2	3081125	33554432	4672	33554562
+write Stored, 32 MiB	klauspost/compress	3	3142750	33554432	4672	33554562
+write Stored, 32 MiB	klauspost/compress	4	3091667	33554432	4672	33554562
+write Stored, 32 MiB	klauspost/compress	5	3112250	33554432	4672	33554562
+write Stored, 32 MiB	klauspost/compress	6	3088709	33554432	4672	33554562
+write Stored, 32 MiB	klauspost/compress	7	3107917	33554432	4672	33554562
+write Stored, 32 MiB	gozipgo without the self-check	1	3171750	33554432	880	33554562
+write Stored, 32 MiB	gozipgo without the self-check	2	3138875	33554432	880	33554562
+write Stored, 32 MiB	gozipgo without the self-check	3	3139167	33554432	880	33554562
+write Stored, 32 MiB	gozipgo without the self-check	4	3134625	33554432	880	33554562
+write Stored, 32 MiB	gozipgo without the self-check	5	3127708	33554432	880	33554562
+write Stored, 32 MiB	gozipgo without the self-check	6	3138000	33554432	880	33554562
+write Stored, 32 MiB	gozipgo without the self-check	7	3128333	33554432	880	33554562
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	1	2554793458	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	2	2384665583	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	3	2338931375	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	4	2425151208	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	5	2389745834	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	6	2395807000	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo	7	2348231333	254783152	48401552	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	1	3607944458	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	2	3607257666	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	3	3599555459	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	4	3596789333	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	5	3596536417	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	6	3606535791	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip	7	3603198375	254783152	52516000	85916923
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	1	3893547916	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	2	3899838750	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	3	3892018958	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	4	3900456625	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	5	3903576125	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	6	3890493875	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	archive/zip with compress/flate at its default level	7	3986634958	254783152	81419705800	85845743
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	1	846204417	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	2	843946209	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	3	843788083	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	4	847337250	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	5	847686625	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	6	847079583	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	klauspost/compress	7	846822375	254783152	52792400	90028225
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	1	1604105709	254783152	48317392	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	2	1611510958	254783152	48317392	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	3	1612956416	254783152	48317392	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	4	1613885667	254783152	48317392	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	5	1609986416	254783152	48317392	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	6	1618592500	254783152	48317392	87518284
+write Deflate, 100000 entries of 1 to 4 KiB	gozipgo without the self-check	7	1610949125	254783152	48317392	87518284
 program size	no ZIP library					1471266
-program size	gozipgo					1674482
+program size	gozipgo					1674658
 program size	archive/zip					1878578
 program size	klauspost/compress					2012946

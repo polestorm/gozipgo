@@ -16,16 +16,16 @@ standard library and the `zip` package of [klauspost/compress](https://github.co
 | Its own archives read back by five other programs, of 7[^written] | 7 | not measured | not measured |
 | Dependencies outside the standard library | 0 🥇 | 0 🥇 | 0 🥇 |
 | Added to a program[^size] | 203 kB 🥇 | 407 kB | 541 kB |
-| Reading, 32 MiB of markup (Deflate)[^bench] | 525 MB/s | 397 MB/s | 563 MB/s 🥇 |
-| Reading, 32 MiB of numeric rows (Deflate) | 270 MB/s | 239 MB/s | 354 MB/s 🥇 |
-| Reading 100,000 small entries, opening included | 748 ms | 802 ms | 537 ms 🥇 |
+| Reading, 32 MiB of markup (Deflate)[^bench] | 525 MB/s | 397 MB/s | 566 MB/s 🥇 |
+| Reading, 32 MiB of numeric rows (Deflate) | 268 MB/s | 239 MB/s | 353 MB/s 🥇 |
+| Reading 100,000 small entries, opening included | 753 ms | 785 ms | 524 ms 🥇 |
 | Memory allocated for that | 36 MiB 🥇 | 54 MiB | 452 MiB |
-| Opening an archive of 100,000 entries[^open] | 45.4 ms | 9.1 ms 🥇 | 9.1 ms 🥇 |
-| Writing, 32 MiB of markup (Deflate) | 72 MB/s | 49 MB/s | 336 MB/s 🥇 |
-| Writing, 32 MiB of numeric rows (Deflate) | 55 MB/s | 47 MB/s | 140 MB/s 🥇 |
-| Writing 100,000 small entries | 89 MB/s | 70 MB/s | 299 MB/s 🥇 |
-| Archive of 32 MiB of markup[^arch] | 7.26 MB 🥇 | 7.27 MB | 7.58 MB |
-| Archive of 32 MiB of numeric rows | 13.55 MB | 13.03 MB 🥇 | 13.96 MB |
+| Opening an archive of 100,000 entries[^open] | 42.8 ms | 11.3 ms | 11.1 ms 🥇 |
+| Writing, 32 MiB of markup (Deflate)[^check] | 180 MB/s, 272 MB/s unchecked | 49 MB/s | 335 MB/s 🥇 |
+| Writing, 32 MiB of numeric rows (Deflate) | 85 MB/s, 116 MB/s unchecked | 47 MB/s | 140 MB/s 🥇 |
+| Writing 100,000 small entries | 107 MB/s, 158 MB/s unchecked | 71 MB/s | 301 MB/s 🥇 |
+| Archive of 32 MiB of markup[^arch] | 7.19 MB 🥇 | 7.27 MB | 7.58 MB |
+| Archive of 32 MiB of numeric rows | 13.09 MB | 13.03 MB 🥇 | 13.96 MB |
 | Local headers checked against the directory | yes, when the archive is opened | no | no |
 | Names with `../`, absolute or duplicate names[^names] | refused | read | read |
 | Limits on entries, sizes and compression ratio | on by default | none | none |
@@ -64,6 +64,9 @@ it: [How the comparison was measured](#how-the-comparison-was-measured), in full
     local header and checks it against the central directory, so that a file with two readings is refused
     before any content is delivered. The other two read the directory only. The cost is about half a
     microsecond per entry and disappears when the content is read as well (the row above).
+[^check]: By default the writer decodes every DEFLATE stream it has just produced and compares it with the
+    content, so a fault of its compressor cannot give a damaged archive without an error; the other two do not
+    check their output. "Unchecked" is the same writer with `Options.SkipSelfCheck`; the archive is the same.
 [^arch]: Each library as it ships; gozipgo has one compression setting. `compress/flate` at its default level,
     which `archive/zip` does not use, gives 6.73 MB and 12.96 MB.
 [^names]: The archives `name-traversal`, `name-absolute`, `name-duplicate` and others of the hostile corpus.
@@ -90,9 +93,11 @@ it: [How the comparison was measured](#how-the-comparison-was-measured), in full
 - **Evidence, not claims**: 86 numbered requirements, each with a test; every field of the format has a recorded
   verdict; every number here comes from a tool in the repository and a raw result next to it.
 
-Where it is weaker: klauspost/compress is much faster, 2.5 to 4.7 times when writing and up to 1.4 times when
-reading, at the price of larger archives and, on many small entries, twelve times the memory. Opening an archive takes gozipgo about five times as
-long as the others. In strict mode it refuses real archives that other programs open, above all those with names
+Where it is weaker: klauspost/compress is faster, 1.6 to 2.8 times when writing (1.2 to 1.9 times against the
+writer without its self-check) and up to 1.4 times when reading, at the price of larger archives and, on many
+small entries, twelve times the memory. On content that does not compress, such as images, it writes sixteen
+times faster: it recognizes such data and copies them, gozipgo does not yet. Opening an archive takes gozipgo
+about four times as long as the others. In strict mode it refuses real archives that other programs open, above all those with names
 outside ASCII and no UTF-8 flag. It does not repair damaged archives, does not extract to disk, and has no
 encryption, no multi-volume archives and no methods other than Stored and Deflate. gozipgo is new and has one consumer so
 far, a DOCX reader of the same family.

@@ -86,6 +86,13 @@ pozostałe punkty (bajty jako kontrakt, bloki, kody Huffmana, pełne kody) obowi
 ### Pomiar
 
 9. Wynik `tools/bench` po tej zmianie jest w `docs/comparison.md` i `docs/results/`; README bierze liczby stamtąd.
+   Commit `1d5412e`, Apple M4, mediana z 7 przebiegów, zapis z samokontrolą / bez niej / `klauspost/compress`:
+   znaczniki 180 / 272 / 335 MB/s (poprzedni kompresor: 72), wiersze liczb 85 / 116 / 140 (55), szum
+   429 / 478 / 6893 (208), zera 1262 / 1936 / 4774 (1153), 100 000 małych wpisów 107 / 158 / 301 (89). Rozmiar
+   wobec `compress/flate` na poziomie domyślnym: znaczniki 1,069 (było 1,078), wiersze liczb 1,010 (1,045),
+   małe wpisy 1,019 (0,998). Zostaje do zrobienia, jeśli będzie potrzeba: rozpoznawanie danych, których nie
+   da się skompresować (tu `klauspost/compress` jest 16 razy szybszy), i szybka ścieżka dekodera, która
+   obniżyłaby koszt samokontroli.
 
 ## Sprawdzone i odrzucone
 
