@@ -12,7 +12,7 @@ go -C tools/bench run . -root ../..       # speed and memory; raw: docs/results/
 ## Behaviour
 
 <!-- compare:begin -->
-Measured on 2026-11-27 at commit `95df9cd` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
+Measured on 2026-11-27 at commit `0a48ee9` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
 
 - gozipgo: this commit
 - archive/zip: go1.26.6
@@ -23,7 +23,7 @@ Measured on 2026-11-27 at commit `95df9cd` on darwin/arm64, Apple M4, macOS 27.0
 
 ### Conformance corpus
 
-22 archives made by real programs (`testdata/interop`). "same" means the reader gives exactly the files
+25 archives made by real programs (`testdata/interop`). "same" means the reader gives exactly the files
 the manifest records (SHA-256 of every file; for readers that list names, the names too, where the archive stores
 them as UTF-8 or ASCII).
 
@@ -43,6 +43,8 @@ them as UTF-8 or ASCII).
 | `infozip-stored.zip` | same with `UnflaggedNames=UTF8` | same | same | same | same | same |
 | `infozip-stream.zip` | same with `UnflaggedNames=UTF8` | same | same | same | same | same |
 | `infozip-zip64.zip` | same with `UnflaggedNames=UTF8` | same | same | same | same | same |
+| `libreoffice-docx.docx` | same | same | same | same | same | same |
+| `libreoffice-odt.odt` | same | same | same | same | same | same |
 | `macos-ditto.zip` | same with `UnflaggedNames=UTF8` | same | same | same | same | same |
 | `macos-ditto-rsrc.zip` | same with `UnflaggedNames=UTF8` | same | same | same | same | differs (8 files) |
 | `python-deflated.zip` | same | same | same | same | same | same |
@@ -51,7 +53,8 @@ them as UTF-8 or ASCII).
 | `python-zip64.zip` | same | same | same | same | same | same |
 | `windows11-7zip.zip` | same with `UnflaggedNames=CodePage:CP852` | same | rejects: exit status 50, 1 files written | same | same | same |
 | `windows11-explorer.zip` | same | same | same | same | same | same |
-| **same** | **22 / 22** | **22 / 22** | **18 / 22** | **22 / 22** | **22 / 22** | **21 / 22** |
+| `word-docx.docx` | same | same | same | same | same | same |
+| **same** | **25 / 25** | **25 / 25** | **21 / 25** | **25 / 25** | **25 / 25** | **24 / 25** |
 
 ### Hostile corpus
 

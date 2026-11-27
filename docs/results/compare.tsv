@@ -1,6 +1,6 @@
 # gozipgo tools/compare
 # date	2026-11-27
-# commit	95df9cd
+# commit	0a48ee9
 # machine	darwin/arm64, Apple M4, macOS 27.0.1
 # candidate	gozipgo	this commit
 # candidate	archive/zip	go1.26.6
@@ -93,6 +93,18 @@ interop	infozip-zip64.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	7-Zip	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	Python zipfile	reads		8	0	791c6ad1	true
 interop	infozip-zip64.zip	bsdtar (libarchive)	reads		8	0	791c6ad1	true
+interop	libreoffice-docx.docx	gozipgo	reads		10	0	5505abaf	true
+interop	libreoffice-docx.docx	archive/zip	reads		10	0	5505abaf	true
+interop	libreoffice-docx.docx	Info-ZIP unzip	reads		10	0	5505abaf	true
+interop	libreoffice-docx.docx	7-Zip	reads		10	0	5505abaf	true
+interop	libreoffice-docx.docx	Python zipfile	reads		10	0	5505abaf	true
+interop	libreoffice-docx.docx	bsdtar (libarchive)	reads		10	0	5505abaf	true
+interop	libreoffice-odt.odt	gozipgo	reads		8	0	c5106d1f	true
+interop	libreoffice-odt.odt	archive/zip	reads		8	0	c5106d1f	true
+interop	libreoffice-odt.odt	Info-ZIP unzip	reads		8	0	c5106d1f	true
+interop	libreoffice-odt.odt	7-Zip	reads		8	0	c5106d1f	true
+interop	libreoffice-odt.odt	Python zipfile	reads		8	0	c5106d1f	true
+interop	libreoffice-odt.odt	bsdtar (libarchive)	reads		8	0	c5106d1f	true
 interop	macos-ditto.zip	gozipgo	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	archive/zip	reads		8	0	791c6ad1	true
 interop	macos-ditto.zip	Info-ZIP unzip	reads		8	0	791c6ad1	true
@@ -141,6 +153,12 @@ interop	windows11-explorer.zip	Info-ZIP unzip	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	7-Zip	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	Python zipfile	reads		8	0	333aac4a	true
 interop	windows11-explorer.zip	bsdtar (libarchive)	reads		8	0	333aac4a	true
+interop	word-docx.docx	gozipgo	reads		11	0	ab442197	true
+interop	word-docx.docx	archive/zip	reads		11	0	ab442197	true
+interop	word-docx.docx	Info-ZIP unzip	reads		11	0	ab442197	true
+interop	word-docx.docx	7-Zip	reads		11	0	ab442197	true
+interop	word-docx.docx	Python zipfile	reads		11	0	ab442197	true
+interop	word-docx.docx	bsdtar (libarchive)	reads		11	0	ab442197	true
 hostile	bomb-ratio	gozipgo	rejects	limit-ratio	0	0	e3b0c442	
 hostile	bomb-ratio	archive/zip	reads		1	0	fa819044	
 hostile	bomb-ratio	Info-ZIP unzip	reads		1	0	fa819044	
