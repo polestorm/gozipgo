@@ -148,6 +148,7 @@ Czytane w etapie 2. Każde pole jest porównywane z katalogiem centralnym (ENT-0
 | `end.dir-offset` | 4.4.24 | przesunięcie, przy którym katalog nie kończy się na początku rekordów końca | `reject zip-directory-out-of-bounds` | 1 |
 | `end.comment-length` | 4.4.25 | długość komentarza mniejsza niż liczba bajtów do końca pliku | `reject zip-trailing-data` | 1 |
 | `end.comment` | 4.4.26 | komentarz archiwum, nieinterpretowany | `expose` | 1 |
+| `end.comment.signature` | 4.3.1, 4.3.16 | sygnatura końca katalogu w komentarzu archiwum albo w polach rekordu | `reject zip-multiple-directory-ends` | 1 |
 
 ## Flaga ogólna (4.4.4)
 
