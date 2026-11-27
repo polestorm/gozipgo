@@ -1,6 +1,6 @@
 # gozipgo tools/compare
 # date	2026-11-27
-# commit	435fc4e
+# commit	95df9cd
 # machine	darwin/arm64, Apple M4, macOS 27.0.1
 # candidate	gozipgo	this commit
 # candidate	archive/zip	go1.26.6
@@ -195,6 +195,12 @@ hostile	two-ends-comment	Info-ZIP unzip	reads with a warning	exit status 1	1	0	a
 hostile	two-ends-comment	7-Zip	reads		2	0	04008f83	
 hostile	two-ends-comment	Python zipfile	reads		1	0	abcba814	
 hostile	two-ends-comment	bsdtar (libarchive)	reads		1	0	abcba814	
+hostile	two-ends-comment-trailing	gozipgo	rejects	zip-multiple-directory-ends	0	0	e3b0c442	
+hostile	two-ends-comment-trailing	archive/zip	reads		1	0	abcba814	
+hostile	two-ends-comment-trailing	Info-ZIP unzip	reads with a warning	exit status 1	1	0	abcba814	
+hostile	two-ends-comment-trailing	7-Zip	reads		2	0	04008f83	
+hostile	two-ends-comment-trailing	Python zipfile	reads		1	0	abcba814	
+hostile	two-ends-comment-trailing	bsdtar (libarchive)	reads		1	0	abcba814	
 hostile	concatenated	gozipgo	rejects	zip-directory-out-of-bounds	0	0	e3b0c442	
 hostile	concatenated	archive/zip	reads		1	0	abcba814	
 hostile	concatenated	Info-ZIP unzip	reads with a warning	exit status 1	1	0	abcba814	

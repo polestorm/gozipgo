@@ -12,7 +12,7 @@ go -C tools/bench run . -root ../..       # speed and memory; raw: docs/results/
 ## Behaviour
 
 <!-- compare:begin -->
-Measured on 2026-11-27 at commit `435fc4e` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
+Measured on 2026-11-27 at commit `95df9cd` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
 
 - gozipgo: this commit
 - archive/zip: go1.26.6
@@ -55,7 +55,7 @@ them as UTF-8 or ASCII).
 
 ### Hostile corpus
 
-39 archives built by the tests of the repository (`testdata/hostile.json`). A cell says what the reader did:
+40 archives built by the tests of the repository (`testdata/hostile.json`). A cell says what the reader did:
 "rejects", or "reads N" with the number of files it produced and a letter for their content, so two readers with
 different letters in one row read different content from the same file. "escapes" means files were written
 outside the directory the reader was told to extract into.
@@ -71,6 +71,7 @@ outside the directory the reader was told to extract into.
 | `directory-past-file` | the central directory offset points past the end of the file | rejects: `zip-directory-out-of-bounds` | rejects | rejects after writing 2 | rejects after writing 2 | rejects | reads 2 (A) |
 | `directory-over-data` | the central directory is declared to start inside the data of the first entry | rejects: `zip-directory-signature` | rejects | rejects | rejects after writing 2 | rejects | rejects |
 | `two-ends-comment` | a whole second archive in the comment of the first | rejects: `zip-multiple-directory-ends` | reads 1 (A) | reads 1 (A), warning | reads 2 (B) | reads 1 (A) | reads 1 (A) |
+| `two-ends-comment-trailing` | a second archive and one more byte in the comment of the first: the inner end record does not end with the file | rejects: `zip-multiple-directory-ends` | reads 1 (A) | reads 1 (A), warning | reads 2 (B) | reads 1 (A) | reads 1 (A) |
 | `concatenated` | two archives one after the other | rejects: `zip-directory-out-of-bounds` | reads 1 (A) | reads 1 (A), warning | reads 2 (B) | reads 1 (A) | reads 1 (A) |
 | `data-after-end` | bytes after the comment of the end of central directory record | rejects: `zip-trailing-data` | reads 2 (A) | reads 2 (A) | reads 2 (A) | reads 2 (A) | reads 2 (A) |
 | `local-name` | the local header names the entry e.exe, the directory a.txt | rejects: `zip-local-header-mismatch` | reads 2 (A) | reads 2 (A), warning | reads 2 (A) | rejects | reads 2 (A) |
@@ -101,7 +102,7 @@ outside the directory the reader was told to extract into.
 | `inflate-truncated` | the compressed data end inside the stream | rejects: `inflate-truncated` | rejects | rejects after writing 1 | rejects after writing 1 | rejects | rejects after writing 1 |
 | `inflate-trailing-data` | bytes after the end of the DEFLATE stream inside the entry | rejects: `inflate-trailing-data` | reads 1 (A) | reads 1 (A) | rejects after writing 1 | reads 1 (A) | rejects after writing 1 |
 | `crc` | the content does not have the declared CRC-32 | rejects: `zip-checksum` | rejects | rejects after writing 2 | rejects after writing 2 | rejects | rejects after writing 2 |
-| **reads** | | **0 / 39** | **23 / 39** | **21 / 39** | **18 / 39** | **24 / 39** | **19 / 39** |
+| **reads** | | **0 / 40** | **24 / 40** | **22 / 40** | **19 / 40** | **25 / 40** | **20 / 40** |
 
 ### Archives written by gozipgo
 
