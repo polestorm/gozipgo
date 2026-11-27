@@ -16,14 +16,14 @@ standard library and the `zip` package of [klauspost/compress](https://github.co
 | Its own archives read back by five other programs, of 7[^written] | 7 | not measured | not measured |
 | Dependencies outside the standard library | 0 🥇 | 0 🥇 | 0 🥇 |
 | Added to a program[^size] | 203 kB 🥇 | 407 kB | 541 kB |
-| Reading, 32 MiB of markup (Deflate)[^bench] | 517 MB/s | 392 MB/s | 551 MB/s 🥇 |
-| Reading, 32 MiB of numeric rows (Deflate) | 259 MB/s | 236 MB/s | 350 MB/s 🥇 |
-| Reading 100,000 small entries, opening included | 790 ms | 783 ms | 520 ms 🥇 |
+| Reading, 32 MiB of markup (Deflate)[^bench] | 525 MB/s | 397 MB/s | 563 MB/s 🥇 |
+| Reading, 32 MiB of numeric rows (Deflate) | 270 MB/s | 239 MB/s | 354 MB/s 🥇 |
+| Reading 100,000 small entries, opening included | 748 ms | 802 ms | 537 ms 🥇 |
 | Memory allocated for that | 36 MiB 🥇 | 54 MiB | 452 MiB |
-| Opening an archive of 100,000 entries[^open] | 45.7 ms | 9.4 ms 🥇 | 9.6 ms |
-| Writing, 32 MiB of markup (Deflate) | 72 MB/s | 49 MB/s | 335 MB/s 🥇 |
-| Writing, 32 MiB of numeric rows (Deflate) | 55 MB/s | 45 MB/s | 140 MB/s 🥇 |
-| Writing 100,000 small entries | 89 MB/s | 70 MB/s | 281 MB/s 🥇 |
+| Opening an archive of 100,000 entries[^open] | 45.4 ms | 9.1 ms 🥇 | 9.1 ms 🥇 |
+| Writing, 32 MiB of markup (Deflate) | 72 MB/s | 49 MB/s | 336 MB/s 🥇 |
+| Writing, 32 MiB of numeric rows (Deflate) | 55 MB/s | 47 MB/s | 140 MB/s 🥇 |
+| Writing 100,000 small entries | 89 MB/s | 70 MB/s | 299 MB/s 🥇 |
 | Archive of 32 MiB of markup[^arch] | 7.26 MB 🥇 | 7.27 MB | 7.58 MB |
 | Archive of 32 MiB of numeric rows | 13.55 MB | 13.03 MB 🥇 | 13.96 MB |
 | Local headers checked against the directory | yes, when the archive is opened | no | no |
@@ -86,7 +86,7 @@ standard library and the `zip` package of [klauspost/compress](https://github.co
 - **Evidence, not claims**: 85 numbered requirements, each with a test; every field of the format has a recorded
   verdict; every number here comes from a tool in the repository and a raw result next to it.
 
-Where it is weaker: klauspost/compress is much faster, 2.5 to 4.7 times when writing and up to 1.5 times when
+Where it is weaker: klauspost/compress is much faster, 2.5 to 4.7 times when writing and up to 1.4 times when
 reading, at the price of larger archives and, on many small entries, twelve times the memory. Opening an archive takes gozipgo about five times as
 long as the others. In strict mode it refuses real archives that other programs open, above all those with names
 outside ASCII and no UTF-8 flag. It does not repair damaged archives, does not extract to disk, and has no
