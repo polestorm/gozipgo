@@ -289,8 +289,11 @@ type endRecord struct {
 
 // findEnd szuka rekordu końca katalogu w ostatnich 22 + 65 535 bajtach pliku (DIR-001, DIR-002). Kandydatem jest
 // każde wystąpienie sygnatury, po którym rekord wraz z komentarzem o zadeklarowanej długości kończy się dokładnie
-// na końcu pliku. Musi być dokładnie jeden kandydat: sygnatura w komentarzu albo w danych, która tego warunku nie
-// spełnia, nie jest drugą interpretacją, bo żaden czytnik nie może jej wziąć za rekord kończący ten plik.
+// na końcu pliku. Musi być dokładnie jeden kandydat, a po jego pierwszym bajcie, czyli w polach rekordu
+// i w komentarzu, nie może być sygnatury końca katalogu: programy, które szukają ostatniej sygnatury i nie
+// sprawdzają długości komentarza (zmierzone: archive/zip, zipfile Pythona, UnZip, bsdtar), zaczęłyby od niej
+// i przeczytały inny katalog (znalezisko FuzzReader z 2026-11-27). Sygnatura w danych przed rekordem nie jest
+// drugą interpretacją.
 func findEnd(ra io.ReaderAt, size int64) (*endRecord, error) {
 	if size < format.EndSize {
 		return nil, archiveError(CodeNoDirectoryEnd, 0, "the file is shorter than an end of central directory record")
@@ -324,6 +327,12 @@ func findEnd(ra io.ReaderAt, size int64) (*endRecord, error) {
 				"data after the comment of the end of central directory record")
 		}
 		return nil, archiveError(CodeNoDirectoryEnd, size, "no end of central directory record that ends with the file")
+	}
+	for q := found + 1; q+4 <= len(tail); q++ {
+		if binary.LittleEndian.Uint32(tail[q:]) == format.SigEnd {
+			return nil, archiveError(CodeMultipleDirectoryEnds, base+int64(q),
+				"an end of central directory signature inside the end of central directory record or its comment")
+		}
 	}
 	b := tail[found:]
 	return &endRecord{

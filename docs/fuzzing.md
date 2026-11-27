@@ -51,3 +51,13 @@ pola rekordów, nie tylko bajty).
 | Data | Commit | Host i sprzęt | Fuzzer | Czas zegarowy | Wykonania | Wynik |
 |---|---|---|---|---|---|---|
 | — | `4a0326b` | Synology StormSyn (DS224+, Celeron J4125, 4 rdzenie) | `FuzzInflate`, `FuzzReader` | zlecone 25 h | — | w kolejce od 2026-11-27 (za zadaniami innych projektów); wiersze z wynikiem dopisze `tools/fuzz -import` po zakończeniu. Krótkie sprawdzenia lokalne z etapów 1–3 są w tabeli pomiarów w `testing.md` |
+| 2026-11-27 10:02 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzDeflate` (./internal/deflate) | 10m2s | 515549 | ok |
+| 2026-11-27 10:12 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzInflate` (./internal/inflate) | 10m5s | 16320196 | ok |
+| 2026-11-27 10:22 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzReader` (./zipreader) | 7m39s | 1572191 | **błąd**: input testdata/fuzz/FuzzReader/5f059cbfad239190 |
+| 2026-11-27 10:30 | `65eabd7` (zmiany) | lokalnie (darwin/arm64, 10 rdzeni) | `FuzzRoundTrip` (./zipwriter) | 10m2s | 1139622 | ok |
+
+## Znaleziska
+
+| Data | Fuzzer | Wejście | Co pokazało | Poprawka |
+|---|---|---|---|---|
+| 2026-11-27 | `FuzzReader` (lokalnie, po 7 min 39 s) | `zipreader/testdata/fuzz/FuzzReader/5f059cbfad239190` | archiwum przyjęte ściśle, którego `archive/zip` nie przyjmuje: komentarz zawierał sygnaturę końca katalogu, a rekord od niej zaczęty nie kończył się równo z plikiem, więc nie był dla nas kandydatem. Zbudowany z tego przykład (drugie archiwum i jeden bajt w komentarzu) czytają inaczej niż my `archive/zip`, Python, UnZip i bsdtar. Luka była w v0.1.0 | sygnatura końca katalogu po pierwszym bajcie wybranego rekordu daje `zip-multiple-directory-ends` (DIR-002, ADR 0002 pkt 3); archiwum `two-ends-comment-trailing` w korpusie wrogim; wejście zostaje jako test regresji |

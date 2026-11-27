@@ -51,9 +51,9 @@ kolumnę „Stan” w `docs/roadmap.md`.
 - etapy w kolejności z `docs/roadmap.md`; **etapy 0 i 1 wykonane 2026-11-26** (narzędzia, budowniczy, korpus,
   inwentarz formatu, czytnik katalogu: ADR 0002), **etap 2 wykonany 2026-11-27** (nagłówki lokalne, układ pliku,
   własny dekoder DEFLATE, `Open`: ADR 0003); **v0.1.0 wydane 2026-11-27**; **etap 3 wykonany 2026-11-27** poza kampanią fuzzingu
-  (korpus wrogi, `tools/compare`, `tools/bench`: ADR 0004; K5 czeka w kolejce na Synology, v0.2.0 po kampanii);
-  **etap 4 wykonany 2026-11-27** (`zipwriter`, własny kompresor `internal/deflate`: ADR 0005; v0.3.0 po kampanii
-  fuzzingu na commicie kandydata); **następny: etap 5** (odbiór: K1–K9, pakiet dowodów, próba u `godocxgo`);
+  (korpus wrogi, `tools/compare`, `tools/bench`: ADR 0004);
+  **etap 4 wykonany 2026-11-27** (`zipwriter`, własny kompresor `internal/deflate`: ADR 0005); **v0.2.0 obejmie etapy 3 i 4**
+  (decyzja właściciela z 2026-11-27) i wyjdzie po kampanii fuzzingu 24 h na commicie kandydata (K5); **następny: etap 5** (odbiór: K1–K9, pakiet dowodów, próba u `godocxgo`);
 - **v0.1.0 po etapie 2** (czytnik kompletny) odblokowuje `godocxgo`;
 - pytania otwarte (`docs/adr/open-questions.md`) rozstrzygamy w etapach, z rekomendacją; pytanie 1 rozstrzygnięte
   2026-11-26 (własna dekompresja DEFLATE), pytanie 2 rozstrzygnięte 2026-11-27 (własny kompresor);

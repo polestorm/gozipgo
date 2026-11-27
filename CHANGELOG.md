@@ -5,6 +5,14 @@ Versions follow semantic versioning. In 0.x the API may grow; an incompatible ch
 
 ## Unreleased
 
+Security fix in the reader (found by `FuzzReader` on 2026-11-27, present in v0.1.0): an archive whose comment
+holds the signature of an end of central directory record was accepted even when the record starting there did not
+end with the file. `archive/zip`, Python `zipfile`, UnZip and bsdtar start from the last signature without that
+check, so a second archive followed by one more byte in the comment of the first made them read other files than
+gozipgo did. Such an archive is now rejected with `zip-multiple-directory-ends`; so is an end record with the
+signature inside its own fields. The set of archives accepted in strict mode narrows by exactly these
+(`docs/adr/0002-directory-reading-rules.md`, point 3).
+
 Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
 
 - New package `zipwriter`: `New`, `Writer.Add` (whole content, sizes in the local header), `Writer.Create`

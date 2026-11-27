@@ -77,9 +77,24 @@ func TestDirectoryEnd(t *testing.T) {
 	// Komentarz zadeklarowany dłuższy niż plik: żaden rekord nie kończy się równo z plikiem.
 	wantCode(t, "comment longer than the file", base(func(a *testkit.Archive) { a.End.CommentLength = 5 }), Options{}, CodeNoDirectoryEnd)
 
-	// Sygnatura w komentarzu, która nie jest rekordem kończącym się równo z plikiem, nie jest drugą interpretacją.
-	wantCode(t, "signature in the comment", base(func(a *testkit.Archive) {
-		a.End.SetComment([]byte("PK\x05\x06 is how an end record starts, and this comment is longer than one"))
+	// Sygnatura w komentarzu, także gdy nie jest rekordem kończącym się równo z plikiem: programy, które biorą
+	// ostatnią sygnaturę bez sprawdzania długości komentarza, zaczęłyby od niej.
+	_, e = wantCode(t, "signature in the comment", base(func(a *testkit.Archive) {
+		a.End.SetComment([]byte("note PK\x05\x06 is how an end record starts, and this comment is longer than one"))
+	}), Options{}, CodeMultipleDirectoryEnds)
+	if e != nil && e.Offset != int64(len(valid)+len("note ")) {
+		t.Errorf("signature in the comment reported at %d", e.Offset)
+	}
+	wantCode(t, "signature at the very end of the comment", base(func(a *testkit.Archive) {
+		a.End.SetComment([]byte("PK\x05\x06"))
+	}), Options{}, CodeMultipleDirectoryEnds)
+	// To samo w polach samego rekordu (tu: przesunięcie katalogu równe sygnaturze).
+	wantCode(t, "signature in a field of the end record", base(func(a *testkit.Archive) {
+		a.End.DirOffset = format.SigEnd
+	}), Options{}, CodeMultipleDirectoryEnds)
+	// Trzy bajty sygnatury to nie sygnatura.
+	wantCode(t, "part of a signature in the comment", base(func(a *testkit.Archive) {
+		a.End.SetComment([]byte("PK\x05 and PK\x05\x05 and K\x05\x06"))
 	}), Options{}, "")
 	// Druga interpretacja: w komentarzu jest cały rekord, który też kończy się równo z plikiem.
 	_, e = wantCode(t, "second record in the comment", base(func(a *testkit.Archive) {

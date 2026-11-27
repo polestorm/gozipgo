@@ -83,6 +83,15 @@
       "sha256": "02fbc8c958557c00ce3e045d69b240655bb7c1ab038c3c8522d9fe3f3a1910fd"
     },
     {
+      "id": "two-ends-comment-trailing",
+      "family": "g",
+      "what": "a second archive and one more byte in the comment of the first: the inner end record does not end with the file",
+      "code": "zip-multiple-directory-ends",
+      "at_read": false,
+      "size": 327,
+      "sha256": "cfcd1077112b817a1ee9260be3b72d5eb4dba8dbd4d84136608312689e1741ff"
+    },
+    {
       "id": "concatenated",
       "family": "g",
       "what": "two archives one after the other",

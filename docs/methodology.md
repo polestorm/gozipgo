@@ -33,7 +33,7 @@ writes `docs/results/compare.tsv` (one row per archive and reader) and the two t
 - the conformance corpus, `testdata/interop`: archives made by real programs, each with the program, version and
   command in `manifest.json`, which also records the SHA-256 of the content of every entry, computed when the
   corpus was made;
-- the hostile corpus: 39 archives in the 14 families of requirement SAFE-003. They are built by the test builder
+- the hostile corpus: 40 archives in the 14 families of requirement SAFE-003. They are built by the test builder
   of the repository, byte for byte the same on every system and Go version; `testdata/hostile.json` records what
   each one is, the code gozipgo gives and the SHA-256 of the archive. `go test ./zipreader -run
   TestHostileArchives -write-hostile DIR` writes them as files; the tool does that itself and checks the sums.

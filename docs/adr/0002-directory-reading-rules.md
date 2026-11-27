@@ -23,8 +23,15 @@ korpus zgodności pokazały coś innego niż szkic.
 3. **Koniec katalogu (DIR-002).** Kandydatem jest każda sygnatura w oknie 22 + 65 535 bajtów, po której rekord
    z komentarzem kończy się dokładnie na końcu pliku. Dokładnie jeden kandydat: przyjęcie; dwa:
    `zip-multiple-directory-ends`; żaden: `zip-trailing-data`, gdy jakiś rekord kończy się przed końcem pliku,
-   inaczej `zip-no-directory-end`. Sygnatura w komentarzu albo w danych (archiwum Stored w archiwum), która warunku
-   nie spełnia, nie jest drugą interpretacją.
+   inaczej `zip-no-directory-end`. Sygnatura w danych (archiwum Stored w archiwum), która warunku nie spełnia,
+   nie jest drugą interpretacją.
+   **Zmiana z 2026-11-27 (poprawka bezpieczeństwa):** pierwotnie to samo dotyczyło sygnatury w komentarzu.
+   `FuzzReader` znalazł archiwum przyjęte ściśle, które `archive/zip` odrzuca, a zbudowany z niego przykład
+   (drugie archiwum i jeden bajt w komentarzu pierwszego) pokazał, że `archive/zip`, `zipfile` Pythona, UnZip
+   i bsdtar biorą ostatnią sygnaturę bez sprawdzania długości komentarza i czytają inny plik niż my. Teraz
+   sygnatura końca katalogu gdziekolwiek po pierwszym bajcie wybranego rekordu (w jego polach albo w komentarzu)
+   daje `zip-multiple-directory-ends`. Koszt: archiwum, którego komentarz zawiera cztery bajty `PK\x05\x06`,
+   jest odrzucane; w korpusach takiego nie ma.
 4. **Lokalizator ZIP64 jest rozpoznawany po sygnaturze**, także gdy zwykły rekord nie ma wartości granicznych:
    wtedy rekordy ZIP64 muszą być w pełni zgodne ze zwykłym rekordem, inaczej `zip64-inconsistent`. Powód: program,
    który woli rekordy ZIP64, przeczytałby inny katalog. Rekordy ZIP64 „na zapas” (Info-ZIP `-fz`) są przyjmowane.

@@ -67,7 +67,7 @@ w manifeście nie wchodzi do korpusu. Archiwa spoza listy (od odbiorców, z siec
 
 ## Korpus wrogi
 
-39 archiwów w 14 rodzinach z `../requirements/safety.md` (SAFE-003). Buduje je test (`hostileArchives`
+40 archiwów w 14 rodzinach z `../requirements/safety.md` (SAFE-003). Buduje je test (`hostileArchives`
 w `../zipreader/hostile_test.go`), bajt w bajt tak samo na każdym systemie; repozytorium trzyma tylko manifest
 `hostile.json` (opis, kod, którym czytnik odrzuca archiwum, SHA-256). Pliki dla innych programów zapisuje
 `go test ./zipreader -run TestHostileArchives -write-hostile KATALOG`; `tools/compare` robi to samo i sprawdza sumy.

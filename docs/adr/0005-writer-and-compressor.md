@@ -107,5 +107,5 @@ przejrzano z APPNOTE 6.3.10 i RFC 1951 i przyjęto; poniżej decyzje, które prz
 - Rozmiar (ZW-006, `tools/bench`): 1,078 wyniku `compress/flate` na znacznikach i 1,045 na wierszach liczb
   (próg 1,1).
 - Kampania fuzzingu dla wydania musi objąć `FuzzRoundTrip` i `FuzzDeflate`; zlecenie na commicie kandydata.
-- Do decyzji właściciela: czy v0.3.0 (pisarz) wychodzi osobno po v0.2.0, czy jedno wydanie obejmuje etapy 3 i 4;
-  czy 1.0 obejmuje pisarza (pytanie 10).
+- Decyzja właściciela z 2026-11-27: jedno wydanie v0.2.0 obejmuje etapy 3 i 4, po kampanii fuzzingu na commicie
+  kandydata. Do decyzji zostaje, czy 1.0 obejmuje pisarza (pytanie 10).

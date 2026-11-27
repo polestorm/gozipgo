@@ -103,6 +103,8 @@ func hostileArchives() []hostileArchive {
 	inner := zip(nil, testkit.File{Name: "inner.txt", Data: []byte("inner")})
 	add("two-ends-comment", "g", "a whole second archive in the comment of the first", CodeMultipleDirectoryEnds, false,
 		zip(func(a *testkit.Archive) { a.End.SetComment(inner) }))
+	add("two-ends-comment-trailing", "g", "a second archive and one more byte in the comment of the first: the inner end record does not end with the file", CodeMultipleDirectoryEnds, false,
+		zip(func(a *testkit.Archive) { a.End.SetComment(append(append([]byte(nil), inner...), 'x')) }))
 	add("concatenated", "g", "two archives one after the other", CodeDirectoryOutOfBounds, false, append(zip(nil), inner...))
 	add("data-after-end", "g", "bytes after the comment of the end of central directory record", CodeTrailingData, false,
 		zip(func(a *testkit.Archive) { a.Trailer = []byte("trailing bytes") }))

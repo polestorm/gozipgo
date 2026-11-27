@@ -241,6 +241,7 @@ func inventoryCases() map[string]inventoryCase {
 		base(func(a *testkit.Archive) { a.End.DirOffset = 0xFFFFFFF0 }),
 	}}
 	c["end.comment-length"] = one(base(func(a *testkit.Archive) { a.Trailer = []byte("x") }))
+	c["end.comment.signature"] = one(base(func(a *testkit.Archive) { a.End.SetComment([]byte("see PK\x05\x06")) }))
 	c["end.comment"] = inventoryCase{
 		archives: [][]byte{base(func(a *testkit.Archive) { a.End.SetComment([]byte("archive \xfe comment")) })},
 		check: func(r *Reader) string {
