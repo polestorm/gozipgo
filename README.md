@@ -7,7 +7,7 @@ same bytes every time. No cgo, no dependencies outside the Go standard library, 
 
 Compared with the two ZIP packages Go programs use today, [`archive/zip`](https://pkg.go.dev/archive/zip) of the
 standard library and the `zip` package of [klauspost/compress](https://github.com/klauspost/compress)[^ref]
-(the corpus and the method are [below](#the-test-corpus)):
+(corpus and method are linked under the table):
 
 | | gozipgo | `archive/zip` (Go 1.26.6) | klauspost/compress 1.20.5 |
 |---|:---:|:---:|:---:|
@@ -36,6 +36,10 @@ standard library and the `zip` package of [klauspost/compress](https://github.co
 | Encryption, multi-volume archives | no | no | no |
 | License | Apache 2.0 | BSD 3-Clause | BSD 3-Clause and others |
 | GitHub popularity[^pop] | new | part of Go | 5,734 stars |
+
+Where the archives come from: [The test corpus](#the-test-corpus). How each number was measured and how to repeat
+it: [How the comparison was measured](#how-the-comparison-was-measured), in full in
+[docs/methodology.md](docs/methodology.md); raw results: [docs/results](docs/results/).
 
 [^ref]: Both are only run, as programs and through their public API; gozipgo is written from the specifications,
     not from the source code of other implementations ([docs/provenance.md](docs/provenance.md)).
