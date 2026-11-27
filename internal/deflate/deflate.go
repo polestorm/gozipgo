@@ -1,11 +1,12 @@
 // Package deflate koduje strumień DEFLATE według RFC 1951. Napisany z tekstu RFC (format bloków w rozdziale 3,
-// opis dopasowań przez łańcuchy skrótów i odroczonego wyboru w rozdziale 4) i z opisu algorytmu package-merge
-// (Larmore, Hirschberg, 1990) dla kodów o ograniczonej długości; compress/flate służy tylko jako wyrocznia
-// w testach (docs/provenance.md).
+// odroczony wybór dopasowań z rozdziału 4) i z opisu algorytmu package-merge (Larmore, Hirschberg, 1990) dla
+// kodów o ograniczonej długości. Dopasowań szuka w dwóch tablicach skrótów, bez łańcuchów (ADR 0007);
+// compress/flate służy tylko jako wyrocznia w testach (docs/provenance.md).
 //
 // Algorytm i jego parametry są stałe: te same dane dają te same bajty na każdym systemie, w każdej architekturze
 // i w każdej wersji Go, niezależnie od tego, jak wywołujący dzieli dane na wywołania Write. Zmiana którejkolwiek
-// stałej z tego pliku zmienia bajty wyjścia, więc jest zmianą formatu wyniku biblioteki (ADR 0005).
+// stałej z tego pliku, poza rozmiarem bufora, zmienia bajty wyjścia, więc jest zmianą formatu wyniku biblioteki
+// (ADR 0005 pkt 2).
 //
 // Koder ma stałą pamięć (bufor wejścia, tablice skrótów, symbole bloku) i nie alokuje w czasie pracy.
 package deflate
@@ -19,33 +20,46 @@ import (
 // Parametry algorytmu. Każdy wpływa na bajty wyjścia.
 const (
 	windowSize = 32768 // największa odległość dopasowania (RFC 1951, 3.2.5)
-	minMatch   = 3
+	minMatch   = 3     // najkrótsze dopasowanie formatu; od niego liczona jest długość w symbolu
 	maxMatch   = 258
 
-	bufSize  = 4 * windowSize // bufor wejścia: okno, bieżący blok i dane do przodu
-	hashBits = 15
-	hashLen  = 4          // skrót liczymy z czterech bajtów: łańcuch nie zbiera przypadkowych trafień na trzech
-	hashMul  = 0x9E3779B1 // 2^32 / złoty podział: mnożnik skrótu
+	// Bufor wejścia: okno, bieżący blok i dane do przodu. Im większy, tym rzadziej dane i tablice trzeba
+	// przesuwać; rozmiar nie wpływa na bajty wyjścia.
+	bufSize = 32 * windowSize
 
-	// Blok kończy się po maxTokens symbolach albo gdy następny symbol mógłby wyprowadzić go ponad maxBlockBytes
-	// bajtów wejścia. Dzięki temu blok mieści się w jednym bloku niezakodowanym, a jego dane są jeszcze w buforze.
+	// Dwie tablice skrótów bez łańcuchów: krótka pamięta ostatnią pozycję o tych samych czterech bajtach, długa
+	// o tych samych ośmiu. Każda pozycja ma więc najwyżej dwóch kandydatów: bliskiego i takiego, który
+	// prawdopodobnie zgadza się dalej.
+	shortLen  = 4
+	longLen   = 8
+	shortBits = 15
+	longBits  = 17
+	shortMul  = 0x9E3779B1         // 2^32 / złoty podział
+	longMul   = 0x9E3779B185EBCA87 // 2^64 / złoty podział
+
+	// Blok kończy się, gdy zbliża się do maxTokens symboli albo maxBlockBytes bajtów wejścia, zawsze w chwili,
+	// w której żadne dopasowanie nie jest odroczone. Zapas pokrywa to, co może dojść do następnego sprawdzenia:
+	// ciąg odroczeń (coraz dłuższe dopasowania, krótsze niż lazyLength, każde z jednym literałem), wydane
+	// dopasowanie albo literały bez szukania, a na końcu strumienia jeszcze ostatnie bajty. Dzięki temu blok
+	// mieści się w jednym bloku niezakodowanym, a jego dane są jeszcze w buforze.
 	maxTokens     = 16384
 	maxBlockBytes = 65535
+	tokenSlack    = 2*lazyLength + maxSkip
+	byteSlack     = 2*maxMatch + 2*lazyLength
 
 	// Pozycja jest kodowana, gdy ma przed sobą tyle bajtów (albo strumień się kończy): najdłuższe dopasowanie
-	// i bajty skrótu ostatniej pozycji, którą ono obejmuje.
-	lookahead = maxMatch + hashLen + 1
+	// i osiem bajtów skrótu ostatniej pozycji, którą ono obejmuje.
+	lookahead = maxMatch + longLen
 
-	maxChain   = 32   // ile kandydatów z łańcucha skrótu sprawdzamy
-	goodLength = 8    // od tej długości odroczonego dopasowania szukamy lepszego już tylko w ćwierci łańcucha
-	lazyLength = 64   // od tej długości dopasowanie jest wydawane bez sprawdzenia następnej pozycji
-	farLimit   = 4096 // dopasowanie długości 3 dalej niż tyle kosztuje więcej niż trzy literały
-	tailInsert = 64   // z pozycji objętych dopasowaniem do łańcuchów trafia tylko tyle ostatnich
+	lazyLength = 32   // od tej długości dopasowanie jest wydawane bez sprawdzenia następnej pozycji
+	goodLength = 8    // gdy kandydat z tablicy długiej daje co najmniej tyle, bliskiego nie sprawdzamy
+	farLimit   = 2048 // dopasowanie najkrótsze (cztery bajty) dalej niż tyle kosztuje więcej niż literały
+	tailInsert = 64   // z pozycji objętych dopasowaniem do tablic trafia tylko tyle ostatnich
 
 	// Dane bez dopasowań: po każdych 2^missShift kolejnych pozycjach bez trafienia o jedną pozycję więcej idzie
 	// literałem bez szukania, najwyżej maxSkip naraz. Pierwsze trafienie zeruje licznik.
 	missShift = 5
-	maxSkip   = 8
+	maxSkip   = 32
 
 	endOfBlock  = 256
 	numLitLen   = 286
@@ -223,21 +237,22 @@ type Writer struct {
 
 	buf        []byte // dane wejściowe: [0, n)
 	n          int
+	start      int // początek danych bieżącego strumienia; wcześniejsze pozycje nie są kandydatami
 	pos        int // następna pozycja do zakodowania
 	blockStart int // początek danych bieżącego bloku
-	blockLen   int // bajty wejścia objęte symbolami bieżącego bloku
 
-	// head[skrót] i prev[pozycja mod okno] trzymają pozycje w buf powiększone o 1; 0 to brak.
-	head []int32
-	prev []int32
+	// head[skrót czterech bajtów] i headL[skrót ośmiu] trzymają pozycje w buf powiększone o 1; 0 to brak.
+	head  []int32
+	headL []int32
 
-	// Odroczone dopasowanie znalezione na pozycji pos−1.
-	pending           bool
-	misses            int // kolejne pozycje bez dopasowania
-	skipping          int // ile następnych pozycji idzie literałem bez szukania
+	// Odroczone dopasowanie znalezione na pozycji pos−1; pendLen = 0, gdy go nie ma.
 	pendLen, pendDist int
+	misses            int // kolejne pozycje bez dopasowania
 
-	tokens   []uint32 // literał: bajt; dopasowanie: 1<<31 | (długość−3)<<16 | (odległość−1)
+	// Symbole bieżącego bloku. Literał: bajt; dopasowanie: 1<<31 | symbol odległości<<24 | (długość−3)<<16 |
+	// (odległość−1). Częstości symboli są liczone na bieżąco.
+	tokens   []uint32
+	nt       int
 	litFreq  [numLitLen]int32
 	distFreq [numDist]int32
 
@@ -249,31 +264,34 @@ type Writer struct {
 
 	acc   uint64 // bity czekające na zapis, od najmłodszego
 	nbits uint
-	out   []byte
+	out   []byte // out[:o] to pełne bajty czekające na zapis do dst
+	o     int
 }
+
+const outSize = 1 << 15
 
 // NewWriter zwraca koder strumienia zapisywanego do dst.
 func NewWriter(dst io.Writer) *Writer {
 	return &Writer{
 		dst:    dst,
 		buf:    make([]byte, bufSize),
-		head:   make([]int32, 1<<hashBits),
-		prev:   make([]int32, windowSize),
-		tokens: make([]uint32, 0, maxTokens),
-		out:    make([]byte, 0, 1<<15),
+		head:   make([]int32, 1<<shortBits),
+		headL:  make([]int32, 1<<longBits),
+		tokens: make([]uint32, maxTokens),
+		out:    make([]byte, outSize),
 	}
 }
 
 // Reset przygotowuje koder do nowego strumienia zapisywanego do dst, bez nowej alokacji. Wynik nie zależy od
-// tego, co koder kodował wcześniej.
+// tego, co koder kodował wcześniej: tablice skrótów nie są czyszczone, ale nowy strumień zaczyna się w buforze
+// za danymi poprzedniego, a pozycja sprzed początku strumienia nie jest kandydatem, tak samo jak brak pozycji.
 func (w *Writer) Reset(dst io.Writer) {
 	w.dst, w.err = dst, nil
-	w.n, w.pos, w.blockStart, w.blockLen = 0, 0, 0, 0
-	clear(w.head) // prev jest czytane tylko dla pozycji osiągniętych z head, więc nie wymaga czyszczenia
-	w.pending, w.misses, w.skipping = false, 0, 0
-	w.tokens = w.tokens[:0]
+	w.start, w.pos, w.blockStart = w.n, w.n, w.n
+	w.pendLen, w.pendDist, w.misses = 0, 0, 0
+	w.nt = 0
 	w.litFreq, w.distFreq = [numLitLen]int32{}, [numDist]int32{}
-	w.acc, w.nbits, w.out = 0, 0, w.out[:0]
+	w.acc, w.nbits, w.o = 0, 0, 0
 }
 
 // Write przyjmuje kolejne bajty wejścia. Zwraca błąd dst, jeśli zapis się nie udał; błąd jest trwały.
@@ -298,25 +316,19 @@ func (w *Writer) Close() error {
 		return w.err
 	}
 	w.compress(true)
-	if w.pending {
-		w.match(w.pendLen, w.pendDist)
-		w.pending = false
-	}
 	w.block(true)
-	// dopełnienie ostatniego bajtu zerami
-	for w.nbits > 0 {
-		w.out = append(w.out, byte(w.acc))
-		w.acc >>= 8
-		w.nbits -= min(w.nbits, 8)
+	if w.nbits > 0 {
+		w.nbits = (w.nbits + 7) &^ 7 // dopełnienie ostatniego bajtu zerami
+		w.spill()
 	}
 	w.flush()
 	return w.err
 }
 
-// slide przesuwa bufor o wielokrotność okna, zostawiając okno przed bieżącą pozycją i dane bieżącego bloku.
-// Wywoływane przy pełnym buforze po compress(false), więc jest o co przesunąć.
+// slide przesuwa dane na początek bufora, zostawiając okno przed bieżącą pozycją i dane bieżącego bloku,
+// i przelicza pozycje w tablicach. Wywoływane przy pełnym buforze po compress(false), więc jest o co przesunąć.
 func (w *Writer) slide() {
-	shift := min(w.blockStart, w.pos-windowSize) / windowSize * windowSize
+	shift := min(w.blockStart, max(w.pos-windowSize, w.start))
 	if shift <= 0 {
 		return
 	}
@@ -324,177 +336,170 @@ func (w *Writer) slide() {
 	w.n -= shift
 	w.pos -= shift
 	w.blockStart -= shift
+	w.start = max(w.start-shift, 0)
 	s := int32(shift)
 	for i, v := range w.head {
 		w.head[i] = max(v-s, 0)
 	}
-	for i, v := range w.prev {
-		w.prev[i] = max(v-s, 0)
+	for i, v := range w.headL {
+		w.headL[i] = max(v-s, 0)
 	}
 }
 
-func (w *Writer) hash(p int) uint32 {
-	return binary.LittleEndian.Uint32(w.buf[p:]) * hashMul >> (32 - hashBits)
+func load32(b []byte, i int) uint32 { return binary.LittleEndian.Uint32(b[i:]) }
+func load64(b []byte, i int) uint64 { return binary.LittleEndian.Uint64(b[i:]) }
+
+// extend zwraca, ile bajtów od pozycji a i od pozycji b jest takich samych, licząc od l i nie dalej niż do limit.
+func extend(buf []byte, a, b, l, limit int) int {
+	for l+8 <= limit {
+		if x := load64(buf, a+l) ^ load64(buf, b+l); x != 0 {
+			return l + bits.TrailingZeros64(x)>>3
+		}
+		l += 8
+	}
+	for l < limit && buf[a+l] == buf[b+l] {
+		l++
+	}
+	return l
 }
 
-// insert dopisuje pozycję p do łańcucha jej skrótu.
-func (w *Writer) insert(p int) {
-	h := w.hash(p)
-	w.prev[p&(windowSize-1)] = w.head[h]
-	w.head[h] = int32(p + 1)
+// match dopisuje do częstości symbole dopasowania i zwraca jego zapis w tokens.
+func (w *Writer) match(length, dist int) uint32 {
+	ds, _ := distSymbol(dist)
+	w.litFreq[257+int(lengthSymbol[length-minMatch])]++
+	w.distFreq[ds]++
+	return 1<<31 | uint32(ds)<<24 | uint32(length-minMatch)<<16 | uint32(dist-1)
 }
 
 // compress koduje pozycje, dla których w buforze jest pełny zapas danych do przodu; z final=true wszystkie.
-// Decyzja o każdej pozycji zależy tylko od danych, nie od chwili wywołania.
+// Decyzja o każdej pozycji zależy tylko od danych strumienia, nie od chwili wywołania ani od podziału na
+// wywołania Write.
+//
+// Jeden obrót pętli to jedna pozycja p: osiem bajtów od p daje oba skróty, tablice podają dwóch kandydatów
+// i od razu zapamiętują p. Dopasowanie krótsze niż lazyLength czeka jeden obrót (pendLen): jeśli pozycja p+1 ma
+// dłuższe, bajt p idzie literałem (RFC 1951, rozdz. 4). Stan pętli jest w zmiennych lokalnych i wraca do w przed
+// wywołaniem block (pozycja i liczba symboli) i na końcu.
 func (w *Writer) compress(final bool) {
-	for w.pos < w.n && w.err == nil {
-		p := w.pos
-		avail := w.n - p
-		if !final && avail < lookahead {
-			return
-		}
-		if w.skipping > 0 {
-			w.skipping--
-			w.literal(w.buf[p])
-			w.pos++
-			continue
-		}
-		length, dist := 0, 0
-		if avail >= hashLen {
-			floor := minMatch - 1
-			if w.pending {
-				floor = w.pendLen
+	buf := w.buf[:w.n]
+	n := len(buf)
+	// Tablice jako wskaźniki na tablice o znanym rozmiarze: skrót mieści się w nich z definicji.
+	head, headL := (*[1 << shortBits]int32)(w.head), (*[1 << longBits]int32)(w.headL)
+	tokens, litFreq := w.tokens, &w.litFreq
+	p, nt, misses := w.pos, w.nt, w.misses
+	pendLen, pendDist := w.pendLen, w.pendDist
+	start := w.start
+	end := n - lookahead // ostatnia pozycja z pełnym zapasem
+	if final {
+		end = n - longLen // ostatnia, od której da się wczytać osiem bajtów
+	}
+	for p <= end {
+		if pendLen == 0 && (nt > maxTokens-tokenSlack || p-w.blockStart > maxBlockBytes-byteSlack) {
+			w.pos, w.nt = p, nt
+			w.block(false)
+			nt = 0
+			if w.err != nil {
+				break
 			}
-			if floor < min(avail, maxMatch) && floor < lazyLength {
-				length, dist = w.longest(p, min(avail, maxMatch), floor)
+		}
+		x := load64(buf, p)
+		hs := uint32(x) * shortMul >> (32 - shortBits)
+		hl := x * longMul >> (64 - longBits)
+		cs, cl := int(head[hs])-1, int(headL[hl])-1
+		head[hs], headL[hl] = int32(p+1), int32(p+1)
+
+		// Kandydat musi leżeć w oknie i w bieżącym strumieniu; brak kandydata to pozycja −1.
+		lowest := max(p-windowSize, start)
+		limit := min(n-p, maxMatch)
+		length, dist := pendLen, 0
+		if cl >= lowest && load32(buf, cl) == uint32(x) {
+			if l := extend(buf, cl, p, shortLen, limit); l > length {
+				length, dist = l, p-cl
 			}
-			w.insert(p)
 		}
-		switch {
-		case w.pending && length > w.pendLen:
-			// lepsze dopasowanie o pozycję dalej: poprzednia pozycja zostaje literałem (RFC 1951, rozdz. 4)
-			w.literal(w.buf[p-1])
-			w.pendLen, w.pendDist = length, dist
-			w.pos++
-		case w.pending:
-			end := p - 1 + w.pendLen
-			w.match(w.pendLen, w.pendDist)
-			w.pending = false
-			w.skip(p+1, end)
-		case length >= lazyLength:
-			w.match(length, dist)
-			w.skip(p+1, p+length)
-		case length >= minMatch:
-			w.pending, w.pendLen, w.pendDist = true, length, dist
-			w.misses = 0
-			w.pos++
-		default:
-			w.literal(w.buf[p])
-			w.pos++
-			w.misses++
-			w.skipping = min(w.misses>>missShift, maxSkip)
+		if length < goodLength && cs >= lowest && cs != cl && load32(buf, cs) == uint32(x) {
+			// przy równej długości wygrywa kandydat bliższy: jego odległość ma krótszy zapis
+			if l := extend(buf, cs, p, shortLen, limit); l > length || l == length && dist > p-cs {
+				length, dist = l, p-cs
+			}
 		}
-	}
-}
+		if length == shortLen && dist > farLimit {
+			dist = 0
+		}
 
-// skip dopisuje do łańcuchów ostatnie pozycje z [from, end) objęte dopasowaniem i ustawia bieżącą pozycję na end.
-func (w *Writer) skip(from, end int) {
-	w.misses = 0
-	from = max(from, end-tailInsert)
-	for q := from; q < end && q+hashLen <= w.n; q++ {
-		w.insert(q)
-	}
-	w.pos = end
-}
-
-// longest szuka w łańcuchu skrótu pozycji p najdłuższego dopasowania dłuższego niż floor i nie dłuższego niż
-// limit. Z dopasowań tej samej długości wygrywa najbliższe (pierwsze w łańcuchu).
-func (w *Writer) longest(p, limit, floor int) (length, dist int) {
-	chain := maxChain
-	if floor >= goodLength {
-		chain >>= 2
-	}
-	buf := w.buf
-	lowest := p - windowSize
-	best := floor
-	// Dopasowanie dłuższe niż best zgadza się w szczególności na czterech bajtach kończących się na pozycji
-	// best: jedno porównanie odrzuca większość kandydatów. Przy best = 2 są to trzy pierwsze bajty.
-	at := max(best-3, 0)
-	want := tail(buf, p+at, best)
-	for c := w.head[w.hash(p)]; c > 0 && chain > 0; chain-- {
-		cand := int(c) - 1
-		if cand < lowest {
-			break
-		}
-		if tail(buf, cand+at, best) == want {
-			l := 0
-			for l+8 <= limit {
-				if x := binary.LittleEndian.Uint64(buf[cand+l:]) ^ binary.LittleEndian.Uint64(buf[p+l:]); x != 0 {
-					l += bits.TrailingZeros64(x) >> 3
-					break
+		from := p // początek dopasowania do wydania
+		if dist == 0 {
+			if pendLen == 0 {
+				// Nic tu nie pasuje: literał, a po dłuższej serii takich pozycji kilka następnych bez szukania.
+				misses++
+				skip := min(misses>>missShift, maxSkip, n-p-1)
+				for stop := p + 1 + skip; p < stop; p++ {
+					tokens[nt] = uint32(buf[p])
+					litFreq[buf[p]]++
+					nt++
 				}
-				l += 8
+				continue
 			}
-			if l+8 > limit {
-				for l < limit && buf[cand+l] == buf[p+l] {
-					l++
-				}
+			// Pozycja p nie ma nic dłuższego: wydajemy dopasowanie odroczone, które zaczyna się na p−1.
+			from, length, dist = p-1, pendLen, pendDist
+		} else {
+			if pendLen > 0 {
+				tokens[nt] = uint32(buf[p-1])
+				litFreq[buf[p-1]]++
+				nt++
 			}
-			if l > best {
-				best, dist = l, p-cand
-				if l >= limit {
-					break
-				}
-				at = best - 3
-				want = tail(buf, p+at, best)
+			if length < lazyLength {
+				pendLen, pendDist = length, dist
+				misses = 0
+				p++
+				continue
 			}
 		}
-		c = w.prev[cand&(windowSize-1)]
+		// Dopasowanie rozszerzamy wstecz o literały, które stoją tuż przed nim w tym bloku i zgadzają się
+		// z bajtami przed kandydatem: tablice pamiętają tylko ostatnią pozycję, więc początek powtórzenia
+		// bywa znaleziony o kilka bajtów za późno. Odległość się nie zmienia, koniec dopasowania też nie.
+		for nt > 0 && tokens[nt-1] < 1<<31 && length < maxMatch && from-dist > start && buf[from-1] == buf[from-dist-1] {
+			nt--
+			litFreq[tokens[nt]]--
+			from--
+			length++
+		}
+		tokens[nt] = w.match(length, dist)
+		nt++
+		pendLen, misses = 0, 0
+		stop := from + length
+		// Ostatnie pozycje objęte dopasowaniem trafiają do tablic bez szukania; p już tam jest. W długim
+		// powtórzeniu wcześniejsze pozycje niczego nie wnoszą, a kosztowałyby najwięcej.
+		for q := max(p+1, stop-tailInsert); q < stop && q+longLen <= n; q++ {
+			y := load64(buf, q)
+			head[uint32(y)*shortMul>>(32-shortBits)] = int32(q + 1)
+			headL[y*longMul>>(64-longBits)] = int32(q + 1)
+		}
+		p = stop
 	}
-	if dist == 0 || best == minMatch && dist > farLimit {
-		return 0, 0
+	if final && w.err == nil {
+		if pendLen > 0 {
+			tokens[nt] = w.match(pendLen, pendDist)
+			nt++
+			p += pendLen - 1
+			pendLen = 0
+		}
+		for ; p < n; p++ {
+			tokens[nt] = uint32(buf[p])
+			litFreq[buf[p]]++
+			nt++
+		}
 	}
-	return best, dist
-}
-
-// tail zwraca cztery bajty od pozycji i, a przy best = 2 trzy (czwarty mógłby leżeć poza danymi).
-func tail(buf []byte, i, best int) uint32 {
-	if best < 3 {
-		b := buf[i : i+3 : i+3]
-		return uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16
-	}
-	return binary.LittleEndian.Uint32(buf[i:])
-}
-
-// room kończy bieżący blok, gdy nie zmieści on kolejnego symbolu.
-func (w *Writer) room() {
-	if len(w.tokens) == maxTokens || w.blockLen > maxBlockBytes-maxMatch {
-		w.block(false)
-	}
-}
-
-func (w *Writer) literal(b byte) {
-	w.room()
-	w.tokens = append(w.tokens, uint32(b))
-	w.litFreq[b]++
-	w.blockLen++
-}
-
-func (w *Writer) match(length, dist int) {
-	w.room()
-	w.tokens = append(w.tokens, 1<<31|uint32(length-minMatch)<<16|uint32(dist-1))
-	w.litFreq[257+int(lengthSymbol[length-minMatch])]++
-	ds, _ := distSymbol(dist)
-	w.distFreq[ds]++
-	w.blockLen += length
+	w.pos, w.nt, w.misses, w.pendLen, w.pendDist = p, nt, misses, pendLen, pendDist
 }
 
 // block zapisuje symbole bieżącego bloku w najtańszej z trzech postaci (RFC 1951, 3.2.3): niezakodowanej, ze
 // stałymi kodami albo z kodami dynamicznymi. Przy równym koszcie wygrywa postać wcześniejsza na tej liście.
+// Blok obejmuje dane do bieżącej pozycji; wywoływane tylko wtedy, gdy żadne dopasowanie nie jest odroczone.
 func (w *Writer) block(final bool) {
 	if w.err != nil {
 		return
 	}
+	blockLen := w.pos - w.blockStart
 	w.litFreq[endOfBlock]++
 	w.lit.build(w.litFreq[:], maxCodeBits)
 	w.dist.build(w.distFreq[:], maxCodeBits)
@@ -535,27 +540,23 @@ func (w *Writer) block(final bool) {
 		dynamic += int64(f) * (int64(w.dist.length[s]) + extra)
 		fixed += int64(f) * (5 + extra)
 	}
-	stored := int64((8-(w.nbits+3)%8)%8) + 32 + 8*int64(w.blockLen)
+	stored := int64((8-(w.nbits+3)%8)%8) + 32 + 8*int64(blockLen)
 
 	last := uint64(0)
 	if final {
 		last = 1
 	}
 	switch {
-	case stored <= fixed && stored <= dynamic:
+	case blockLen <= maxBlockBytes && stored <= fixed && stored <= dynamic: // pole długości ma 16 bitów
 		w.bits(last, 3) // BTYPE 00
 		if pad := (8 - w.nbits%8) % 8; pad > 0 {
 			w.bits(0, pad)
 		}
-		w.bits(uint64(w.blockLen), 16)
-		w.bits(uint64(^uint16(w.blockLen)), 16)
-		for w.nbits > 0 {
-			w.out = append(w.out, byte(w.acc))
-			w.acc >>= 8
-			w.nbits -= 8
-		}
+		w.bits(uint64(blockLen), 16)
+		w.bits(uint64(^uint16(blockLen)), 16)
+		w.spill() // liczba bitów jest wielokrotnością ośmiu, więc nie zostaje żaden
 		w.flush()
-		w.write(w.buf[w.blockStart : w.blockStart+w.blockLen])
+		w.write(w.buf[w.blockStart : w.blockStart+blockLen])
 	case fixed <= dynamic:
 		w.bits(last|1<<1, 3) // BTYPE 01
 		w.symbols(&fixedLitLen, &fixedDist)
@@ -581,9 +582,8 @@ func (w *Writer) block(final bool) {
 		}
 		w.symbols(&w.lit, &w.dist)
 	}
-	w.blockStart += w.blockLen
-	w.blockLen = 0
-	w.tokens = w.tokens[:0]
+	w.blockStart += blockLen
+	w.nt = 0
 	w.litFreq, w.distFreq = [numLitLen]int32{}, [numDist]int32{}
 }
 
@@ -634,22 +634,43 @@ func (w *Writer) runLengths(hlit, hdist int) int {
 	return n
 }
 
-// symbols zapisuje symbole bloku podanymi kodami i znak końca bloku.
+// symbols zapisuje symbole bloku podanymi kodami i znak końca bloku. Stan zapisu bitów jest w zmiennych
+// lokalnych; pełne bajty schodzą do out po osiem naraz, tak jak w spill.
 func (w *Writer) symbols(lit, dist *code) {
-	for _, t := range w.tokens {
+	acc, nb, out, o := w.acc, w.nbits, w.out, w.o
+	for _, t := range w.tokens[:w.nt] {
+		// Przed symbolem zostaje najwyżej 7 bitów (dopasowanie, do 48 bitów) albo najwyżej 48 (literał, do 15).
+		if nb > 48 || t >= 1<<31 {
+			binary.LittleEndian.PutUint64(out[o:], acc)
+			k := nb >> 3
+			o += int(k)
+			acc >>= k * 8
+			nb &= 7
+			if o > len(out)-8 {
+				w.write(out[:o])
+				o = 0
+			}
+		}
 		if t < 1<<31 {
-			w.bits(uint64(lit.word[t]), uint(lit.length[t]))
+			acc |= uint64(lit.word[t]) << nb
+			nb += uint(lit.length[t])
 			continue
 		}
 		lv := t >> 16 & 0xFF
 		ls := 257 + uint(lengthSymbol[lv])
 		le := uint(lengthExtra[lv])
-		// słowo długości (najwyżej 15 bitów) i jej bity dodatkowe (najwyżej 5) jednym zapisem
-		w.bits(uint64(lit.word[ls])|uint64(lv&(1<<le-1))<<lit.length[ls], uint(lit.length[ls])+le)
-		d := uint(t&0x7FFF) + 1
-		ds, de := distSymbol(int(d))
-		w.bits(uint64(dist.word[ds])|uint64((d-1)&(1<<de-1))<<dist.length[ds], uint(dist.length[ds])+de)
+		acc |= (uint64(lit.word[ls]) | uint64(lv&(1<<le-1))<<lit.length[ls]) << nb
+		nb += uint(lit.length[ls]) + le
+		ds := uint(t >> 24 & 0x1F)
+		de := uint(0)
+		if ds > 3 {
+			de = ds/2 - 1
+		}
+		acc |= (uint64(dist.word[ds]) | uint64(t&(1<<de-1))<<dist.length[ds]) << nb
+		nb += uint(dist.length[ds]) + de
 	}
+	w.acc, w.nbits, w.o = acc, nb, o
+	w.spill()
 	w.bits(uint64(lit.word[endOfBlock]), uint(lit.length[endOfBlock]))
 }
 
@@ -658,19 +679,26 @@ func (w *Writer) bits(v uint64, n uint) {
 	w.acc |= v << w.nbits
 	w.nbits += n
 	if w.nbits >= 32 {
-		w.out = binary.LittleEndian.AppendUint32(w.out, uint32(w.acc))
-		w.acc >>= 32
-		w.nbits -= 32
-		if len(w.out) >= cap(w.out)-8 {
-			w.flush()
-		}
+		w.spill()
+	}
+}
+
+// spill przenosi pełne bajty z bufora bitów do out; zostaje mniej niż osiem bitów.
+func (w *Writer) spill() {
+	binary.LittleEndian.PutUint64(w.out[w.o:], w.acc)
+	k := w.nbits >> 3
+	w.o += int(k)
+	w.acc >>= k * 8
+	w.nbits &= 7
+	if w.o > len(w.out)-8 {
+		w.flush()
 	}
 }
 
 // flush zapisuje do dst zebrane pełne bajty.
 func (w *Writer) flush() {
-	w.write(w.out)
-	w.out = w.out[:0]
+	w.write(w.out[:w.o])
+	w.o = 0
 }
 
 func (w *Writer) write(p []byte) {

@@ -1,6 +1,7 @@
 # 0005 Pisarz i kompresor (etap 4)
 
-Status: przyjęta · 2026-11-27 (potwierdzona przez właściciela 2026-11-27)
+Status: przyjęta · 2026-11-27 (potwierdzona przez właściciela 2026-11-27); pkt 1, 6 i 7 zastąpione tego samego
+dnia przez ADR 0007 (szybszy kompresor), liczba z pkt 2 zmieniona tamże (266 bajtów zamiast 263)
 
 ## Kontekst
 

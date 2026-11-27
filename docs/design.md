@@ -119,24 +119,29 @@ err = w.Close()
 - wpis z `Create` zamyka się jawnie; pisarz nie zgaduje, że poprzedni wpis jest skończony;
 - ZIP64 tylko tam, gdzie wartość tego wymaga; dla wpisu strumieniowego, którego rozmiar nie jest znany przy
   zapisie nagłówka, decyduje `Header.Zip64`;
-- błąd wykryty przed pierwszym bajtem wpisu nie zmienia stanu; błąd późniejszy (cel zapisu, rozmiar, dane surowe)
-  jest trwały, bo archiwum nie da się dokończyć;
+- błąd wykryty przed pierwszym bajtem wpisu nie zmienia stanu; błąd późniejszy (cel zapisu, rozmiar, dane surowe,
+  samokontrola wpisu strumieniowego) jest trwały, bo archiwum nie da się dokończyć;
 - to, co pisarz zapisał, czytnik przyjmuje w trybie ścisłym, a czarne skrzynki rozpakowują z tą samą treścią.
 
 ## Kompresja (`internal/deflate`)
 
 RFC 1951, rozdziały 3 i 4. Jeden algorytm, stałe parametry, żadnych poziomów:
 
-- dopasowania przez łańcuchy skrótów czterech bajtów w oknie 32 KiB, najwyżej 32 kandydatów na pozycję, z odroczonym
-  wyborem (dopasowanie krótsze niż 64 bajty jest wydawane dopiero, gdy następna pozycja nie daje dłuższego);
-  na danych bez dopasowań koder przeskakuje do 8 pozycji bez szukania (parametry i ich pomiar: ADR 0005 pkt 1);
-- pozycja jest kodowana, gdy ma przed sobą 263 bajty danych albo strumień się kończy, więc wynik nie zależy od
+- dopasowania z dwóch tablic skrótów w oknie 32 KiB, bez łańcuchów: jedna pamięta ostatnią pozycję o tych samych
+  czterech bajtach, druga o tych samych ośmiu, więc pozycja ma najwyżej dwóch kandydatów; odroczony wybór
+  (dopasowanie krótsze niż 32 bajty jest wydawane dopiero, gdy następna pozycja nie daje dłuższego); dopasowanie
+  jest rozszerzane wstecz o literały, które stoją tuż przed nim; na danych bez dopasowań koder przeskakuje do
+  32 pozycji bez szukania (parametry i ich pomiar: ADR 0007);
+- pozycja jest kodowana, gdy ma przed sobą 266 bajtów danych albo strumień się kończy, więc wynik nie zależy od
   podziału danych na zapisy;
-- blok kończy się po 16 384 symbolach albo 65 535 bajtach wejścia i dostaje najtańszą z trzech postaci
+- blok kończy się przed 16 384 symbolami i 65 535 bajtami wejścia i dostaje najtańszą z trzech postaci
   (niezakodowana, kody stałe, kody dynamiczne), liczoną dokładnie w bitach;
 - kody dynamiczne o najmniejszym koszcie przy limicie 15 bitów (7 dla kodu długości) wyznacza algorytm
   package-merge; kod jest zawsze pełny;
-- pamięć stała (około 0,5 MiB na koder), bez alokacji w czasie pracy.
+- pamięć stała (około 1,8 MiB na koder: bufor wejścia 1 MiB i tablice), bez alokacji w czasie pracy; nowy
+  strumień nie czyści tablic, więc mały wpis nie płaci za ich rozmiar;
+- pisarz dekoduje każdy strumień kompresora w trakcie zapisu i porównuje rozmiar oraz CRC-32 wyniku z treścią
+  wpisu (`write-self-check`, ZW-011, ADR 0007 pkt 6).
 
 ## Kody błędów
 

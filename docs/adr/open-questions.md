@@ -13,7 +13,7 @@ z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, potwierdzona 
    wyznaczony przez specyfikację. Rekomendacja: własna, z granicą wydajności z K7; gdyby K7 nie dało się spełnić,
    wracamy do pytania z pomiarem.
 2. **Kompresja w pisarzu (przed etapem 4).** Rozstrzygnięte 2026-11-27 (właściciel): własny kompresor
-   (ADR 0005; zmierzony rozmiar w `comparison.md`). Bajty z `compress/flate` mogą się zmienić z wersją Go, co łamie
+   (ADR 0005; zmierzony rozmiar w `comparison.md`; sposób szukania dopasowań zmieniony w ADR 0007). Bajty z `compress/flate` mogą się zmienić z wersją Go, co łamie
    zasadę D („te same bajty w obrębie wersji biblioteki”). Rekomendacja: własny kompresor o ustalonym algorytmie
    (dopasowania przez łańcuchy skrótów o stałych parametrach, kody dynamiczne), jeden poziom kompresji w 1.0.
    Cel: rozmiar nie gorszy niż 1,1× `compress/flate` na poziomie domyślnym na korpusie XML; mierzone w `tools/bench`.

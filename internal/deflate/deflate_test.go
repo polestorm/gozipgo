@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/polestorm/gozipgo/internal/inflate"
@@ -54,14 +55,29 @@ func sample(kind, n int) []byte {
 	return b
 }
 
-var sizes = []int{0, 1, 2, 3, 4, 100, 257, 258, 259, 4096, 32768, 65277, 65278, 65535, 65536, 131072, 131073, 300000, 1 << 20}
+var sizes = []int{0, 1, 2, 3, 4, 100, 257, 258, 259, 4096, 32768, 65277, 65278, 65535, 65536, 131072, 131073, 300000, bufSize, bufSize + 1, 3*bufSize + 12345}
 
 // compress koduje data, dzieląc je na kawałki o długościach z chunks (cyklicznie; pusty wycinek: jeden zapis).
 func compress(t testing.TB, data []byte, chunks ...int) []byte {
 	var out bytes.Buffer
-	w := NewWriter(&out)
+	w := fresh(&out)
 	writeAll(t, w, data, chunks...)
+	writers.Put(w)
 	return out.Bytes()
+}
+
+// writers oszczędza testom i fuzzerowi alokacji kodera (około 1,8 MiB) przy każdym strumieniu.
+var writers = sync.Pool{New: func() any { return NewWriter(nil) }}
+
+// fresh zwraca koder w stanie nowego: pusty bufor i puste tablice. Reset tego nie robi (zaczyna strumień za
+// danymi poprzedniego), a testy porównują właśnie z koderem nowym.
+func fresh(dst io.Writer) *Writer {
+	w := writers.Get().(*Writer)
+	clear(w.head)
+	clear(w.headL)
+	w.n = 0
+	w.Reset(dst)
+	return w
 }
 
 func writeAll(t testing.TB, w *Writer, data []byte, chunks ...int) {
@@ -150,6 +166,86 @@ func TestSplitIndependence(t *testing.T) {
 				t.Errorf("kind %d, %d bytes: output of a reused writer differs", kind, n)
 			}
 		}
+	}
+}
+
+// displaced koduje data koderem, który wcześniej zakodował inny strumień i którego bufor wejścia ma jeszcze room
+// wolnych bajtów: nowy strumień zaczyna się w środku bufora, tablice skrótów pamiętają pozycje poprzedniego,
+// a dane i tablice są przesuwane w chwili zależnej od room.
+func displaced(t testing.TB, data, earlier []byte, room int, chunks ...int) []byte {
+	w := fresh(io.Discard)
+	writeAll(t, w, earlier)
+	w.n = max(w.n, bufSize-room) // jak po strumieniu, który skończył się w tym miejscu bufora
+	var out bytes.Buffer
+	w.Reset(&out)
+	writeAll(t, w, data, chunks...)
+	writers.Put(w)
+	return out.Bytes()
+}
+
+// TestBufferPositionIndependence: bajty wyjścia nie zależą od tego, w którym miejscu bufora wejścia strumień się
+// zaczyna, ani od tego, w którym miejscu strumienia dane są w buforze przesuwane.
+// REQ: ZW-008
+func TestBufferPositionIndependence(t *testing.T) {
+	for kind := 1; kind < 6; kind++ {
+		data := sample(kind, 200000)
+		want := compress(t, data)
+		for _, room := range []int{0, 1, 7, 8, 9, 265, 266, 267, 1000, 32768, 65535, 65536, 70000, 199999, 200000, 200001} {
+			if got := displaced(t, data, data[:50000], room); !bytes.Equal(got, want) {
+				t.Errorf("kind %d, %d bytes of room: output differs from that of a new writer", kind, room)
+			}
+		}
+	}
+}
+
+// TestFarthestMatchAcrossMove: dane o okresie równym oknu mają dopasowania tylko w największej dozwolonej
+// odległości; przesunięcie danych w buforze nie może zgubić ostatniego bajta okna, więc wynik jest ten sam co
+// z nowego kodera.
+// REQ: ZW-008
+func TestFarthestMatchAcrossMove(t *testing.T) {
+	data := bytes.Repeat(sample(1, windowSize), 6)
+	want := compress(t, data)
+	if len(want) > 2*windowSize {
+		t.Fatalf("%d bytes: the repetitions at distance %d were not found", len(want), windowSize)
+	}
+	if got := expandStdlib(t, want); !bytes.Equal(got, data) {
+		t.Fatal("compress/flate gives different data")
+	}
+	for room := 0; room < len(data); room += 4099 {
+		if got := displaced(t, data, nil, room); !bytes.Equal(got, want) {
+			t.Fatalf("%d bytes of room: output differs from that of a new writer", room)
+		}
+	}
+}
+
+// TestBlockLimits: żaden blok nie ma więcej niż maxTokens symboli ani więcej niż maxBlockBytes bajtów wejścia,
+// także gdy przed jego końcem dopasowania są wielokrotnie odraczane. Dane to szum z gęstymi powtórzeniami
+// o rosnącej długości, a po nich czysty szum w blokach niezakodowanych: błąd w rachunku granic bloku przesunąłby
+// ich treść.
+// REQ: ZW-006
+func TestBlockLimits(t *testing.T) {
+	noise := sample(1, 3<<20)
+	data := make([]byte, 0, len(noise))
+	for i := 0; len(data) < 2<<20; i += 7 {
+		data = append(data, noise[i:i+7]...)
+		if len(data) > 600 {
+			// kopia, której kolejne pozycje mają coraz dłuższe dopasowania
+			back := 300 + int(noise[i])
+			for k := 4; k < 12; k++ {
+				data = append(data, data[len(data)-back])
+			}
+		}
+	}
+	data = append(data, noise[len(noise)-300000:]...)
+	c := compress(t, data)
+	if got := expand(t, c); !bytes.Equal(got, data) {
+		t.Error("own decoder gives different data")
+	}
+	if got := expandStdlib(t, c); !bytes.Equal(got, data) {
+		t.Error("compress/flate gives different data")
+	}
+	if split := compress(t, data, 4097); !bytes.Equal(split, c) {
+		t.Error("output depends on how the input is split")
 	}
 }
 
@@ -313,7 +409,7 @@ func TestGolden(t *testing.T) {
 	var b strings.Builder
 	b.WriteString("kind\tbytes\tcompressed bytes\tsha256 of the compressed stream\n")
 	for kind := 0; kind < 6; kind++ {
-		for _, n := range []int{0, 1, 1000, 65536, 1 << 20} {
+		for _, n := range []int{0, 1, 1000, 65536, 1 << 20, 2<<20 + 5} {
 			c := compress(t, sample(kind, n))
 			h := sha256.Sum256(c)
 			fmt.Fprintf(&b, "%d\t%d\t%d\t%s\n", kind, n, len(c), hex.EncodeToString(h[:]))
@@ -416,7 +512,7 @@ func TestNoAllocations(t *testing.T) {
 }
 
 // FuzzDeflate: dla dowolnych danych i dowolnego podziału na zapisy strumień jest poprawny (oba dekodery oddają
-// dane) i taki sam jak przy jednym zapisie.
+// dane) i taki sam jak przy jednym zapisie, także z kodera używanego ponownie, w dowolnym miejscu jego bufora.
 // REQ: ZW-006 ZW-008
 func FuzzDeflate(f *testing.F) {
 	f.Add([]byte(nil), uint16(1))
@@ -435,6 +531,11 @@ func FuzzDeflate(f *testing.F) {
 		}
 		if split := compress(t, long, int(chunk)+1); !bytes.Equal(split, whole) {
 			t.Fatal("output depends on how the input is split")
+		}
+		// koder używany ponownie, z przesunięciem bufora w miejscu strumienia wyznaczonym przez chunk
+		room := int(chunk) % (len(long) + 2)
+		if moved := displaced(t, long, data, room, int(chunk)+1); !bytes.Equal(moved, whole) {
+			t.Fatal("output depends on the position in the input buffer")
 		}
 	})
 }

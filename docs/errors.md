@@ -143,8 +143,9 @@ above, `write-name-length`, `write-method`, `write-timestamp`, `name-duplicate`,
 call (`write-directory-content`, `write-raw-content` for Stored sizes that differ).
 
 An error found before the first byte of an entry is written leaves the writer as it was: the call can be repeated
-with a corrected header. An error found after that (`write-entry-size`, and `write-raw-content` found while
-copying) means the archive cannot be completed: every later call returns the same error. The same holds for an
+with a corrected header. An error found after that (`write-entry-size`, `write-raw-content` found while
+copying, and `write-self-check` of an entry started by `Create`) means the archive cannot be completed: every
+later call returns the same error. The same holds for an
 error of the `io.Writer` the archive is written to and of the `io.Reader` given to `AddRaw`, which are returned
 unchanged; a write that is short without an error yields `io.ErrShortWrite`, a reader that returns no bytes and no
 error yields `io.ErrNoProgress`.
@@ -159,3 +160,4 @@ error yields `io.ErrNoProgress`.
 | `write-after-close` | `CodeAfterClose` | ADR 0005 | A new entry after `Close` of the writer (`Entry` is -1), or `Write` to an entry after its `Close`. |
 | `write-entry-size` | `CodeEntrySize` | APPNOTE 4.3.9.2, 4.5.3 | An entry started by `Create` without `Header.Zip64` reached 4 GiB − 1 bytes, compressed or not: its local header, already written, does not announce 64-bit sizes. The archive cannot be completed. |
 | `write-raw-content` | `CodeRawContent` | ADR 0005 | The data given to `AddRaw` are not what `RawInfo` says: Stored data with two different sizes (found before anything is written), data that end early, a stream that is not DEFLATE or does not end with the data, content of another size or CRC-32. |
+| `write-self-check` | `CodeSelfCheck` | ADR 0007 | The writer decodes every DEFLATE stream it writes and compares the size and the CRC-32 of the result with the content it was given; they differ, or the stream does not end with its last byte. It means a defect of the compressor of this module, not of the caller: please report it. `Add` finds it before anything is written and the archive can be completed without the entry; an entry started by `Create` is already in the archive, which cannot be completed. |

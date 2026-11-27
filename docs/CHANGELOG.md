@@ -26,6 +26,15 @@ Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
   version of Go, whatever the way the content is split into writes. Checksums of its output are kept in the
   repository and compared on every system of the CI and with two versions of Go. Writing is not slower than
   with `archive/zip` and the archives are about the same size (`docs/comparison.md`).
+- The compressor was rewritten before its first release
+  (`docs/adr/0007-faster-compressor-and-self-check.md`): matches come from two hash tables instead of hash
+  chains, and the main loop handles one position per turn with its state in local variables. Compression is
+  several times faster than in the first version, with output of about the same size (`docs/comparison.md`).
+  The bytes the writer produces changed with it, and the recorded checksums were replaced; no release contained
+  the earlier bytes. A compressor uses about 1.8 MiB of memory (0.5 MiB before).
+- The writer checks its own compressor: every DEFLATE stream is decoded while it is written, and the size and
+  the CRC-32 of the result are compared with the content of the entry. A difference is the new error
+  `write-self-check` (`CodeSelfCheck`) instead of an archive that unpacks to something else.
 - `tools/compare` also gives the archives `zipwriter` writes to the other readers, and `tools/bench` measures
   writing against `archive/zip`.
 - The reader is unchanged; its rules for names moved to a package shared with the writer.

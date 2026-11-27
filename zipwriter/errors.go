@@ -25,6 +25,7 @@ const (
 	CodeAfterClose       = "write-after-close"       // use of the writer, or of an entry, after its Close
 	CodeEntrySize        = "write-entry-size"        // a streamed entry reached 4 GiB without Header.Zip64
 	CodeRawContent       = "write-raw-content"       // raw data that are not what their description says
+	CodeSelfCheck        = "write-self-check"        // the compressor wrote data that do not decode to the content
 )
 
 // Error is an error of the writer about what it was asked to write. Errors of the io.Writer the archive is

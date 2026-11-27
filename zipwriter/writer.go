@@ -13,8 +13,9 @@
 // parameters. The writer does not touch the file system: it writes to an io.Writer and never seeks.
 //
 // An archive written without an error is one that zipreader accepts in its strict mode, with the same names and
-// content: the names follow the rules of the reader, and the content given to AddRaw is checked while it is
-// copied.
+// content: the names follow the rules of the reader, the content given to AddRaw is checked while it is copied,
+// and every DEFLATE stream the writer produces is decoded while it is written and compared with the content it
+// was made from (a difference is the error write-self-check).
 //
 // Entries can be written in three ways. Add takes the whole content and records the sizes and the CRC-32 in the
 // local header. Create returns a writer for content of unknown length and records them in a data descriptor
@@ -88,6 +89,7 @@ type Writer struct {
 	files, dirs, parents map[string]struct{}
 
 	comp    *deflate.Writer
+	check   checker // kontrola strumienia kompresora bieżącego wpisu
 	inf     *inflate.Reader
 	scratch []byte // nagłówki i kopiowanie
 	packed  []byte // treść skompresowana w Add
@@ -138,6 +140,7 @@ func (s sink) Write(p []byte) (int, error) {
 	if err := s.w.write(p); err != nil {
 		return 0, err
 	}
+	s.w.check.feed(p)
 	return len(p), nil
 }
 
@@ -311,7 +314,9 @@ func (w *Writer) header(r *record) error {
 }
 
 // Add writes an entry with the given content. The sizes and the CRC-32 are in the local header and the entry has
-// no data descriptor. With Deflate the compressed content is held in memory until it is written.
+// no data descriptor. With Deflate the compressed content is held in memory until it is written, and it is
+// written only after it has been decoded back to the content: if that fails, Add returns write-self-check and
+// the archive is as it was before the call.
 func (w *Writer) Add(h Header, content []byte) error {
 	r, err := w.begin(&h)
 	if err != nil {
@@ -330,6 +335,13 @@ func (w *Writer) Add(h Header, content []byte) error {
 		data = w.packed
 	}
 	r.crc = crc32.ChecksumIEEE(content)
+	if r.method == Deflate {
+		// Nic jeszcze nie zostało zapisane, więc po tym błędzie archiwum da się dokończyć.
+		w.check.feed(data)
+		if !w.check.finish(r.crc, uint64(len(content))) {
+			return w.fail(CodeSelfCheck, &h, selfCheckMessage)
+		}
+	}
 	r.usize, r.csize = uint64(len(content)), uint64(len(data))
 	r.zip64 = r.zip64 || r.usize >= format.Sentinel32 || r.csize >= format.Sentinel32
 	if err := w.header(&r); err != nil {
@@ -346,7 +358,9 @@ func (a *appender) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
+// compressor przygotowuje kompresor i kontrolę jego strumienia dla nowego wpisu.
 func (w *Writer) compressor(dst io.Writer) {
+	w.check.reset()
 	if w.comp == nil {
 		w.comp = deflate.NewWriter(dst)
 		return
@@ -354,11 +368,14 @@ func (w *Writer) compressor(dst io.Writer) {
 	w.comp.Reset(dst)
 }
 
+const selfCheckMessage = "the compressed data do not decode to the content of the entry"
+
 // Create starts an entry whose content is written to the returned writer, in any number of calls. The entry
 // must be closed before the next entry is started and before Close of the Writer. The sizes and the CRC-32 are
 // recorded in a data descriptor after the content. An entry that reaches 4 GiB, compressed or not, fails with
 // write-entry-size unless Header.Zip64 is set. A directory (a name ending with "/") takes no content and has no
-// data descriptor.
+// data descriptor. Close of a Deflate entry fails with write-self-check when the data written for it do not
+// decode to its content; the archive cannot be completed then.
 func (w *Writer) Create(h Header) (io.WriteCloser, error) {
 	r, err := w.begin(&h)
 	if err != nil {
@@ -440,6 +457,11 @@ func (e *entryWriter) Close() error {
 	if r.method == Deflate && !r.dir {
 		if err := w.comp.Close(); err != nil {
 			return err
+		}
+		if !w.check.finish(e.crc, e.usize) {
+			// Dane wpisu są już w archiwum, więc nie da się go dokończyć.
+			w.err = e.fail(CodeSelfCheck, selfCheckMessage)
+			return w.err
 		}
 	}
 	e.closed = true

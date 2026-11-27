@@ -52,7 +52,8 @@ kolumnę „Stan” w `docs/roadmap.md`.
   inwentarz formatu, czytnik katalogu: ADR 0002), **etap 2 wykonany 2026-11-27** (nagłówki lokalne, układ pliku,
   własny dekoder DEFLATE, `Open`: ADR 0003); **v0.1.0 wydane 2026-11-27**, **v0.1.1 tego samego dnia** z gałęzi `release-0.1` (poprawka bezpieczeństwa po znalezisku `FuzzReader`: ADR 0002 pkt 3); **etap 3 wykonany 2026-11-27** poza kampanią fuzzingu
   (korpus wrogi, `tools/compare`, `tools/bench`: ADR 0004);
-  **etap 4 wykonany 2026-11-27** (`zipwriter`, własny kompresor `internal/deflate`: ADR 0005); **v0.2.0 obejmie etapy 3 i 4**
+  **etap 4 wykonany 2026-11-27** (`zipwriter`, własny kompresor `internal/deflate`: ADR 0005; kompresor przepisany
+  tego samego dnia na dwie tablice skrótów i pisarz z samokontrolą: ADR 0007); **v0.2.0 obejmie etapy 3 i 4**
   (decyzja właściciela z 2026-11-27) i wyjdzie po kampanii fuzzingu 24 h na commicie kandydata (K5); **następny: etap 5** (odbiór: K1–K9, pakiet dowodów, próba u `godocxgo`);
 - **v0.1.0 po etapie 2** (czytnik kompletny) odblokowuje `godocxgo`;
 - pytania otwarte (`docs/adr/open-questions.md`) rozstrzygamy w etapach, z rekomendacją; pytanie 1 rozstrzygnięte

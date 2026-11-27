@@ -15,10 +15,15 @@
   from this text; section numbers in its comments, in `requirements/inflate.md` and in `docs/errors.md` refer to it.
   The tables of base lengths, base distances and extra bits (3.2.5), the order of the code length codes (3.2.7)
   and the fixed codes (3.2.6) are data of the format, taken from the RFC;
-- the same RFC for the compressor in `internal/deflate`: the format of the blocks (section 3) and the outline of
-  an encoder in section 4 (hash chains over three-byte sequences, deferred selection of matches), which the RFC
-  gives as a description free of known patents. The parameters of the search are our own, chosen by measurement
-  (ADR 0005);
+- the same RFC for the compressor in `internal/deflate`: the format of the blocks (section 3) and, from the
+  outline of an encoder in section 4, the deferred selection of matches, which the RFC gives as a description
+  free of known patents. The search for matches does not follow that outline (hash chains over three-byte
+  sequences): it keeps two hash tables without chains, one over four bytes and one over eight, so that a position
+  has at most two candidates, and it extends a match backwards over the literals just before it. Hashing a
+  short and a long sequence into separate tables is a commonly known way of building fast LZ77 encoders; it was
+  implemented here from that idea alone, without reading or consulting the code of any implementation, and the
+  loop, the rules for choosing between candidates and all parameters are our own, chosen by measurement
+  (ADR 0007);
 - the package-merge algorithm for Huffman codes of limited length, from its published description (L. L. Larmore,
   D. S. Hirschberg, "A fast algorithm for optimal length-limited Huffman codes", Journal of the ACM 37(3), 1990),
   implemented from the definition of the algorithm, not from any code;
