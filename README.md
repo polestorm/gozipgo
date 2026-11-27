@@ -90,8 +90,8 @@ Where it is weaker: klauspost/compress is much faster, 2.5 to 4.7 times when wri
 reading, at the price of larger archives and, on many small entries, twelve times the memory. Opening an archive takes gozipgo about five times as
 long as the others. In strict mode it refuses real archives that other programs open, above all those with names
 outside ASCII and no UTF-8 flag. It does not repair damaged archives, does not extract to disk, and has no
-encryption, no multi-volume archives and no methods other than Stored and Deflate. gozipgo is new, and its first
-consumer is only starting to use it.
+encryption, no multi-volume archives and no methods other than Stored and Deflate. gozipgo is new and has one consumer so
+far, a DOCX reader of the same family.
 
 ## Contents
 
@@ -179,8 +179,10 @@ Version 0.1.1 has the reader; the writer and the compressor are on the main bran
   pinned, so neither changes without a recorded decision.
 - Hostile corpus: 40 of 40 refused, each in under a millisecond and under 110 KiB of memory. A ZIP64 archive of
   4.3 GB is read with 130 KiB allocated.
-- Not yet done: the 24-hour fuzzing campaign on the release candidate, the check against the documents of the
-  first consumer (a DOCX reader of the same family), and an archive made by Java in the corpus.
+- First consumer: a DOCX reader of the same family reads its corpus of 3,126 Word documents through gozipgo with
+  no change to gozipgo: 3,094 in strict mode, 3,098 with the two options for habits of real writers; the
+  remaining 28 are encrypted or damaged files.
+- Not yet done: the 24-hour fuzzing campaign on the release candidate, and an archive made by Java in the corpus.
 
 ## The test corpus
 
