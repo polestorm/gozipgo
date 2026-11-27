@@ -32,7 +32,8 @@ z sumami.
 | czarne skrzynki | `tools/compare` (osobny moduł) | korpus zgodności i korpus wrogi przez Info-ZIP, 7-Zip, Python i `archive/zip`; tabela w `comparison.md` (K3) |
 | odporność | fuzzery z `fuzzing.md`, `tools/fuzz` | K5 |
 | wydajność | `Benchmark*`, `tools/bench` | K7; metoda w `methodology.md` |
-| pisarz (etap 4) | `TestRoundTrip`, `TestWriterAccepted`, `TestWriterStableAcrossGo` | zapis → odczyt ścisły; czarne skrzynki rozpakowują to samo; te same bajty w dwóch wersjach Go |
+| kompresja | `internal/deflate`: `TestRoundTrip`, `TestCodeLengths`, `TestSymbols`, `TestBlockForms`, `TestSplitIndependence`, `TestGolden`, `FuzzDeflate` | każdy strumień czytają własny dekoder i `compress/flate`; kody pełne, w limicie długości i optymalne; tabele symboli zgodne z RFC 1951; bajty niezależne od podziału zapisów i równe wzorcowi skrótów |
+| pisarz | `zipwriter`: `TestRoundTrip`, `TestSmallestArchive`, `TestFixedFields`, `TestNames`, `TestZip64Forms`, `TestLarge`, `TestAddRaw`, `TestSinkErrors`, `TestGolden`, `FuzzRoundTrip`; `tools/compare` | zapis → odczyt ścisły i `archive/zip`; bajty najmniejszego archiwum pole po polu; ZIP64 dokładnie tam, gdzie trzeba; wpis ponad 4 GiB; błąd w każdym miejscu zapisu; te same bajty na każdym systemie i w dwóch wersjach Go (job `bytes` w CI); czarne skrzynki rozpakowują to samo |
 | przykłady | `Example*` | przykłady z dokumentacji kompilują się i dają zapisany wynik |
 | dowody | `tools/evidence` | pakiet K9 |
 

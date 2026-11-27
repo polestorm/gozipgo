@@ -21,10 +21,10 @@ const modulePath = "github.com/polestorm/gozipgo"
 
 // publicPackages to pakiety biblioteki z publicznym API; każdy ma wzorzec api/<pakiet>.txt. Nowy pakiet dopisuje
 // się tutaj.
-var publicPackages = []string{"zipreader"}
+var publicPackages = []string{"zipreader", "zipwriter"}
 
 // libraryPackages to wszystkie pakiety biblioteki (bez narzędzi testów): ich importy pilnuje TestNoIOImports.
-var libraryPackages = []string{".", "zipreader", "internal/format", "internal/inflate"}
+var libraryPackages = []string{".", "zipreader", "zipwriter", "internal/format", "internal/inflate", "internal/deflate", "internal/entryname"}
 
 // allowedImports to pakiety biblioteki standardowej, które wolno importować kodowi biblioteki: żaden nie ma
 // wejścia ani wyjścia poza interfejsami io. Nowy pakiet na liście wymaga decyzji (CLAUDE.md, „Zasady”).
@@ -61,7 +61,7 @@ func TestAPISnapshot(t *testing.T) {
 }
 
 // TestErrorCatalog: każdy kod błędu z kodu źródłowego jest w docs/errors.md i odwrotnie, a każda stała kodu jest
-// użyta w co najmniej jednym teście pakietu albo jej kod stoi w werdykcie inwentarza formatu, który test sprawdza.
+// użyta w co najmniej jednym teście swojego pakietu albo jej kod stoi w werdykcie inwentarza formatu, który test sprawdza.
 // REQ: API-003 API-004
 func TestErrorCatalog(t *testing.T) {
 	constRe := regexp.MustCompile(`(?m)^\s*(Code\w+)\s*=\s*"([a-z0-9-]+)"`)
@@ -75,6 +75,7 @@ func TestErrorCatalog(t *testing.T) {
 	}
 	inventory := read("requirements/format.md")
 	inCode := map[string]string{} // kod → stała
+	seenIn := map[string]string{} // kod → pakiet, który go zdefiniował jako ostatni
 	for _, pkg := range publicPackages {
 		files, _ := filepath.Glob(filepath.Join(pkg, "*.go"))
 		tests := ""
@@ -89,10 +90,11 @@ func TestErrorCatalog(t *testing.T) {
 			}
 			for _, m := range constRe.FindAllStringSubmatch(read(f), -1) {
 				name, code := m[1], m[2]
-				if _, dup := inCode[code]; dup {
+				// Ten sam kod w dwóch pakietach to ta sama stała: pisarz odmawia nazw, które czytnik odrzuca.
+				if other, dup := inCode[code]; dup && (other != name || seenIn[code] == pkg) {
 					t.Errorf("code %s is defined twice", code)
 				}
-				inCode[code] = name
+				inCode[code], seenIn[code] = name, pkg
 				used := regexp.MustCompile(`\b`+name+`\b`).MatchString(tests) ||
 					strings.Contains(inventory, "`reject "+code+"` | 1 |") || strings.Contains(inventory, "`entry "+code+"` | 1 |")
 				if !used {

@@ -112,8 +112,32 @@ real documents differs from the generated data.
 
 ## Writer
 
-To be filled in at stage 4: output size against `compress/flate`, byte identity across Go versions, acceptance by
-the candidates.
+**Read back by other programs (`tools/compare`).** The tool builds seven archives with `zipwriter` from data it
+generates with a fixed linear congruential generator (`tools/compare/written.go`): entries written by `Add`, by
+`Create` and by `AddRaw`, both methods, a directory, empty files, names outside ASCII, `Header.Zip64`, 66,000
+entries (ZIP64 end records) and an archive with no entries. Each archive goes to every reader of the behaviour
+comparison, with the same commands; gozipgo reads with its default options except `MaxEntries: -1`. *same* means
+the SHA-256 of the files the reader produced are exactly those of the content that was written, and for the
+readers that list names (gozipgo, `archive/zip`, Python) the names too. The raw file also records the size and
+the SHA-256 of every archive written, so two runs on different systems can be compared byte for byte.
+`TestCompareRecorded` requires that gozipgo reads every one of them back. Sizes above 4 GiB are not in this
+corpus: `TestLarge` covers them with the reader of this repository only.
+
+**Speed and size (`tools/bench`).** The same content as for reading (32 MiB of each kind, and 100,000 entries of
+1 to 4 KiB) is written three ways: by `zipwriter` through `Create`; by `archive/zip` as it ships; and by
+`archive/zip` with `compress/flate` at `flate.DefaultCompression` registered as its compressor. The third exists
+because the two differ: measured as a black box, `archive/zip` produces a larger archive than `compress/flate` at
+its default level does. Every writer gets the content in pieces of 32 KiB and writes to a destination that only
+counts bytes. One warm-up run, then 7 runs, median; the size is that of the whole archive. gozipgo has no
+compression levels. `TestBenchWriteRecorded` checks on the recorded file that for markup and tabular data the
+archive of gozipgo is at most 1.1 times the size of the one made with `compress/flate` at its default level
+(requirement ZW-006). There is no threshold for the speed of writing.
+
+**The same bytes everywhere.** `internal/deflate/testdata/golden.tsv` and `zipwriter/testdata/golden.tsv` hold
+the SHA-256 of what the compressor and the writer produce for fixed inputs. `TestGolden` in both packages
+compares them on every system of the continuous integration workflow with the current Go release, and the job
+`bytes` repeats it with the Go version named in `go.mod`. The files change only with `-update-golden` and an
+entry in the change log.
 
 ## Known limits of the numbers
 

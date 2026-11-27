@@ -505,6 +505,64 @@ func main() {
 	}
 	doc.WriteString("\n")
 
+	// Archives written by gozipgo: every reader must give back the content that went in.
+	ws := writtenArchives()
+	scratch, err := os.MkdirTemp("", "gozipgo-written-")
+	if err != nil {
+		fatal(err)
+	}
+	defer os.RemoveAll(scratch)
+	fmt.Fprintf(&doc, "\n### Archives written by gozipgo\n\n%d archives written by `zipwriter` from data the tool generates. \"same\" means the reader gives back exactly\nthe files that were written (SHA-256 of every file; for readers that list names, the names too). gozipgo reads\nthem in its strict mode, with its default limits except the one on the number of entries.\n\n| Archive | What it is |", len(ws))
+	for _, c := range cs {
+		doc.WriteString(" " + c.Name + " |")
+	}
+	doc.WriteString("\n|---|---|" + strings.Repeat("---|", len(cs)) + "\n")
+	back := make([]int, len(cs))
+	for _, a := range ws {
+		path := filepath.Join(scratch, a.ID+".zip")
+		if err := os.WriteFile(path, a.Data, 0o644); err != nil {
+			fatal(err)
+		}
+		var want []string
+		for _, s := range a.Files {
+			want = append(want, s)
+		}
+		sort.Strings(want)
+		fmt.Fprintf(&doc, "| `%s` | %s |", a.ID, a.What)
+		for i, c := range cs {
+			o := c.Run(path, a.Data, zipreader.Options{MaxEntries: -1})
+			same := o.Verdict != "rejects" && o.Verdict != "timeout" && strings.Join(o.Sums, ",") == strings.Join(want, ",") && o.Escaped == 0
+			if same && o.Files != nil {
+				for n, s := range a.Files {
+					if o.Files[n] != s {
+						same = false
+					}
+				}
+			}
+			cell := "same"
+			switch {
+			case same && o.Verdict != "reads":
+				cell += " (" + o.Verdict[len("reads "):] + ")"
+			case !same && (o.Verdict == "rejects" || o.Verdict == "timeout"):
+				cell = o.Verdict + ": " + o.Detail
+			case !same:
+				cell = fmt.Sprintf("differs (%d files)", len(o.Sums))
+			}
+			if same {
+				back[i]++
+			}
+			fmt.Fprintf(&doc, " %s |", cell)
+			fmt.Fprintf(&raw, "written\t%s\t%s\t%s\t%s\t%d\t%d\t%s\t%v\n", a.ID, c.Name, o.Verdict, o.Detail, len(o.Sums), o.Escaped, o.digest(), same)
+		}
+		fmt.Fprintf(&raw, "written\t%s\t(archive)\t%d bytes\t%s\t%d\t0\t\t\n", a.ID, len(a.Data), sum(a.Data), len(a.Files))
+		doc.WriteString("\n")
+	}
+	doc.WriteString("| **same** | |")
+	for i := range cs {
+		fmt.Fprintf(&doc, " **%d / %d** |", back[i], len(ws))
+	}
+	doc.WriteString("\n")
+
 	header := fmt.Sprintf("Measured on %s at commit `%s` on %s. Readers:\n\n", date, commit, machine)
 	for _, c := range cs {
 		header += fmt.Sprintf("- %s: %s\n", c.Name, c.Version)
@@ -528,6 +586,6 @@ func main() {
 		fatal(err)
 	}
 	for i, c := range cs {
-		fmt.Printf("%-22s conformance %d/%d, reads %d/%d hostile archives\n", c.Name, agree[i], len(interop.Archives), reads[i], len(hostile.Archives))
+		fmt.Printf("%-22s conformance %d/%d, reads %d/%d hostile archives, reads back %d/%d written archives\n", c.Name, agree[i], len(interop.Archives), reads[i], len(hostile.Archives), back[i], len(ws))
 	}
 }

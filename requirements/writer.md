@@ -1,18 +1,19 @@
 # Wymagania: pisarz
 
-Status: szkic
+Status: przyjęte
 
-Etap 4.
+Etap 4, przyjęte 2026-11-27 po przeglądzie z APPNOTE 6.3.10 i RFC 1951 (ADR 0005). Numery w nawiasach to rozdziały
+APPNOTE, o ile nie zaznaczono inaczej.
 
 | Id | Wymaganie |
 |---|---|
-| ZW-001 | Pisarz zapisuje do `io.Writer` bez cofania się; wpisy są w archiwum i w katalogu w kolejności wywołań. |
-| ZW-002 | Nazwy podlegają tym samym regułom co w czytniku (NAME-001…005); nazwa niedozwolona albo powtórzona jest błędem przy `Create`. Nazwy spoza ASCII są zapisywane w UTF-8 z bitem 11. |
-| ZW-003 | Pisarz nie czyta zegara: data i czas wpisu pochodzą z nagłówka podanego przez wywołującego, domyślnie 1980-01-01 00:00:00. Pola „version made by”, atrybuty i pozostałe pola stałe mają wartości ustalone w kodzie i opisane w dokumentacji. |
-| ZW-004 | Pisarz nie dodaje pól dodatkowych poza ZIP64; ZIP64 pojawia się wtedy i tylko wtedy, gdy rozmiar, przesunięcie albo liczba wpisów tego wymaga. |
-| ZW-005 | Metody: Stored i Deflate. Kompresor ma ustalony algorytm i parametry: te same dane dają te same bajty na każdym systemie, architekturze i w każdej wersji Go z CI (pytanie 2). |
-| ZW-006 | Każdy strumień kompresora jest poprawnym strumieniem DEFLATE: własna dekompresja i `compress/flate` oddają dane wejściowe. Rozmiar wyniku na korpusie XML nie przekracza 1,1× wyniku `compress/flate` na poziomie domyślnym (cel roboczy). |
-| ZW-007 | To, co pisarz zapisał bez błędu, czytnik przyjmuje w trybie ścisłym z tymi samymi nazwami i treścią; Info-ZIP, 7-Zip, Python i `archive/zip` rozpakowują to samo (`tools/compare`). |
-| ZW-008 | Ten sam ciąg wywołań daje te same bajty archiwum, niezależnie od podziału danych wpisu na wywołania `Write`. |
-| ZW-009 | `Close` zapisuje katalog i koniec katalogu; wpis niezamknięty, zapis po `Close` i błąd docelowego `io.Writer` są błędami ze stałym kodem; po błędzie zapisu pisarz zwraca stale ten sam błąd. |
-| ZW-010 | Kopiowanie wpisu z czytnika bez ponownej kompresji (`OpenRaw` → pisarz) daje wpis o tej samej treści i tym samym CRC. |
+| ZW-001 | Pisarz zapisuje do `io.Writer` bez cofania się; wpisy są w archiwum i w katalogu w kolejności wywołań. Wpis powstaje jedną z trzech dróg: `Add` (cała treść naraz; rozmiary i CRC-32 w nagłówku lokalnym, 4.3.7), `Create` (treść w dowolnej liczbie zapisów; rozmiary i CRC-32 w deskryptorze danych z sygnaturą, bit 3, 4.3.9) i `AddRaw` (ZW-010). |
+| ZW-002 | Nazwy podlegają tym samym regułom co w czytniku (NAME-001…005, wspólny kod w `internal/entryname`); nazwa niedozwolona albo kolidująca z wcześniejszą jest błędem wywołania o tym samym kodzie co w czytniku, a nazwa dłuższa niż 65 535 bajtów (4.4.10) daje `write-name-length`. Nazwa jest zapisywana w UTF-8; bit 11 (4.4.4) jest ustawiony wtedy i tylko wtedy, gdy nazwa ma bajt spoza ASCII. Odrzucone wywołanie nie zostawia śladu w archiwum. |
+| ZW-003 | Pisarz nie czyta zegara: data i czas wpisu (4.4.6) pochodzą z nagłówka podanego przez wywołującego, domyślnie 1980-01-01 00:00:00; wartość, której format nie zapisze, daje `write-timestamp`. Pozostałe pola są stałe: „version made by” 4.5 i system 0 (4.4.2), wersja wymagana 1.0, 2.0 dla Deflate i katalogów, 4.5 dla ZIP64 (4.4.3.2), atrybuty wewnętrzne 0, zewnętrzne 0 albo 0x10 dla katalogu, bez komentarzy, bity 1–2 flag zerowe. |
+| ZW-004 | Pisarz nie dodaje pól dodatkowych poza ZIP64 (4.5.3). W katalogu pole ZIP64 zawiera dokładnie te wartości, które nie mieszczą się w 32 bitach; rekord i lokalizator ZIP64 końca katalogu (4.3.14, 4.3.15) pojawiają się wtedy i tylko wtedy, gdy liczba wpisów (od 65 535), rozmiar albo przesunięcie katalogu tego wymaga. Nagłówek lokalny ma postać ZIP64 (oba rozmiary w polu, deskryptor 64-bitowy), gdy wymaga tego znany rozmiar albo gdy wywołujący ustawił `Header.Zip64`; wpis z `Create` bez `Header.Zip64`, który osiąga 4 GiB − 1 bajtów, daje `write-entry-size`. |
+| ZW-005 | Metody: Stored i Deflate; inna daje `write-method`. Katalog (nazwa zakończona `/`) nie ma treści (`write-directory-content`) i jest zapisywany jako Stored. Kompresor ma ustalony algorytm i parametry i nie alokuje w czasie pracy: te same dane dają te same bajty na każdym systemie, architekturze i w każdej wersji Go z CI, co sprawdzają wzorce skrótów w repozytorium (pytanie 2, ADR 0005). |
+| ZW-006 | Każdy strumień kompresora jest poprawnym strumieniem DEFLATE (RFC 1951, 3.2): własna dekompresja i `compress/flate` oddają dane wejściowe i zużywają strumień co do bajta. Kody Huffmana bloków są pełne i nie dłuższe niż 15 bitów (7 dla kodu długości). Rozmiar wyniku na danych znacznikowych i tabelarycznych nie przekracza 1,1 wyniku `compress/flate` na poziomie domyślnym (`tools/bench`). |
+| ZW-007 | To, co pisarz zapisał bez błędu, czytnik przyjmuje w trybie ścisłym z tymi samymi nazwami i treścią (także wpisy ponad 1 MiB z samych zer: stosunek kompresji kompresora nie przekracza 1000:1); `archive/zip`, Info-ZIP, 7-Zip, Python i bsdtar oddają tę samą treść (`tools/compare`, różnice w `docs/differences.md`). |
+| ZW-008 | Ten sam ciąg wywołań daje te same bajty archiwum, niezależnie od podziału danych wpisu na wywołania `Write` i od tego, co kompresor kodował wcześniej. |
+| ZW-009 | `Close` zapisuje katalog i koniec katalogu. Wpis niezamknięty (`write-entry-open`) i użycie pisarza albo wpisu po zamknięciu (`write-after-close`) są błędami ze stałym kodem; powtórne `Close` zwraca wynik pierwszego. Błąd docelowego `io.Writer` wraca niezmieniony (zapis krótszy bez błędu to `io.ErrShortWrite`). Błąd wykryty przed pierwszym bajtem wpisu nie zmienia stanu pisarza; po błędzie, który zostawia archiwum niedokończone (błąd celu, `write-entry-size`, `write-raw-content` w trakcie kopiowania), każde następne wywołanie zwraca ten sam błąd. |
+| ZW-010 | Kopiowanie wpisu z czytnika bez ponownej kompresji (`OpenRaw` → `AddRaw`) daje wpis o tych samych danych, tej samej treści i tym samym CRC. Dane są sprawdzane w trakcie kopiowania (strumień DEFLATE jest dekodowany, rozmiar i CRC-32 treści porównane z opisem); niezgodność daje `write-raw-content`, więc ZW-007 obowiązuje także dla wpisów kopiowanych. |

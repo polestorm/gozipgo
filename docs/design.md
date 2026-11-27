@@ -6,15 +6,17 @@ w `../requirements/` i decyzje w `adr/`.
 ## Pakiety
 
 ```
-internal/format   stałe i struktury rekordów ZIP (sygnatury, rozmiary pól, bity flag), bez logiki
-internal/inflate  dekompresja DEFLATE według RFC 1951 (pytanie 1)
-internal/deflate  kompresja DEFLATE o ustalonym algorytmie (etap 4, pytanie 2)
-zipreader         czytnik: otwarcie, lista wpisów, treść wpisu, limity, kody błędów
-zipwriter         pisarz (etap 4)
+internal/format     stałe i struktury rekordów ZIP (sygnatury, rozmiary pól, bity flag), bez logiki
+internal/entryname  reguły nazw wpisów wspólne dla czytnika i pisarza
+internal/inflate    dekompresja DEFLATE według RFC 1951 (pytanie 1)
+internal/deflate    kompresja DEFLATE o ustalonym algorytmie (pytanie 2, ADR 0005)
+zipreader           czytnik: otwarcie, lista wpisów, treść wpisu, limity, kody błędów
+zipwriter           pisarz (ADR 0005)
 ```
 
 Z biblioteki standardowej pakiety biblioteki importują tylko to, co nie ma wejścia ani wyjścia poza interfejsami
-`io`: `io`, `errors`, `hash/crc32`, `encoding/binary`, `unicode/utf8`, `sort`, `strconv`, `strings`. Nigdy `archive/zip`,
+`io`: `io`, `errors`, `hash/crc32`, `encoding/binary`, `math/bits`, `unicode/utf8`, `sort`, `strconv`, `strings`,
+`sync`, `sync/atomic`. Nigdy `archive/zip`,
 `os`, `net` ani `fmt` (wciąga `os`); `compress/flate` tylko w testach. Listę trzyma `api_test.go`.
 
 ## Czytnik
@@ -94,24 +96,45 @@ RFC 1951: bloki niezakodowane, ze stałymi i z dynamicznymi kodami Huffmana; okn
 - test różnicowy z `compress/flate`: te same bajty wyjścia dla każdego poprawnego strumienia, błąd dla każdego
   niepoprawnego (różnice w tym, co jest błędem, opisane w `differences.md`).
 
-## Pisarz (`zipwriter`, etap 4)
+## Pisarz (`zipwriter`)
+
+Stan po etapie 4 (ADR 0005); wiążące są `requirements/writer.md` i wzorzec `api/zipwriter.txt`.
 
 ```go
-w := zipwriter.New(out io.Writer, zipwriter.Options{})
-ew, err := w.Create(zipwriter.Header{Name: "word/document.xml", Method: zipwriter.Deflate})
-ew.Write(...)
+w := zipwriter.New(out io.Writer)
+err := w.Add(zipwriter.Header{Name: "word/document.xml", Method: zipwriter.Deflate}, content)
+ew, err := w.Create(zipwriter.Header{Name: "big.bin", Method: zipwriter.Deflate}) // io.WriteCloser
+err = w.AddRaw(header, raw io.Reader, zipwriter.RawInfo{CompressedSize, UncompressedSize, CRC32})
 err = w.Close()
 ```
 
-- kolejność wpisów taka jak wywołań; nazwy sprawdzane tymi samymi regułami co w czytniku;
-- data i czas tylko z nagłówka podanego przez wywołującego; domyślnie stała (1980-01-01 00:00:00); nigdy zegar;
-- żadnych pól dodatkowych poza ZIP64, gdy rozmiar albo liczba wpisów tego wymaga;
-- zapis do `io.Writer` bez cofania: rozmiary i CRC w deskryptorze danych (bit 3), albo w nagłówku, gdy wywołujący
-  poda treść w całości (do decyzji w etapie 4, co jest domyślne; OPC ogranicza użycie deskryptora w niektórych
-  odbiornikach, do sprawdzenia w ECMA-376 część 2);
-- kompresor własny o ustalonym algorytmie i parametrach (pytanie 2): te same dane to te same bajty w każdej
-  wersji Go;
+- kolejność wpisów taka jak wywołań; nazwy sprawdzane tymi samymi regułami co w czytniku (`internal/entryname`),
+  z tymi samymi kodami;
+- data i czas tylko z nagłówka podanego przez wywołującego; domyślnie 1980-01-01 00:00:00; nigdy zegar;
+- żadnych pól dodatkowych poza ZIP64 i żadnych komentarzy; pola stałe opisane w ZW-003;
+- zapis do `io.Writer` bez cofania: `Add` zna treść, więc rozmiary i CRC-32 idą do nagłówka lokalnego (dla Deflate
+  treść skompresowana czeka w pamięci); `Create` zapisuje je w deskryptorze danych (bit 3); `AddRaw` dostaje je
+  od wywołującego i sprawdza w trakcie kopiowania;
+- wpis z `Create` zamyka się jawnie; pisarz nie zgaduje, że poprzedni wpis jest skończony;
+- ZIP64 tylko tam, gdzie wartość tego wymaga; dla wpisu strumieniowego, którego rozmiar nie jest znany przy
+  zapisie nagłówka, decyduje `Header.Zip64`;
+- błąd wykryty przed pierwszym bajtem wpisu nie zmienia stanu; błąd późniejszy (cel zapisu, rozmiar, dane surowe)
+  jest trwały, bo archiwum nie da się dokończyć;
 - to, co pisarz zapisał, czytnik przyjmuje w trybie ścisłym, a czarne skrzynki rozpakowują z tą samą treścią.
+
+## Kompresja (`internal/deflate`)
+
+RFC 1951, rozdziały 3 i 4. Jeden algorytm, stałe parametry, żadnych poziomów:
+
+- dopasowania przez łańcuchy skrótów trzech bajtów w oknie 32 KiB, najwyżej 128 kandydatów na pozycję, z odroczonym
+  wyborem (dopasowanie jest wydawane dopiero, gdy następna pozycja nie daje dłuższego);
+- pozycja jest kodowana, gdy ma przed sobą 262 bajty danych albo strumień się kończy, więc wynik nie zależy od
+  podziału danych na zapisy;
+- blok kończy się po 16 384 symbolach albo 65 535 bajtach wejścia i dostaje najtańszą z trzech postaci
+  (niezakodowana, kody stałe, kody dynamiczne), liczoną dokładnie w bitach;
+- kody dynamiczne o najmniejszym koszcie przy limicie 15 bitów (7 dla kodu długości) wyznacza algorytm
+  package-merge; kod jest zawsze pełny;
+- pamięć stała (około 0,5 MiB na koder), bez alokacji w czasie pracy.
 
 ## Kody błędów
 

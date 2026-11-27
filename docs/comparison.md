@@ -12,7 +12,7 @@ go -C tools/bench run . -root ../..       # speed and memory; raw: docs/results/
 ## Behaviour
 
 <!-- compare:begin -->
-Measured on 2026-11-27 at commit `d84f0ab` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
+Measured on 2026-11-27 at commit `d7e69d6 with uncommitted changes` on darwin/arm64, Apple M4, macOS 27.0.1. Readers:
 
 - gozipgo: this commit
 - archive/zip: go1.26.6
@@ -102,6 +102,23 @@ outside the directory the reader was told to extract into.
 | `inflate-trailing-data` | bytes after the end of the DEFLATE stream inside the entry | rejects: `inflate-trailing-data` | reads 1 (A) | reads 1 (A) | rejects after writing 1 | reads 1 (A) | rejects after writing 1 |
 | `crc` | the content does not have the declared CRC-32 | rejects: `zip-checksum` | rejects | rejects after writing 2 | rejects after writing 2 | rejects | rejects after writing 2 |
 | **reads** | | **0 / 39** | **23 / 39** | **21 / 39** | **18 / 39** | **24 / 39** | **19 / 39** |
+
+### Archives written by gozipgo
+
+7 archives written by `zipwriter` from data the tool generates. "same" means the reader gives back exactly
+the files that were written (SHA-256 of every file; for readers that list names, the names too). gozipgo reads
+them in its strict mode, with its default limits except the one on the number of entries.
+
+| Archive | What it is | gozipgo | archive/zip | Info-ZIP unzip | 7-Zip | Python zipfile | bsdtar (libarchive) |
+|---|---|---|---|---|---|---|---|
+| `added` | entries written by `Add`: sizes in the local headers, Stored and Deflate, a directory, an empty file | same | same | same | same | same | same |
+| `streamed` | entries written by `Create`: data descriptors, Stored and Deflate, 3 MiB of zeros, empty files | same | same | same | same | same | same |
+| `utf8-names` | names outside ASCII: UTF-8 with bit 11 | same | same | rejects: exit status 50 | same | same | same |
+| `zip64-headers` | `Header.Zip64`: local headers with the ZIP64 extra field, 64-bit data descriptors | same | same | same | same | same | same |
+| `zip64-count` | 66,000 entries: ZIP64 end of central directory record and locator | same | same | same | same | same | same |
+| `raw-copy` | the entries of `added` copied by `AddRaw` from `OpenRaw`, not compressed again | same | same | same | same | same | same |
+| `empty` | an archive with no entries: an end of central directory record and nothing else | same | same | same (with a warning) | same | same | same |
+| **same** | | **7 / 7** | **7 / 7** | **6 / 7** | **7 / 7** | **7 / 7** | **7 / 7** |
 <!-- compare:end -->
 
 Reading the hostile table: gozipgo rejects every archive of the hostile corpus, each with the code the corpus
@@ -114,17 +131,39 @@ rejects although others read them are listed, with the reason, in [differences.m
 ## Speed and memory
 
 <!-- bench:begin -->
-Measured on 2026-11-27 at commit `d84f0ab` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
+Measured on 2026-11-27 at commit `d7e69d6 with uncommitted changes` with go1.26.6 on darwin/arm64, Apple M4, macOS 27.0.1. Median of 7 runs after one warm-up run; a ratio below 1 means
 gozipgo is faster. Reading includes opening the archive and, for both readers, checking the CRC-32.
-The largest ratio for reading content is 1.33; criterion K7 allows 1.5.
+The largest ratio for reading content is 1.31; criterion K7 allows 1.5.
 
 | Case | gozipgo | archive/zip | time, gozipgo / archive/zip | allocated, gozipgo | allocated, archive/zip |
 |---|---|---|---|---|---|
-| Deflate, xml, 32 MiB (7266999 bytes compressed) | 395 MB/s | 321 MB/s | 0.81 | 130 KiB | 120 KiB |
-| Deflate, table, 32 MiB (13028297 bytes compressed) | 203 MB/s | 191 MB/s | 0.94 | 130 KiB | 118 KiB |
-| Deflate, random, 32 MiB (33564807 bytes compressed) | 6223 MB/s | 6948 MB/s | 1.12 | 82 KiB | 51 KiB |
-| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3138 MB/s | 4188 MB/s | 1.33 | 42 KiB | 51 KiB |
-| Stored, 32 MiB | 7479 MB/s | 7575 MB/s | 1.01 | 80 KiB | 6 KiB |
-| open an archive of 100000 entries (81 MiB) | 54.6 ms (546 ns per entry) | 11.5 ms (115 ns per entry) | 4.77 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) |
-| open and read all 100000 entries | 848.9 ms (8489 ns per entry) | 821.2 ms (8212 ns per entry) | 1.03 | 36.3 MiB (381 bytes per entry) | 53.5 MiB (561 bytes per entry) |
+| Deflate, xml, 32 MiB (7266999 bytes compressed) | 526 MB/s | 398 MB/s | 0.76 | 130 KiB | 120 KiB |
+| Deflate, table, 32 MiB (13028297 bytes compressed) | 270 MB/s | 239 MB/s | 0.89 | 130 KiB | 118 KiB |
+| Deflate, random, 32 MiB (33564807 bytes compressed) | 8097 MB/s | 8796 MB/s | 1.09 | 130 KiB | 7 KiB |
+| Deflate, zeros, 32 MiB (32750 bytes compressed) | 3866 MB/s | 5068 MB/s | 1.31 | 90 KiB | 51 KiB |
+| Stored, 32 MiB | 9898 MB/s | 9965 MB/s | 1.01 | 80 KiB | 6 KiB |
+| open an archive of 100000 entries (81 MiB) | 43.6 ms (436 ns per entry) | 9.2 ms (92 ns per entry) | 4.73 | 25.5 MiB (267 bytes per entry) | 26.7 MiB (280 bytes per entry) |
+| open and read all 100000 entries | 750.5 ms (7505 ns per entry) | 786.2 ms (7862 ns per entry) | 0.95 | 36.3 MiB (381 bytes per entry) | 53.5 MiB (561 bytes per entry) |
 <!-- bench:end -->
+
+## Writing
+
+What `zipwriter` produces against `archive/zip` from the same content: how long it takes and how large the archive
+is. The compressor of gozipgo has one fixed algorithm (it has no levels), because its output is part of the
+contract: the same content gives the same bytes with every version of Go. `compress/flate` makes no such promise.
+
+<!-- bench-write:begin -->
+Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that
+only counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level
+registered as its compressor, which is the level requirement ZW-006 names. Sizes are bytes of the whole archive.
+The largest size ratio on markup and tabular data is 1.052; ZW-006 allows 1.1.
+
+| Case | gozipgo | archive/zip | compress/flate, default level | archive, gozipgo | archive, archive/zip | archive, compress/flate default | size, gozipgo / compress/flate default |
+|---|---|---|---|---|---|---|---|
+| Deflate, xml, 32 MiB | 21 MB/s | 46 MB/s | 22 MB/s | 6869327 | 7266999 | 6731617 | 1.020 |
+| Deflate, table, 32 MiB | 20 MB/s | 47 MB/s | 33 MB/s | 13636680 | 13028297 | 12960172 | 1.052 |
+| Deflate, random, 32 MiB | 56 MB/s | 122 MB/s | 122 MB/s | 33564802 | 33564807 | 33564807 | 1.000 |
+| Deflate, zeros, 32 MiB | 596 MB/s | 822 MB/s | 820 MB/s | 39058 | 32750 | 32750 | 1.193 |
+| Stored, 32 MiB | 10752 MB/s | 10492 MB/s | 10263 MB/s | 33554562 | 33554562 | 33554562 | 1.000 |
+| Deflate, 100000 entries of 1 to 4 KiB | 59 MB/s | 71 MB/s | 59 MB/s | 85063394 | 85916923 | 85845743 | 0.991 |
+<!-- bench-write:end -->

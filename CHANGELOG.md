@@ -5,6 +5,22 @@ Versions follow semantic versioning. In 0.x the API may grow; an incompatible ch
 
 ## Unreleased
 
+Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
+
+- New package `zipwriter`: `New`, `Writer.Add` (whole content, sizes in the local header), `Writer.Create`
+  (content of unknown length, data descriptor), `Writer.AddRaw` (copies data that are already compressed, for
+  example from `zipreader.Reader.OpenRaw`, and checks them on the way), `Writer.Close`. Names follow the rules
+  of the reader and are refused with the reader's codes; other errors have `write-*` codes (`docs/errors.md`).
+  ZIP64 is written where a size, an offset or the number of entries requires it, or where `Header.Zip64` asks
+  for it.
+- DEFLATE is compressed by the module's own compressor (`internal/deflate`), written from RFC 1951. It has one
+  algorithm with constant parameters: the same content gives the same bytes on every system and with every
+  version of Go, whatever the way the content is split into writes. Checksums of its output are kept in the
+  repository and compared on every system of the CI and with two versions of Go.
+- `tools/compare` also gives the archives `zipwriter` writes to the other readers, and `tools/bench` measures
+  writing against `archive/zip`.
+- The reader is unchanged; its rules for names moved to a package shared with the writer.
+
 Stage 3 of the plan: hardening and measurements.
 
 - Faster reading: overlapping matches are copied in growing chunks (content made of one repeated byte was nine

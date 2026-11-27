@@ -1,6 +1,6 @@
 # gozipgo — instrukcje dla Claude Code
 
-Projekt: czytnik (a potem pisarz) archiwów ZIP w czystym Go, pisany od zera ze specyfikacji formatu, dla wejścia,
+Projekt: czytnik i pisarz archiwów ZIP w czystym Go, pisany od zera ze specyfikacji formatu, dla wejścia,
 któremu nie ufamy. Cele: **własna implementacja kontenera, bez `archive/zip`**; każda struktura archiwum sprawdzona
 względem pozostałych (jedna interpretacja albo odrzucenie); limity domyślnie włączone; błędy ze stałym kodem
 i miejscem; biblioteka nie dotyka systemu plików ani sieci; wynik powtarzalny co do bajta i niezależny od wersji
@@ -37,10 +37,10 @@ Zacznij od `README.md`, potem `docs/roadmap.md`, `docs/adr/0001-scope-and-accept
 | K2 | korpus zgodności: wszystkie archiwa z prawdziwych programów (Info-ZIP, 7-Zip, Windows, macOS, Python, Java, Go, Word, LibreOffice) czytane w 100%: lista wpisów i SHA-256 treści zgodne z manifestem | `TestInteropCorpus` | R |
 | K3 | zgodność z czarnymi skrzynkami: na korpusie zgodności ta sama lista i treść co `archive/zip`, Info-ZIP, 7-Zip i `zipfile` Pythona (100%); każde wrogie archiwum odrzucone z oczekiwanym kodem; każda różnica w `docs/differences.md` | `tools/compare` (osobny moduł) | R |
 | K4 | każde wymaganie z `requirements/` ma test; publiczne API zgodne z zapisanym wzorcem | `TestRequirementsCovered`, `TestAPISnapshot` | R |
-| K5 | fuzzing ≥ 24 h łącznie bez paniki i bez naruszenia niezmienników (to, co przyjęte, jest spójne; to, co przyjęte ściśle, `archive/zip` czyta tak samo) | `FuzzReader`, `FuzzInflate`, `FuzzRoundTrip` | I |
+| K5 | fuzzing ≥ 24 h łącznie bez paniki i bez naruszenia niezmienników (to, co przyjęte, jest spójne; to, co przyjęte ściśle, `archive/zip` czyta tak samo) | `FuzzReader`, `FuzzInflate`, `FuzzRoundTrip`, `FuzzDeflate` | I |
 | K6 | bezpieczeństwo: wrogie archiwa (bomby, nakładające się wpisy, kłamiące rozmiary, `../`, powtórzone nazwy, wiele końców katalogu) odrzucone w < 1 s i < 64 MB; biblioteka nie importuje `os` ani `net`; czas liniowy | `TestHostileArchives`, `TestNoIOImports`, `TestPathological` | I |
 | K7 | wydajność: rozpakowanie nie wolniejsze niż 1,5× `archive/zip` na tych samych danych; pamięć stała względem rozmiaru treści i zmierzona na wpis; archiwum ZIP64 > 4 GB czytane w < 64 MB | `tools/bench`, `TestLargeArchive` | E |
-| K8 | powtarzalność i konsument: te same wyniki w 10 przebiegach i na każdym systemie z CI; zapis daje te same bajty niezależnie od wersji Go; `godocxgo` czyta swój korpus bez zmian w `gozipgo` | `TestDeterministic`, u konsumenta | D |
+| K8 | powtarzalność i konsument: te same wyniki w 10 przebiegach i na każdym systemie z CI; zapis daje te same bajty niezależnie od wersji Go; `godocxgo` czyta swój korpus bez zmian w `gozipgo` | `TestDeterministic`, `TestGolden` (pisarz i kompresor, job `bytes` w CI), u konsumenta | D |
 | K9 | pakiet dowodów: wymagania → testy → wynik ostatniego przebiegu, tabela K1–K9 ze źródłem każdej liczby | `tools/evidence` | R |
 
 Po każdym etapie dopisz wiersz do tabeli pomiarów w `docs/testing.md` (data, commit, liczby K1–K3) i zaktualizuj
@@ -52,11 +52,14 @@ kolumnę „Stan” w `docs/roadmap.md`.
   inwentarz formatu, czytnik katalogu: ADR 0002), **etap 2 wykonany 2026-11-27** (nagłówki lokalne, układ pliku,
   własny dekoder DEFLATE, `Open`: ADR 0003); **v0.1.0 wydane 2026-11-27**; **etap 3 wykonany 2026-11-27** poza kampanią fuzzingu
   (korpus wrogi, `tools/compare`, `tools/bench`: ADR 0004; K5 czeka w kolejce na Synology, v0.2.0 po kampanii);
-  **następny: etap 4** (pisarz), a przed nim decyzja w pytaniu 2;
-- **v0.1.0 po etapie 2** (czytnik kompletny) odblokowuje `godocxgo`; pisarz (etap 4) powstaje po utwardzeniu;
+  **etap 4 wykonany 2026-11-27** (`zipwriter`, własny kompresor `internal/deflate`: ADR 0005; v0.3.0 po kampanii
+  fuzzingu na commicie kandydata); **następny: etap 5** (odbiór: K1–K9, pakiet dowodów, próba u `godocxgo`);
+- **v0.1.0 po etapie 2** (czytnik kompletny) odblokowuje `godocxgo`;
 - pytania otwarte (`docs/adr/open-questions.md`) rozstrzygamy w etapach, z rekomendacją; pytanie 1 rozstrzygnięte
-  2026-11-26 (własna dekompresja DEFLATE, `compress/flate` tylko w testach); przed etapem 4 potrzebna decyzja
-  w pytaniu 2 (kompresja w pisarzu);
+  2026-11-26 (własna dekompresja DEFLATE), pytanie 2 rozstrzygnięte 2026-11-27 (własny kompresor);
+  `compress/flate` tylko w testach i narzędziach pomiaru;
+- **bajty pisarza są kontraktem**: każda zmiana w `internal/deflate` albo `zipwriter`, która zmienia wzorce
+  `testdata/golden.tsv`, wymaga decyzji, `-update-golden` i wpisu w `CHANGELOG.md`;
 - wymagania w `requirements/` są szkicami do czasu rozpoczęcia ich etapu (`requirements/README.md`); etap zaczyna
   się od potwierdzenia swoich wymagań;
 - najpierw test (archiwum zbudowane w teście albo plik korpusu), potem kod;

@@ -15,6 +15,13 @@
   from this text; section numbers in its comments, in `requirements/inflate.md` and in `docs/errors.md` refer to it.
   The tables of base lengths, base distances and extra bits (3.2.5), the order of the code length codes (3.2.7)
   and the fixed codes (3.2.6) are data of the format, taken from the RFC;
+- the same RFC for the compressor in `internal/deflate`: the format of the blocks (section 3) and the outline of
+  an encoder in section 4 (hash chains over three-byte sequences, deferred selection of matches), which the RFC
+  gives as a description free of known patents. The parameters of the search are our own, chosen by measurement
+  (ADR 0005);
+- the package-merge algorithm for Huffman codes of limited length, from its published description (L. L. Larmore,
+  D. S. Hirschberg, "A fast algorithm for optimal length-limited Huffman codes", Journal of the ACM 37(3), 1990),
+  implemented from the definition of the algorithm, not from any code;
 - the definition of CRC-32 given in APPNOTE;
 - published descriptions of attacks on ZIP readers (overlapping entries, disagreeing headers, concatenated
   archives), as the source of test cases, cited where used.

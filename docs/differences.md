@@ -83,3 +83,20 @@ wynikiem; różnice w drugą stronę zapisujemy tutaj.
 | Strumień | `gozipgo` | `compress/flate` | Reguła |
 |---|---|---|---|
 | blok dynamiczny, którego kod znaków ma tylko kod końca bloku (jeden kod o długości 1) | `inflate-code-lengths` | przyjmuje, wynik pusty | RFC 1951, 3.2.7 dopuszcza niezupełny kod tylko dla odległości; ADR 0003 pkt 10. Test: `TestDynamicCodes` („single literal code”) |
+
+## Archiwa zapisane przez `zipwriter` w innych programach (ZW-007)
+
+Stan z 2026-11-27, `tools/compare` (`comparison.md`, surowy wynik `results/compare.tsv`), macOS. `archive/zip`,
+7-Zip, `zipfile` Pythona i bsdtar oddają treść wszystkich 7 archiwów.
+
+| Program | Archiwum | Co się dzieje | Czyja to cecha |
+|---|---|---|---|
+| Info-ZIP UnZip 6.00 w wydaniu Apple (macOS 27.0.1) | `utf8-names` | kończy pracę kodem 50 na plikach o nazwach spoza ASCII zapisanych w UTF-8 z bitem 11 | programu: ta sama różnica co dla archiwów Go i 7-Zipa w korpusie zgodności (wyżej) |
+| Info-ZIP UnZip 6.00 | `empty` | kod 1 (ostrzeżenie „zipfile is empty”), nic do rozpakowania | programu: plik złożony tylko z rekordu końca katalogu jest pustym archiwum (APPNOTE 4.3.1); ostrzeżenie nie zmienia wyniku |
+
+## Kompresja względem `compress/flate`
+
+| Dane | `gozipgo` | `compress/flate` | Powód |
+|---|---|---|---|
+| jeden powtarzany bajt (32 MiB zer) | 39 058 bajtów, około 860:1 | 32 750 bajtów, około 1025:1 | blok kompresora ma najwyżej 65 535 bajtów wejścia, więc stosunek nie przekracza 1000:1 i wynik mieści się w domyślnym `MaxRatio` czytnika (ADR 0005 pkt 3) |
+

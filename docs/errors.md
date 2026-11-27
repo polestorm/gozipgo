@@ -1,10 +1,11 @@
 # Error codes
 
-Every error of the library about an archive is a `*zipreader.Error` with a fixed code. Messages (`Error.Message`)
-are in English and may change between versions; the contract is the code, the entry (`Entry`, `Other`, `Name`) and
-the offset, so a caller can translate or classify errors by code. A code, once released, keeps its meaning and is
-not removed. `TestErrorCatalog` checks that this file lists exactly the codes the source defines and that a test
-raises each of them.
+Every error of the reader about an archive is a `*zipreader.Error` with a fixed code, and every error of the
+writer about what it was asked to write is a `*zipwriter.Error` with a fixed code ([the writer](#the-writer-write--and-name-)).
+Messages (`Error.Message`) are in English and may change between versions; the contract is the code, the entry
+(`Entry`, `Other`, `Name`) and, for the reader, the offset, so a caller can translate or classify errors by code.
+A code, once released, keeps its meaning and is not removed. `TestErrorCatalog` checks that this file lists
+exactly the codes the source defines and that a test raises each of them.
 
 Errors of the `io.ReaderAt` the caller supplied are not wrapped: `New` and the readers of `Open` and `OpenRaw`
 return them unchanged. A source that ends before the size the caller gave yields `io.ErrUnexpectedEOF`; a source
@@ -131,3 +132,30 @@ bytes. When several apply, the first in the order encryption, patch, method, ver
 | `unsupported-flag` | `CodeUnsupportedFlag` | APPNOTE 4.4.4 | A reserved or unused bit of the general purpose flag is set: 4, 7, 8, 9, 10, 12, 14 or 15. |
 | `unsupported-digital-signature` | `CodeUnsupportedDigitalSignature` | APPNOTE 4.3.13 | A digital signature record in the central directory. |
 | `unsupported-zip64-data` | `CodeUnsupportedZip64Data` | APPNOTE 4.3.14.3, 4.4.27 | The ZIP64 end of central directory record has an extensible data sector. |
+
+## The writer (`write-*` and `name-*`)
+
+`zipwriter` refuses a name with the code the reader gives for it: `name-empty`, `name-nul`, `name-encoding` (the
+name is not valid UTF-8), `name-control-character`, `name-backslash`, `name-absolute`, `name-traversal` and
+`name-duplicate`, under constants of the same names (`zipwriter.CodeNameEmpty` and so on). The checks run in a
+fixed order: the state of the writer (`write-after-close`, `write-entry-open`), the name in the order of the list
+above, `write-name-length`, `write-method`, `write-timestamp`, `name-duplicate`, and then what is specific to the
+call (`write-directory-content`, `write-raw-content` for Stored sizes that differ).
+
+An error found before the first byte of an entry is written leaves the writer as it was: the call can be repeated
+with a corrected header. An error found after that (`write-entry-size`, and `write-raw-content` found while
+copying) means the archive cannot be completed: every later call returns the same error. The same holds for an
+error of the `io.Writer` the archive is written to and of the `io.Reader` given to `AddRaw`, which are returned
+unchanged; a write that is short without an error yields `io.ErrShortWrite`, a reader that returns no bytes and no
+error yields `io.ErrNoProgress`.
+
+| Code | Constant | Rule | Meaning |
+|---|---|---|---|
+| `write-name-length` | `CodeNameLength` | APPNOTE 4.4.10 | The name is longer than 65,535 bytes, the limit of the name length field. |
+| `write-method` | `CodeMethod` | APPNOTE 4.4.5; ADR 0001 | `Header.Method` is neither `Stored` (0) nor `Deflate` (8). |
+| `write-timestamp` | `CodeTimestamp` | APPNOTE 4.4.6 | `Header.Modified` is not a date the MS-DOS format records: a year outside 1980 to 2107, a day the month does not have, an odd or out-of-range second. The zero value is 1980-01-01 00:00:00. |
+| `write-directory-content` | `CodeDirectoryContent` | ADR 0002 (DIR-011) | Content for an entry whose name ends with "/": the reader rejects a directory entry with a size. |
+| `write-entry-open` | `CodeEntryOpen` | ADR 0005 | `Add`, `AddRaw`, `Create` or `Close` while the entry started by `Create` has not been closed. |
+| `write-after-close` | `CodeAfterClose` | ADR 0005 | A new entry after `Close` of the writer (`Entry` is -1), or `Write` to an entry after its `Close`. |
+| `write-entry-size` | `CodeEntrySize` | APPNOTE 4.3.9.2, 4.5.3 | An entry started by `Create` without `Header.Zip64` reached 4 GiB − 1 bytes, compressed or not: its local header, already written, does not announce 64-bit sizes. The archive cannot be completed. |
+| `write-raw-content` | `CodeRawContent` | ADR 0005 | The data given to `AddRaw` are not what `RawInfo` says: Stored data with two different sizes (found before anything is written), data that end early, a stream that is not DEFLATE or does not end with the data, content of another size or CRC-32. |

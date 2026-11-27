@@ -59,3 +59,15 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.go == 'stable'
         # -short pomija testy czasu i archiwum ponad 4 GiB, które pod detektorem wyścigów trwają minuty
         run: go test -race -short ./...
+
+  bytes:
+    # K8: pisarz daje te same bajty w wersji Go z go.mod i w bieżącym wydaniu (job test); wzorce skrótów są
+    # w repozytorium (internal/deflate/testdata, zipwriter/testdata)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go version
+      - run: go test ./internal/deflate ./zipwriter -run 'TestGolden|TestSplitIndependence|TestSmallestArchive' -count=1 -v

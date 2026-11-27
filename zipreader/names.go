@@ -4,6 +4,8 @@ import (
 	"sort"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/polestorm/gozipgo/internal/entryname"
 )
 
 // cp437High to znaki IBM Code Page 437 dla bajtów 0x80–0xFF, w kolejności bajtów. Źródło: tablica Unicode
@@ -72,34 +74,8 @@ func checkName(raw []byte, utf8Flag bool, unflagged NameEncoding, page *[128]run
 	default:
 		return "", false, CodeNameEncoding, "the name has bytes outside ASCII and no UTF-8 flag"
 	}
-	for i := 0; i < len(name); i++ {
-		if c := name[i]; c < 0x20 || c == 0x7F {
-			return "", false, CodeNameControl, "a control character in the name"
-		}
-	}
-	if strings.IndexByte(name, '\\') >= 0 {
-		return "", false, CodeNameBackslash, "a backslash in the name"
-	}
-	if name[0] == '/' {
-		return "", false, CodeNameAbsolute, "the name starts with a slash"
-	}
-	if len(name) >= 2 && name[1] == ':' && (name[0]|0x20 >= 'a' && name[0]|0x20 <= 'z') {
-		return "", false, CodeNameAbsolute, "the name starts with a drive letter"
-	}
-	// Segmenty: jeden ukośnik na końcu oznacza katalog; poza tym żaden segment nie jest pusty, „.” ani „..”.
-	path := strings.TrimSuffix(name, "/")
-	for start := 0; start <= len(path); {
-		end := strings.IndexByte(path[start:], '/')
-		if end < 0 {
-			end = len(path)
-		} else {
-			end += start
-		}
-		switch path[start:end] {
-		case "", ".", "..":
-			return "", false, CodeNameTraversal, "an empty, \".\" or \"..\" path segment in the name"
-		}
-		start = end + 1
+	if code, msg = entryname.Check(name); code != "" {
+		return "", false, code, msg
 	}
 	return name, relaxed, "", ""
 }

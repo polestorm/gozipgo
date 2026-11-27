@@ -1,6 +1,6 @@
 # gozipgo tools/compare
 # date	2026-11-27
-# commit	d84f0ab
+# commit	d7e69d6 with uncommitted changes
 # machine	darwin/arm64, Apple M4, macOS 27.0.1
 # candidate	gozipgo	this commit
 # candidate	archive/zip	go1.26.6
@@ -375,3 +375,52 @@ hostile	crc	Info-ZIP unzip	rejects	exit status 2, 2 files written	2	0	04008f83
 hostile	crc	7-Zip	rejects	exit status 2, 2 files written	2	0	04008f83	
 hostile	crc	Python zipfile	rejects	BadZipFile: Bad CRC-32 for file 'a.txt'	0	0	e3b0c442	
 hostile	crc	bsdtar (libarchive)	rejects	exit status 1, 2 files written	2	0	04008f83	
+written	added	gozipgo	reads		7	0	a06c2e4b	true
+written	added	archive/zip	reads		7	0	a06c2e4b	true
+written	added	Info-ZIP unzip	reads		7	0	a06c2e4b	true
+written	added	7-Zip	reads		7	0	a06c2e4b	true
+written	added	Python zipfile	reads		7	0	a06c2e4b	true
+written	added	bsdtar (libarchive)	reads		7	0	a06c2e4b	true
+written	added	(archive)	284592 bytes	107d60860f8bae7aaaf5dab4f80939cab4fe45e5297f092de52684c9b54160af	7	0		
+written	streamed	gozipgo	reads		6	0	a884a1fd	true
+written	streamed	archive/zip	reads		6	0	a884a1fd	true
+written	streamed	Info-ZIP unzip	reads		6	0	a884a1fd	true
+written	streamed	7-Zip	reads		6	0	a884a1fd	true
+written	streamed	Python zipfile	reads		6	0	a884a1fd	true
+written	streamed	bsdtar (libarchive)	reads		6	0	a884a1fd	true
+written	streamed	(archive)	306942 bytes	c16d4cde3b19aea4cb4c5e61e65e2a9dba57035c3977139a57988194e43632bb	6	0		
+written	utf8-names	gozipgo	reads		3	0	8b974e57	true
+written	utf8-names	archive/zip	reads		3	0	8b974e57	true
+written	utf8-names	Info-ZIP unzip	rejects	exit status 50	0	0	e3b0c442	false
+written	utf8-names	7-Zip	reads		3	0	8b974e57	true
+written	utf8-names	Python zipfile	reads		3	0	8b974e57	true
+written	utf8-names	bsdtar (libarchive)	reads		3	0	8b974e57	true
+written	utf8-names	(archive)	6005 bytes	19f1f6b0a31a4f9d6f9b942cd22a38810e466031840e08943a42a25504b4ae4f	3	0		
+written	zip64-headers	gozipgo	reads		4	0	d1628322	true
+written	zip64-headers	archive/zip	reads		4	0	d1628322	true
+written	zip64-headers	Info-ZIP unzip	reads		4	0	d1628322	true
+written	zip64-headers	7-Zip	reads		4	0	d1628322	true
+written	zip64-headers	Python zipfile	reads		4	0	d1628322	true
+written	zip64-headers	bsdtar (libarchive)	reads		4	0	d1628322	true
+written	zip64-headers	(archive)	72420 bytes	b1ee2d7302b4211e22bbef801f3e937ea19ce142a9922abc535475703a6cda6c	4	0		
+written	zip64-count	gozipgo	reads		66000	0	d7234db8	true
+written	zip64-count	archive/zip	reads		66000	0	d7234db8	true
+written	zip64-count	Info-ZIP unzip	reads		66000	0	d7234db8	true
+written	zip64-count	7-Zip	reads		66000	0	d7234db8	true
+written	zip64-count	Python zipfile	reads		66000	0	d7234db8	true
+written	zip64-count	bsdtar (libarchive)	reads		66000	0	d7234db8	true
+written	zip64-count	(archive)	7512988 bytes	5095fc84f24dc09a69e391c06b3673a75eacff3539e5d757d63c5edfc1418040	66000	0		
+written	raw-copy	gozipgo	reads		7	0	a06c2e4b	true
+written	raw-copy	archive/zip	reads		7	0	a06c2e4b	true
+written	raw-copy	Info-ZIP unzip	reads		7	0	a06c2e4b	true
+written	raw-copy	7-Zip	reads		7	0	a06c2e4b	true
+written	raw-copy	Python zipfile	reads		7	0	a06c2e4b	true
+written	raw-copy	bsdtar (libarchive)	reads		7	0	a06c2e4b	true
+written	raw-copy	(archive)	284672 bytes	880e9132260cafa6c3b1cfc97d793006788962321aa1a3649017088f610b5e1a	7	0		
+written	empty	gozipgo	reads		0	0	e3b0c442	true
+written	empty	archive/zip	reads		0	0	e3b0c442	true
+written	empty	Info-ZIP unzip	reads with a warning	exit status 1	0	0	e3b0c442	true
+written	empty	7-Zip	reads		0	0	e3b0c442	true
+written	empty	Python zipfile	reads		0	0	e3b0c442	true
+written	empty	bsdtar (libarchive)	reads		0	0	e3b0c442	true
+written	empty	(archive)	22 bytes	8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85	0	0		

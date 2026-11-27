@@ -40,8 +40,8 @@ sprawdzenie lokalne uruchamiamy z `-fuzzminimizetime 1s`.
 |---|---|---|---|
 | `FuzzReader` | `zipreader` | bez paniki; błąd to `*Error` ze znanym kodem i przesunięciem w pliku; archiwum przyjęte ma poprawne i niekolidujące nazwy, a dane każdego wpisu leżą w pliku; każdy `Open` daje dokładnie zadeklarowaną liczbę bajtów z zadeklarowanym CRC-32 albo błąd ze znanym kodem, nigdy więcej bajtów, niż zadeklarowano; archiwum przyjęte w trybie ścisłym `archive/zip` przyjmuje z tą samą listą nazw i tymi samymi bajtami treści; wynik nie zależy od podziału odczytów. Limity treści 1 MiB na wpis i 4 MiB łącznie trzymają czas wykonania | 1 (katalog), 2 (treść i wyrocznia) |
 | `FuzzInflate` | `internal/inflate` | bez paniki; błąd to `*inflate.Error`; strumień przyjęty przez nas przyjmuje też `compress/flate` z tymi samymi bajtami; bajty wydane przed naszym błędem są początkiem tego, co daje `compress/flate` | 2 |
-| `FuzzRoundTrip` | `zipwriter` | dowolne wpisy zapisane pisarzem: czytnik w trybie ścisłym oddaje te same nazwy i treść; drugi zapis daje te same bajty | 4 |
-| `FuzzDeflate` | `internal/deflate` | dowolne dane: własna dekompresja i `compress/flate` oddają dane wejściowe | 4 |
+| `FuzzRoundTrip` | `zipwriter` | z dowolnych danych powstają nazwy i treść wpisów (`Add` i `Create`, Stored i Deflate, z `Header.Zip64` i bez): błąd pisarza to `*Error`; to, co zapisał, czytnik w trybie ścisłym i `archive/zip` oddają z tymi samymi nazwami i treścią; te same wywołania z treścią podzieloną inaczej dają te same bajty | 4 |
+| `FuzzDeflate` | `internal/deflate` | dowolne dane, powielone ponad długość okna i bloku: własna dekompresja i `compress/flate` oddają dane wejściowe i zużywają strumień co do bajta; wynik nie zależy od podziału na zapisy | 4 |
 
 Wejścia startowe: korpus zgodności, korpus wrogi i archiwa z budowniczego testów (fuzzer strukturalny: mutuje
 pola rekordów, nie tylko bajty).

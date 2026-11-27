@@ -12,7 +12,8 @@ z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, do potwierdze
    do testów różnicowych. Przeciw: `compress/flate` jest dojrzały i szybki, a wynik poprawnego strumienia jest
    wyznaczony przez specyfikację. Rekomendacja: własna, z granicą wydajności z K7; gdyby K7 nie dało się spełnić,
    wracamy do pytania z pomiarem.
-2. **Kompresja w pisarzu (przed etapem 4).** Bajty z `compress/flate` mogą się zmienić z wersją Go, co łamie
+2. **Kompresja w pisarzu (przed etapem 4).** Rozstrzygnięte 2026-11-27 (właściciel): własny kompresor
+   (ADR 0005; zmierzony rozmiar w `comparison.md`). Bajty z `compress/flate` mogą się zmienić z wersją Go, co łamie
    zasadę D („te same bajty w obrębie wersji biblioteki”). Rekomendacja: własny kompresor o ustalonym algorytmie
    (dopasowania przez łańcuchy skrótów o stałych parametrach, kody dynamiczne), jeden poziom kompresji w 1.0.
    Cel: rozmiar nie gorszy niż 1,1× `compress/flate` na poziomie domyślnym na korpusie XML; mierzone w `tools/bench`.
@@ -46,7 +47,8 @@ z 2026-11-26: dekompresja własna), 3, 9 i 12 (ADR 0003 pkt 6–9, do potwierdze
    wpisu 1 000:1 liczony dopiero powyżej 1 MiB wyjścia (DEFLATE nie przekracza ok. 1 032:1, więc limit łapie
    bomby warstwowe i kłamiące nagłówki; arkusze z powtarzalną treścią miewają ponad 100:1). Konsumenci OPC
    ustawią ciaśniej.
-10. **Czy pisarz wchodzi do 1.0.** Patrz `../roadmap.md`: rekomendacja to 1.0 dla czytnika po etapach 0–3 i 5,
+10. **Czy pisarz wchodzi do 1.0.** Pisarz powstał w etapie 4 (2026-11-27) przed odbiorem, więc 1.0 obejmie oba
+    pakiety, o ile właściciel nie zdecyduje inaczej. Patrz `../roadmap.md`: rekomendacja to 1.0 dla czytnika po etapach 0–3 i 5,
     pisarz w 1.1, o ile wcześniej nie pojawi się piszący konsument.
 11. **Najniższa wersja Go.** Rozstrzygnięte 2026-11-26 (właściciel): bieżące wydanie, bez wspierania starszych
     (ADR 0002 pkt 13).

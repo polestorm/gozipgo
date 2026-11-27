@@ -11,6 +11,7 @@ package main
 import (
 	"archive/zip"
 	"bytes"
+	"compress/flate"
 	"flag"
 	"fmt"
 	"io"
@@ -23,6 +24,7 @@ import (
 	"time"
 
 	"github.com/polestorm/gozipgo/zipreader"
+	"github.com/polestorm/gozipgo/zipwriter"
 )
 
 const runs = 7
@@ -140,6 +142,73 @@ func openStdlib(data []byte) int64 {
 	return int64(len(r.File))
 }
 
+// counter is a destination that only counts.
+type counter struct{ n int64 }
+
+func (c *counter) Write(p []byte) (int, error) { c.n += int64(len(p)); return len(p), nil }
+
+// piece is one entry to write.
+type piece struct {
+	name string
+	data []byte
+}
+
+// writeOurs writes the parts with zipwriter, each through Create in pieces of 32 KiB, as a program that streams
+// content would, and returns the size of the archive.
+func writeOurs(parts []piece, method uint16) int64 {
+	var c counter
+	w := zipwriter.New(&c)
+	for _, p := range parts {
+		e, err := w.Create(zipwriter.Header{Name: p.name, Method: method})
+		if err != nil {
+			fatal(err)
+		}
+		for d := p.data; len(d) > 0; {
+			n := min(len(d), 32<<10)
+			if _, err := e.Write(d[:n]); err != nil {
+				fatal(err)
+			}
+			d = d[n:]
+		}
+		if err := e.Close(); err != nil {
+			fatal(err)
+		}
+	}
+	if err := w.Close(); err != nil {
+		fatal(err)
+	}
+	return c.n
+}
+
+// writeStdlib does the same with archive/zip. With level 0 the compressor is the one archive/zip ships with;
+// otherwise it is compress/flate at the given level, so the container is the same and only the level differs.
+func writeStdlib(level int) func(parts []piece, method uint16) int64 {
+	return func(parts []piece, method uint16) int64 {
+		var c counter
+		w := zip.NewWriter(&c)
+		if level != 0 {
+			w.RegisterCompressor(zip.Deflate, func(out io.Writer) (io.WriteCloser, error) { return flate.NewWriter(out, level) })
+		}
+		for _, p := range parts {
+			e, err := w.CreateHeader(&zip.FileHeader{Name: p.name, Method: method})
+			if err != nil {
+				fatal(err)
+			}
+			for d := p.data; len(d) > 0; {
+				n := min(len(d), 32<<10)
+				if _, err := e.Write(d[:n]); err != nil {
+					fatal(err)
+				}
+				d = d[n:]
+			}
+		}
+		if err := w.Close(); err != nil {
+			fatal(err)
+		}
+		return c.n
+	}
+}
+
 // measure runs f `runs` times and returns the durations and the bytes allocated in the last run.
 func measure(f func() int64) ([]time.Duration, uint64) {
 	f() // warm up
@@ -203,7 +272,7 @@ func main() {
 	date := time.Now().Format("2006-01-02")
 	var raw, doc strings.Builder
 	fmt.Fprintf(&raw, "# gozipgo tools/bench\n# date\t%s\n# commit\t%s\n# go\t%s\n# machine\t%s\n# runs\t%d\n", date, commit, runtime.Version(), machine, runs)
-	raw.WriteString("case\treader\trun\tnanoseconds\tbytes of content or entries\tbytes allocated\n")
+	raw.WriteString("case\treader\trun\tnanoseconds\tbytes of content or entries\tbytes allocated\tbytes written\n")
 
 	type row struct {
 		label        string
@@ -255,7 +324,7 @@ func main() {
 			times, a := measure(f)
 			med[k], alloc[k] = median(times), a
 			for i, d := range times {
-				fmt.Fprintf(&raw, "%s\t%s\t%d\t%d\t%d\t%d\n", r.label, name, i+1, d.Nanoseconds(), r.units, a)
+				fmt.Fprintf(&raw, "%s\t%s\t%d\t%d\t%d\t%d\t\n", r.label, name, i+1, d.Nanoseconds(), r.units, a)
 			}
 		}
 		ratio := float64(med[0]) / float64(med[1])
@@ -278,6 +347,58 @@ func main() {
 		fmt.Printf("%-55s %.2f\n", r.label, ratio)
 	}
 	header := fmt.Sprintf("Measured on %s at commit `%s` with %s on %s. Median of %d runs after one warm-up run; a ratio below 1 means\ngozipgo is faster. Reading includes opening the archive and, for both readers, checking the CRC-32.\nThe largest ratio for reading content is %.2f; criterion K7 allows 1.5.\n\n", date, commit, runtime.Version(), machine, runs, worst)
+
+	// Writing: the same content through zipwriter and through archive/zip, time and size of the archive.
+	type wrow struct {
+		label  string
+		units  int64
+		parts  []piece
+		method uint16
+	}
+	var wrows []wrow
+	for _, kind := range []string{"xml", "table", "random", "zeros"} {
+		wrows = append(wrows, wrow{fmt.Sprintf("write Deflate, %s, 32 MiB", kind), size, []piece{{"data.bin", generate(kind, size)}}, zip.Deflate})
+	}
+	wrows = append(wrows, wrow{"write Stored, 32 MiB", size, []piece{{"data.bin", generate("random", size)}}, zip.Store})
+	var small []piece
+	var smallBytes int64
+	for i := 0; i < entries; i++ {
+		p := piece{fmt.Sprintf("parts/%03d/item%06d.xml", i%500, i), part[:1024+i%3072]}
+		small = append(small, p)
+		smallBytes += int64(len(p.data))
+	}
+	wrows = append(wrows, wrow{fmt.Sprintf("write Deflate, %d entries of 1 to 4 KiB", entries), smallBytes, small, zip.Deflate})
+	var wdoc strings.Builder
+	const flateDefault = "archive/zip with compress/flate at its default level"
+	writers := []struct {
+		name string
+		f    func([]piece, uint16) int64
+	}{{"gozipgo", writeOurs}, {"archive/zip", writeStdlib(0)}, {flateDefault, writeStdlib(flate.DefaultCompression)}}
+	wdoc.WriteString("| Case | gozipgo | archive/zip | compress/flate, default level | archive, gozipgo | archive, archive/zip | archive, compress/flate default | size, gozipgo / compress/flate default |\n|---|---|---|---|---|---|---|---|\n")
+	worstSize := 0.0
+	for _, r := range wrows {
+		var med [3]time.Duration
+		var bytesOut [3]int64
+		for k, wr := range writers {
+			bytesOut[k] = wr.f(r.parts, r.method)
+			times, a := measure(func() int64 { return wr.f(r.parts, r.method) })
+			med[k] = median(times)
+			for i, d := range times {
+				fmt.Fprintf(&raw, "%s\t%s\t%d\t%d\t%d\t%d\t%d\n", r.label, wr.name, i+1, d.Nanoseconds(), r.units, a, bytesOut[k])
+			}
+		}
+		speed := func(d time.Duration) string { return fmt.Sprintf("%.0f MB/s", float64(r.units)/1e6/d.Seconds()) }
+		sizeRatio := float64(bytesOut[0]) / float64(bytesOut[2])
+		if strings.Contains(r.label, "xml") || strings.Contains(r.label, "table") {
+			worstSize = max(worstSize, sizeRatio)
+		}
+		fmt.Fprintf(&wdoc, "| %s | %s | %s | %s | %d | %d | %d | %.3f |\n", r.label[len("write "):], speed(med[0]), speed(med[1]), speed(med[2]),
+			bytesOut[0], bytesOut[1], bytesOut[2], sizeRatio)
+		fmt.Printf("%-55s time %.2f of archive/zip, %.2f of flate default; size %.3f of flate default\n", r.label,
+			float64(med[0])/float64(med[1]), float64(med[0])/float64(med[2]), sizeRatio)
+	}
+	wheader := fmt.Sprintf("Measured in the same run. Every writer gets the content in pieces of 32 KiB and writes to a destination that\nonly counts. `archive/zip` is measured twice: as it ships, and with `compress/flate` at its default level\nregistered as its compressor, which is the level requirement ZW-006 names. Sizes are bytes of the whole archive.\nThe largest size ratio on markup and tabular data is %.3f; ZW-006 allows 1.1.\n\n", worstSize)
+
 	if err := os.WriteFile(resolve(abs, *rawPath), []byte(raw.String()), 0o644); err != nil {
 		fatal(err)
 	}
@@ -286,12 +407,16 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
-	const begin, end = "<!-- bench:begin -->\n", "<!-- bench:end -->\n"
-	i, j := strings.Index(string(old), begin), strings.Index(string(old), end)
-	if i < 0 || j < i {
-		fatal(*docPath + " has no bench:begin and bench:end markers")
+	text := string(old)
+	for _, section := range []struct{ name, body string }{{"bench", header + doc.String()}, {"bench-write", wheader + wdoc.String()}} {
+		begin, end := "<!-- "+section.name+":begin -->\n", "<!-- "+section.name+":end -->\n"
+		i, j := strings.Index(text, begin), strings.Index(text, end)
+		if i < 0 || j < i {
+			fatal(*docPath + " has no " + section.name + ":begin and " + section.name + ":end markers")
+		}
+		text = text[:i] + begin + section.body + text[j:]
 	}
-	if err := os.WriteFile(docFile, []byte(string(old[:i])+begin+header+doc.String()+string(old[j:])), 0o644); err != nil {
+	if err := os.WriteFile(docFile, []byte(text), 0o644); err != nil {
 		fatal(err)
 	}
 }

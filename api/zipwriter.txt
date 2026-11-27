@@ -1,0 +1,83 @@
+package github.com/polestorm/gozipgo/zipwriter
+
+const (
+	CodeNameEmpty     = "name-empty"
+	CodeNameNUL       = "name-nul"
+	CodeNameEncoding  = "name-encoding"
+	CodeNameControl   = "name-control-character"
+	CodeNameBackslash = "name-backslash"
+	CodeNameAbsolute  = "name-absolute"
+	CodeNameTraversal = "name-traversal"
+	CodeNameDuplicate = "name-duplicate"
+
+	CodeNameLength       = "write-name-length"
+	CodeMethod           = "write-method"
+	CodeTimestamp        = "write-timestamp"
+	CodeDirectoryContent = "write-directory-content"
+	CodeEntryOpen        = "write-entry-open"
+	CodeAfterClose       = "write-after-close"
+	CodeEntrySize        = "write-entry-size"
+	CodeRawContent       = "write-raw-content"
+)
+
+const (
+	Stored  uint16 = 0
+	Deflate uint16 = 8
+)
+
+type Error struct {
+	Code string
+
+	Entry int
+
+	Name string
+
+	Message string
+}
+
+type Header struct {
+	Name string
+
+	Method uint16
+
+	Modified Timestamp
+
+	Zip64 bool
+}
+
+type RawInfo struct {
+	CompressedSize   uint64
+	UncompressedSize uint64
+	CRC32            uint32
+}
+
+type Timestamp struct {
+	Year, Month, Day     int
+	Hour, Minute, Second int
+}
+
+type Writer struct {
+	// contains filtered or unexported fields
+}
+
+func New(w io.Writer) *Writer
+
+func (e *Error) Error() string
+
+func (w *Writer) Add(h Header, content []byte) error
+
+func (w *Writer) AddRaw(h Header, raw io.Reader, info RawInfo) error
+
+func (w *Writer) Close() error
+
+func (w *Writer) Create(h Header) (io.WriteCloser, error)
+
+func (a *appender) Write(p []byte) (int, error)
+
+func (e *entryWriter) Close() error
+
+func (e *entryWriter) Write(p []byte) (int, error)
+
+func (s sink) Write(p []byte) (int, error)
+
+func (t *tee) Read(p []byte) (int, error)
