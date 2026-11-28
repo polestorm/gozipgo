@@ -71,7 +71,9 @@ nagłówków do `Open` nie ma (ADR 0003 pkt 1 i 9): po `New` układ pliku jest s
 - licznik bajtów wyjścia: przekroczenie rozmiaru zadeklarowanego, limitu wpisu, limitu łącznego albo stosunku
   kompresji kończy odczyt błędem natychmiast, nie na końcu;
 - CRC-32 liczone w locie; niezgodność albo krótszy strumień to błąd przy ostatnim odczycie zamiast `io.EOF`.
-  Wywołujący, który nie doczytał do końca, nie ma potwierdzenia integralności i dokumentacja to mówi;
+  Wywołujący, który nie doczytał do końca, nie ma potwierdzenia integralności i dokumentacja to mówi.
+  CRC-32 wykrywa uszkodzenie przypadkowe, nie celową zmianę: sumy w archiwum pisze ten, kto je tworzy, więc
+  pochodzenie treści potwierdza dopiero podpis albo skrót kryptograficzny po stronie wywołującego;
 - deskryptor danych (bit 3): po danych czytany i porównywany z katalogiem; cztery dozwolone postaci (z sygnaturą
   albo bez, 32 albo 64 bity) rozstrzyga długość obszaru wyznaczona w `New`, nie zgadywanie.
 
@@ -144,8 +146,9 @@ RFC 1951, rozdziały 3 i 4. Jeden algorytm, stałe parametry, żadnych poziomów
   package-merge; kod jest zawsze pełny;
 - pamięć stała (około 1,8 MiB na koder: bufor wejścia 1 MiB i tablice), bez alokacji w czasie pracy; nowy
   strumień nie czyści tablic, więc mały wpis nie płaci za ich rozmiar;
-- pisarz dekoduje każdy strumień kompresora w trakcie zapisu i porównuje rozmiar oraz CRC-32 wyniku z treścią
-  wpisu (`write-self-check`, ZW-011, ADR 0007 pkt 7); kontrolę wyłącza `Options.SkipSelfCheck`, bez wpływu na
+- pisarz dekoduje każdy strumień kompresora w trakcie zapisu i porównuje wynik z treścią wpisu bajt po
+  bajcie, bez udziału sum; wpis z `Create` trzyma do tego kopię treści, zwykle 1 do 2 MiB, więcej przy treści
+  kompresowanej bardzo mocno (`write-self-check`, ZW-011, ADR 0007 pkt 7); kontrolę wyłącza `Options.SkipSelfCheck`, bez wpływu na
   bajty archiwum.
 
 ## Kody błędów

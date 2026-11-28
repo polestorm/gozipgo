@@ -132,7 +132,7 @@ because the two differ: measured as a black box, `archive/zip` produces a larger
 its default level does. Every writer gets the content in pieces of 32 KiB and writes to a destination that only
 counts bytes. One warm-up run, then 7 runs, median; the size is that of the whole archive. gozipgo has no
 compression levels. It is measured twice: as it ships, where the writer decodes every DEFLATE stream it produces
-and compares the size and the CRC-32 with the content (the self-check, requirement ZW-011), and with
+and compares the result with the content byte by byte (the self-check, requirement ZW-011), and with
 `Options.SkipSelfCheck`; the tool stops if the two archives differ in size. The other writers have no such check,
 so the column without it is the one that compares compressors and the default column is what a caller gets. `TestBenchWriteRecorded` checks on the recorded file that for markup and tabular data the
 archive of gozipgo is at most 1.1 times the size of the one made with `compress/flate` at its default level

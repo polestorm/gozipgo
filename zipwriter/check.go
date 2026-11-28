@@ -2,7 +2,6 @@ package zipwriter
 
 import (
 	"errors"
-	"hash/crc32"
 	"io"
 
 	"github.com/polestorm/gozipgo/internal/inflate"
@@ -16,13 +15,26 @@ import (
 // 16 000 bajtów treści; do tego 4096 bajtów, które dekoder wczytuje na zapas. Razem poniżej 75 000 bajtów.
 const checkReserve = 128 << 10
 
+// errDiffers: treść odczytana ze strumienia różni się od treści wpisu.
+var errDiffers = errors.New("zipwriter: the decoded data differ from the content")
+
 // errStarved: dekoder poprosił o dane przed końcem strumienia, a kolejka była pusta. Rachunek przy checkReserve
 // mówi, że to się nie zdarza; gdyby się zdarzyło, kontrola kończy się niepowodzeniem, nie milczeniem.
 var errStarved = errors.New("zipwriter: the self-check ran out of compressed data")
 
-// checker dekoduje strumień DEFLATE wpisu w miarę, jak kompresor go zapisuje, i liczy rozmiar oraz CRC-32 tego,
-// co z niego wychodzi. Na końcu wpisu pisarz porównuje je z tym, co dostał od wywołującego: archiwum, którego
-// wpis nie rozpakowuje się do swojej treści, nie zostaje ukończone bez błędu (ZW-011).
+// pendKeep to największa kolejka treści, którą kontrola zostawia sobie na następny wpis; większa wraca do
+// systemu, żeby jeden wpis o bardzo powtarzalnej treści nie zajmował pamięci do końca życia pisarza.
+const pendKeep = 4 << 20
+
+// checker dekoduje strumień DEFLATE wpisu w miarę, jak kompresor go zapisuje, i porównuje to, co z niego
+// wychodzi, bajt po bajcie z tym, co pisarz dostał od wywołującego: archiwum, którego wpis nie rozpakowuje się
+// do swojej treści, nie zostaje ukończone bez błędu (ZW-011). Wynik nie zależy od żadnej sumy kontrolnej.
+//
+// Treść do porównania to ref[rp:]. Gdy pisarz ma ją całą (Add), podaje ją przez expect i nic nie jest kopiowane.
+// Gdy treść płynie (Create), pisarz podaje ją przez content przed oddaniem kompresorowi, a kontrola trzyma kopię
+// do chwili, w której dekoder ją odczyta. Dekoder rusza dopiero przy checkReserve bajtach strumienia, a kompresor
+// zbiera do 1 MiB wejścia, więc kolejka ma zwykle 1 do 2 MiB; przy treści kompresowanej bardzo mocno rośnie do
+// tego, co mieści checkReserve bajtów strumienia (około 130 MiB przy 1000:1).
 type checker struct {
 	inf  *inflate.Reader
 	q    []byte // q[r:] to bajty strumienia, których dekoder jeszcze nie wziął
@@ -31,9 +43,10 @@ type checker struct {
 	last bool  // kompresor skończył: koniec kolejki jest końcem strumienia
 	end  bool  // dekoder doszedł do końca strumienia
 	err  error
-	crc  uint32
-	size uint64
 	out  []byte
+	ref  []byte // ref[rp:] to treść wpisu, której dekoder jeszcze nie odczytał
+	rp   int
+	pend []byte // własna kolejka treści wpisu strumieniowego; ref wskazuje na nią albo na treść z expect
 }
 
 // Read podaje dekoderowi bajty z kolejki.
@@ -49,7 +62,7 @@ func (c *checker) Read(p []byte) (int, error) {
 	return n, nil
 }
 
-// reset zaczyna kontrolę nowego strumienia.
+// reset zaczyna kontrolę nowego strumienia, z pustą treścią.
 func (c *checker) reset() {
 	if c.inf == nil {
 		c.inf = inflate.NewReader(c)
@@ -59,7 +72,28 @@ func (c *checker) reset() {
 	}
 	c.q, c.r, c.fed = c.q[:0], 0, 0
 	c.last, c.end, c.err = false, false, nil
-	c.crc, c.size = 0, 0
+	if cap(c.pend) > pendKeep {
+		c.pend = nil
+	}
+	c.pend = c.pend[:0]
+	c.ref, c.rp = c.pend, 0
+}
+
+// expect podaje całą treść wpisu. Kontrola jej nie kopiuje i nie zmienia.
+func (c *checker) expect(content []byte) {
+	c.ref, c.rp = content, 0
+}
+
+// content dopisuje kolejny kawałek treści wpisu strumieniowego. Musi być wywołane, zanim kompresor dostanie te
+// bajty: dekoder nie odczyta wtedy niczego, czego kontrola jeszcze nie zna. Nie łączy się z expect.
+func (c *checker) content(p []byte) {
+	if c.rp > len(c.pend)/2 {
+		// Odczytana połowa kolejki: przesunięcie kosztuje mniej niż to, co już porównano.
+		c.pend = c.pend[:copy(c.pend, c.pend[c.rp:])]
+		c.rp = 0
+	}
+	c.pend = append(c.pend, p...)
+	c.ref = c.pend
 }
 
 // feed przyjmuje kolejne bajty strumienia i dekoduje tyle, ile można bez ryzyka braku danych.
@@ -75,11 +109,16 @@ func (c *checker) feed(p []byte) {
 	}
 }
 
-// step to jedno wywołanie Read dekodera.
+// step to jedno wywołanie Read dekodera i porównanie tego, co odczytał, z kolejnymi bajtami treści.
 func (c *checker) step() {
 	n, err := c.inf.Read(c.out)
-	c.crc = crc32.Update(c.crc, crc32.IEEETable, c.out[:n])
-	c.size += uint64(n)
+	rest := c.ref[c.rp:]
+	if n > len(rest) || string(c.out[:n]) != string(rest[:n]) {
+		// Także wtedy, gdy strumień daje więcej, niż treść ma bajtów.
+		c.err = errDiffers
+		return
+	}
+	c.rp += n
 	switch {
 	case err == io.EOF:
 		c.end = true
@@ -88,12 +127,12 @@ func (c *checker) step() {
 	}
 }
 
-// finish dekoduje resztę strumienia i mówi, czy jest on dokładnie strumieniem treści o podanym rozmiarze
-// i CRC-32: poprawny, bez bajtów po końcu i bez różnicy w treści.
-func (c *checker) finish(crc uint32, size uint64) bool {
+// finish dekoduje resztę strumienia i mówi, czy jest on dokładnie strumieniem treści wpisu: poprawny, bez
+// bajtów po końcu, a odczytane bajty są wszystkimi bajtami treści, w tej samej kolejności.
+func (c *checker) finish() bool {
 	c.last = true
 	for c.err == nil && !c.end {
 		c.step()
 	}
-	return c.err == nil && c.inf.Consumed() == c.fed && c.size == size && c.crc == crc
+	return c.err == nil && c.inf.Consumed() == c.fed && c.rp == len(c.ref)
 }

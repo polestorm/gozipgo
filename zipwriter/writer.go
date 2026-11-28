@@ -16,6 +16,9 @@
 // content: the names follow the rules of the reader, the content given to AddRaw is checked while it is copied,
 // and every DEFLATE stream the writer produces is decoded while it is written and compared with the content it
 // was made from (a difference is the error write-self-check; Options.SkipSelfCheck turns the comparison off).
+// The comparison is of the bytes, not of a checksum. For an entry written with Create the writer keeps a copy of
+// the content until the decoder has read it back: usually 1 to 2 MiB, and more for content that compresses very
+// well (what 128 KiB of compressed data hold, about 130 MiB at a ratio of 1000 to 1).
 // The reader has limits that the format does not have, and an archive must fit in them to be read: with the
 // default Options of zipreader a name of at most 4,096 bytes, at most 65,536 entries, a central directory of at
 // most 64 MiB, and for the content that is read, at most 1 GiB per entry and 4 GiB in total. The writer does not
@@ -338,8 +341,8 @@ func (w *Writer) header(r *record) error {
 
 // Add writes an entry with the given content. The sizes and the CRC-32 are in the local header and the entry has
 // no data descriptor. With Deflate the compressed content is held in memory until it is written, and it is
-// written only after it has been decoded back to the content: if that fails, Add returns write-self-check and
-// the archive is as it was before the call.
+// written only after it has been decoded and the result compared with content byte by byte: if that fails, Add
+// returns write-self-check and the archive is as it was before the call.
 func (w *Writer) Add(h Header, content []byte) error {
 	r, err := w.begin(&h)
 	if err != nil {
@@ -360,8 +363,10 @@ func (w *Writer) Add(h Header, content []byte) error {
 	r.crc = crc32.ChecksumIEEE(content)
 	if r.method == Deflate && !w.nocheck {
 		// Nic jeszcze nie zostało zapisane, więc po tym błędzie archiwum da się dokończyć.
+		// Cała treść jest pod ręką, więc porównujemy bajty, nie sumy.
+		w.check.expect(content)
 		w.check.feed(data)
-		if !w.check.finish(r.crc, uint64(len(content))) {
+		if !w.check.finish() {
 			return w.fail(CodeSelfCheck, &h, selfCheckMessage)
 		}
 	}
@@ -400,7 +405,7 @@ const selfCheckMessage = "the compressed data do not decode to the content of th
 // recorded in a data descriptor after the content. An entry that reaches 4 GiB, compressed or not, fails with
 // write-entry-size unless Header.Zip64 is set. A directory (a name ending with "/") takes no content and has no
 // data descriptor. Close of a Deflate entry fails with write-self-check when the data written for it do not
-// decode to its content; the archive cannot be completed then.
+// decode to its content, byte for byte; the archive cannot be completed then.
 func (w *Writer) Create(h Header) (io.WriteCloser, error) {
 	r, err := w.begin(&h)
 	if err != nil {
@@ -457,6 +462,10 @@ func (e *entryWriter) Write(p []byte) (int, error) {
 	e.crc = crc32.Update(e.crc, crc32.IEEETable, p)
 	e.usize += uint64(len(p))
 	if r.method == Deflate {
+		if !w.nocheck {
+			// Przed kompresorem: jego wyjście trafia do kontroli jeszcze w trakcie tego wywołania.
+			w.check.content(p)
+		}
 		if _, err := w.comp.Write(p); err != nil {
 			return 0, err
 		}
@@ -483,7 +492,7 @@ func (e *entryWriter) Close() error {
 		if err := w.comp.Close(); err != nil {
 			return err
 		}
-		if !w.nocheck && !w.check.finish(e.crc, e.usize) {
+		if !w.nocheck && !w.check.finish() {
 			// Dane wpisu są już w archiwum, więc nie da się go dokończyć.
 			w.err = e.fail(CodeSelfCheck, selfCheckMessage)
 			return w.err

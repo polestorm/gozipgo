@@ -10,6 +10,11 @@
 // from the first byte to the central directory with no overlap and no bytes that belong to nothing. Open then
 // gives the content of an entry (Stored or Deflate, decoded by the package's own decoder) and checks its size and
 // CRC-32 while it is read.
+//
+// The CRC-32 is the checksum the format has and it detects accidental damage. It is not a protection against
+// deliberate change: content can be altered so that its CRC-32 stays the same, and whoever makes an archive
+// chooses the checksums in it. A caller that needs to know where the content comes from verifies a signature or
+// a cryptographic hash of its own.
 package zipreader
 
 import (

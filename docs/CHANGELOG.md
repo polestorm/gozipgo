@@ -38,8 +38,10 @@ Stage 4 of the plan: the writer (`docs/adr/0005-writer-and-compressor.md`).
   several times faster than in the first version, with output of about the same size (`docs/comparison.md`).
   The bytes the writer produces changed with it, and the recorded checksums were replaced; no release contained
   the earlier bytes. A compressor uses about 1.8 MiB of memory (0.5 MiB before).
-- The writer checks its own compressor: every DEFLATE stream is decoded while it is written, and the size and
-  the CRC-32 of the result are compared with the content of the entry. A difference is the new error
+- The writer checks its own compressor: every DEFLATE stream is decoded while it is written and the result is
+  compared with the content of the entry byte by byte, not by a checksum. For an entry written with `Create`
+  the writer keeps a copy of the content until it has been read back: usually 1 to 2 MiB, more for content
+  that compresses very well. A difference is the new error
   `write-self-check` (`CodeSelfCheck`) instead of an archive that unpacks to something else. The check takes
   about half of the time of writing compressed entries; `NewWithOptions` with `Options.SkipSelfCheck` turns it
   off, for a caller that verifies the archive in another way. The option does not change the bytes.

@@ -55,9 +55,15 @@ pozostałe punkty (bajty jako kontrakt, bloki, kody Huffmana, pełne kody) obowi
 
 ### Pisarz (`zipwriter`)
 
-7. **Pisarz dekoduje każdy własny strumień DEFLATE i porównuje wynik z treścią wpisu (ZW-011).** Rozmiar
-   i CRC-32 tego, co wychodzi z naszego dekodera, muszą być równe rozmiarowi i CRC-32 treści podanej przez
-   wywołującego, a strumień musi kończyć się ze swoim ostatnim bajtem. Inaczej: `write-self-check`.
+7. **Pisarz dekoduje każdy własny strumień DEFLATE i porównuje wynik z treścią wpisu (ZW-011).** To, co
+   wychodzi z naszego dekodera, musi być treścią podaną przez wywołującego, a strumień musi kończyć się ze swoim
+   ostatnim bajtem. Inaczej: `write-self-check`.
+   - Sposób porównania (uzupełnienie z 2026-11-28, po uwadze właściciela, że kontrola nie powinna opierać się
+     na tym, że błąd jest mało prawdopodobny): `Add` ma całą treść, więc porównuje bajty i jego wynik nie zależy
+     od żadnej sumy; koszt jest ten sam co liczenia CRC-32. Wpis z `Create` treści nie dostaje w całości, więc
+     kontrola trzyma jej kopię do chwili, w której dekoder ją odczyta, i też porównuje bajty (decyzja
+     właściciela po pomiarze z pkt 10). Wcześniej porównywane były rozmiar i CRC-32. Testy: `TestSelfCheck`
+     dla obu sposobów podania treści, `TestSelfCheckQueue` dla kolejki.
    - Po co: błąd kompresora nie jest odrzuceniem, tylko archiwum, które rozpakowuje się do czegoś innego. Testy
      i fuzzing zmniejszają to ryzyko, samokontrola je zamyka po stronie zapisu: złe dane nie wychodzą bez błędu.
    - `Add` sprawdza przed zapisem czegokolwiek, więc po błędzie archiwum da się dokończyć bez tego wpisu. Wpis
@@ -66,7 +72,8 @@ pozostałe punkty (bajty jako kontrakt, bloki, kody Huffmana, pełne kody) obowi
      kompresora czekają więc w kolejce, a dekoder pracuje tylko wtedy, gdy czeka ich co najmniej 128 KiB: jedno
      jego wywołanie dekoduje najwyżej okno (32 768 bajtów treści) i zużywa przy tym mniej niż 75 000 bajtów
      strumienia (rachunek przy stałej `checkReserve`). Gdyby rachunek zawiódł, kontrola kończy się błędem,
-     nie milczeniem. Pamięć: do około 200 KiB kolejki i dekoder (około 50 KiB) na pisarza.
+     nie milczeniem. Pamięć: do około 200 KiB kolejki strumienia i dekoder (około 50 KiB) na pisarza, do tego
+     kolejka treści wpisu z `Create` (pkt 10).
    - Kontrola kosztuje około połowy szybkości zapisu wpisów kompresowanych (nasz dekoder jest tylko około
      1,7 raza szybszy od kompresora; pomiar w pkt 9). Decyzja właściciela z 2026-11-27: **domyślnie włączona,
      wyłączana nazwaną opcją** `Options.SkipSelfCheck`, podawaną przez `NewWithOptions`; `New` zostaje i znaczy
@@ -93,6 +100,25 @@ pozostałe punkty (bajty jako kontrakt, bloki, kody Huffmana, pełne kody) obowi
    małe wpisy 1,019 (0,998). Zostaje do zrobienia, jeśli będzie potrzeba: rozpoznawanie danych, których nie
    da się skompresować (tu `klauspost/compress` jest 16 razy szybszy), i szybka ścieżka dekodera, która
    obniżyłaby koszt samokontroli.
+
+10. **Warianty porównania dla `Create`, prototyp z 2026-11-28** (Apple M4, go1.26.6, wpisy przez `Create`
+    w kawałkach po 32 KiB, trzy przebiegi po trzy powtórzenia, dane jak w `tools/bench`; prototyp nie jest
+    w repozytorium). MB/s dla znaczników / wierszy liczb / szumu / zer / 100 000 małych wpisów:
+    - rozmiar i CRC-32 (stan obecny): 205 / 100 / 406 / 1310 / 117;
+    - bajty, treść czeka w kolejce do chwili odczytania: 204 / 99 / 411 / 1190 / 117. Kolejka treści miała
+      najwyżej 1,8 / 1,4 / 1,1 MiB i 4 KiB dla małych wpisów, ale 32 MiB dla 32 MiB zer: dekoder rusza dopiero
+      przy 128 KiB strumienia (`checkReserve`), a zera dają strumień krótszy. Granica to treść, którą mieści
+      128 KiB strumienia, czyli do około 130 MiB przy danych kompresowanych 1000 razy;
+    - SHA-256 treści i wyniku dekodera: 183 / 93 / 334 / 802 / 108, pamięć stała; wymaga `crypto/sha256` na
+      liście dozwolonych importów;
+    - bez kontroli: 274 / 128 / 435 / 1940 / 158.
+    Mniejszy zapas dekodera (16 KiB przy odczycie po 4 KiB) nie pomógł: kolejka dla zer spadła tylko do 27 MiB,
+    a na szumie kontrola skończyła się błędem, więc rachunek zapasu nie przenosi się wprost. Wybór wariantu dla
+    Decyzja właściciela z 2026-11-28: **bajty**. Kolejność jego kryteriów: kontrola ma się obronić w walidacji,
+    działać szybko i mieć prosty kod; pamięć jest mniej ważna, dopóki przy zwykłych dokumentach jesteśmy daleko
+    od zajęcia całego RAM-u. Porównanie bajtów nie zostawia niczego do szacowania, nie kosztuje szybkości i jest
+    jednym porównaniem w `step`. Kolejka większa niż 4 MiB jest oddawana przy następnym wpisie. SHA-256
+    odrzucone: wolniejsze, nowy import i nadal suma.
 
 ## Sprawdzone i odrzucone
 
