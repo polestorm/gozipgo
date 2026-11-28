@@ -42,7 +42,8 @@ powstają błędy i kończy się strumień.
    poziomach i ich wersje ucięte, z odwróconym bitem i z podmienionymi bajtami, ziarna fuzzera),
    `TestFastPathWindow` (odwołania na brzegach okna i odległości na granicy początku wyjścia),
    `TestFastPathLongestStep` (kroki po 48 bitów przy każdym stanie bufora, kody każdej długości),
-   `TestFastPathRefusals` oraz `FuzzInflate`, który porównuje ścieżki na każdym wejściu.
+   `TestFastPathRefusals`, `TestFastPathWindowEdges`, `TestRandomStreams` oraz `FuzzInflate`, który porównuje
+   ścieżki na każdym wejściu.
 
 ## Sprawdzenie testów
 
@@ -66,6 +67,49 @@ miał to sprawdzenie; zniknęło przy porządkowaniu kodu, a testy brzegów okna
 takim odwołaniu stoi znak. Poprawka: po powrocie szybkiej ścieżki pełne okno kończy krok. `TestFastPathWindow`
 ma teraz ten przypadek (bez poprawki panikuje), a oba wejścia fuzzera są ziarnami. Wniosek zapisany w pkt 7:
 testy pisane przez autora zmiany nie zastąpiły tu fuzzera, który porównuje ścieżki na każdym wejściu.
+
+## Granice i niezależny przegląd (2026-11-27)
+
+Na pytanie właściciela, czy szybka ścieżka może zawieść na spreparowanym wejściu, kod został przejrzany dwa
+razy: przez autora, linia po linii, i przez osobną sesję, która dostała tylko kod i wymaganie INF-010, bez
+rozumowania autora. Oba przeglądy doszły do tych samych granic i żaden nie znalazł błędu.
+
+- **Bity.** Na początku kroku w buforze jest co najmniej 48 ważnych bitów (bez dopełnienia 48–63, po nim
+  56–63), a krok zużywa najwyżej 15 + 5 + 15 + 13 = 48. Odejmowanie od licznika bitów nie może więc zejść
+  poniżej zera, a `long` zawsze ma swoje 15 bitów.
+- **Wejście.** Osiem bajtów jest czytanych tylko pod warunkiem pętli `ip+8 <= ie`; dopełnienie przesuwa `ip`
+  o 2–7 bajtów.
+- **Tablice.** Indeks tablicy kodu jest maskowany do 9 bitów; tablice długości i odległości są czytane po
+  sprawdzeniu symbolu (mniej niż 29 i mniej niż 30); w `long` indeks symbolu jest mniejszy od liczby kodów danej
+  długości. Tablice po poprzednim bloku albo strumieniu nie mogą dać symbolu: `build` zeruje liczniki przy
+  każdym wywołaniu, a dekoder dostaje kod dopiero po udanym zbudowaniu.
+- **Okno.** Przed krokiem `wp <= 32 510`, odwołanie ma najwyżej 258 bajtów, więc kopia kończy się najdalej na
+  końcu okna. Źródło w bieżącym obrocie leży przed celem i jest z nim rozłączne. Źródło w poprzednim obrocie
+  wymaga, żeby okno było już raz zapełnione przez ten strumień, i leży w oknie nie wcześniej niż cel, więc
+  kopia w przód czyta każdy bajt, zanim go nadpisze; przy odległości 32 768 źródło i cel to to samo miejsce.
+  Gdy źródło dochodzi do końca okna, cel stoi dokładnie na pozycji równej odległości, więc dalszy ciąg to
+  zwykłe odwołanie o tej odległości od początku okna.
+- **Koniec pracy.** Każdy obrót pętli w `symbols` posuwa dekodowanie, kończy się błędem albo wraca; kopia
+  zawsze przenosi co najmniej jeden bajt.
+- **Błędy.** Każda odmowa szybkiej ścieżki przywraca bufor bitów sprzed symbolu, więc zwykła ścieżka dekoduje
+  te same bity: rodzaj i miejsce błędu powstają w jednym miejscu kodu.
+
+Przegląd wskazał jedną kruchość poza szybką ścieżką, dziś nieosiągalną: gałąź ośmiobajtowa `fill` liczyła
+`(63 − nb) >> 3` na liczbach bez znaku, a pętla po bajcie potrafi zostawić w buforze 64 bity. Stan był
+bezpieczny tylko dlatego, że po każdym dopełnieniu zużywany jest co najmniej jeden bit. `fill` wraca teraz od
+razu, gdy bufor ma więcej niż 56 bitów (`TestFillFullBuffer`); szybkość bez zmian. Jedna gałąź szybkiej ścieżki
+jest nieosiągalna z założenia (przywrócenie bufora, gdy kod znaków nie daje symbolu: kod znaków jest zawsze
+zupełny) i zostaje jako obrona.
+
+Z przeglądu pochodzi też `TestRandomStreams`: generator losowych strumieni o wielu blokach z losowymi zupełnymi
+kodami do 15 bitów, sprawdzany z własnym modelem wyniku, z `compress/flate`, między ścieżkami, ze źródłem
+o losowych odczytach i na jednym dekoderze używanym przez `Reset`. Pełny przebieg przeglądu: 42 000 strumieni
+(26 680 poprawnych, 15 320 uszkodzonych), bez różnicy. `TestFastPathWindowEdges` przechodzi systematycznie
+przez okolice końca okna (ponad 5000 układów miejsca, długości, odległości i następnego symbolu).
+
+Czego to nie dowodzi: granice są rozumowaniem dwóch czytających, nie dowodem sprawdzonym maszynowo, a testy
+i fuzzing są próbkowaniem. Go sprawdza indeksy, więc błąd zakresu byłby paniką (odmową usługi), nie zapisem
+poza pamięć; błąd, który dawałby złe bajty bez paniki, musiałby leżeć w rachunku kopii opisanym wyżej.
 
 ## Pomiar
 

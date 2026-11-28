@@ -476,3 +476,91 @@ func TestFastPathRefusals(t *testing.T) {
 		t.Errorf("match without distance codes: kind %d after %d bytes, want kind %d after 200", got.kind, len(got.out), Distance)
 	}
 }
+
+// TestFastPathWindowEdges przechodzi systematycznie przez okolice końca okna, czyli miejsce, w którym szybka
+// ścieżka oddaje pracę zwykłej: dla każdej z wybranych ilości miejsca w oknie (od 1 bajta do więcej niż najdłuższe
+// odwołanie, gęsto wokół progu 258) stoi odwołanie każdej z wybranych długości (także kończące się dokładnie
+// z oknem i przechodzące przez jego koniec) i odległości (zachodzące na siebie, zwykłe, sięgające w poprzedni
+// obrót i najdalsze), a po nim znak albo jedno z dwóch odwołań. Wynik obu ścieżek jest porównywany z definicją
+// odwołania, nie tylko ze sobą.
+// REQ: INF-010 INF-001
+func TestFastPathWindowEdges(t *testing.T) {
+	x := uint32(11)
+	next := func() int { x = x*1664525 + 1013904223; return int(x >> 8) }
+	lengths := []int{3, 4, 5, 7, 8, 9, 15, 16, 17, 100, 226, 227, 250, 255, 256, 257, 258}
+	rooms := map[int]bool{1: true, 2: true, 3: true, 270: true, 300: true}
+	for r := 254; r <= 262; r++ {
+		rooms[r] = true
+	}
+	for _, l := range lengths {
+		rooms[l], rooms[l+1] = true, true
+	}
+	// Wspólny początek: prawie dwa obroty okna znaków; każdy przypadek dopisuje do jego kopii.
+	base := &tokens{}
+	base.w.bits(1, 1).bits(1, 2)
+	for len(base.want) < 2*windowSize-300 {
+		base.literal(byte(next()))
+	}
+	cases := 0
+	for room := 300; room >= 1; room-- {
+		base.literal(byte(next())) // po tym znaku w oknie zostaje room-1 bajtów; przypadki biorą stan sprzed niego
+		if !rooms[room-1] && room != 1 {
+			continue
+		}
+		if room == 1 {
+			break
+		}
+		left := room - 1
+		for _, length := range lengths {
+			for _, dist := range []int{1, 2, 300, windowSize - 1, windowSize} {
+				for after := 0; after < 3; after++ {
+					k := &tokens{w: bitWriter{out: append([]byte(nil), base.w.out...), n: base.w.n},
+						want: append([]byte(nil), base.want...)}
+					k.match(length, dist)
+					switch after {
+					case 0:
+						k.literal('x')
+					case 1:
+						k.match(4, windowSize)
+					default:
+						k.match(258, 1)
+					}
+					for i := 0; i < 24; i++ {
+						k.literal(byte(i)) // zapas wejścia dla szybkiej ścieżki
+					}
+					k.w.lit(endOfBlock)
+					for _, slow := range []bool{false, true} {
+						got := decodeWith(k.w.out, slow, 4096, 32<<10, 1<<30)
+						if got.kind != 0 || !bytes.Equal(got.out, k.want) || got.consumed != int64(len(k.w.out)) {
+							t.Fatalf("room %d, match of %d at distance %d, then case %d, slow=%v: %d bytes, kind %d, consumed %d; want %d bytes, consumed %d",
+								left, length, dist, after, slow, len(got.out), got.kind, got.consumed, len(k.want), len(k.w.out))
+						}
+					}
+					cases++
+				}
+			}
+		}
+	}
+	if cases < 5000 {
+		t.Errorf("only %d cases", cases)
+	}
+}
+
+// TestFillFullBuffer: dopełnianie bufora bitów, który jest już pełny, niczego nie zmienia, także przy 64 bitach.
+// Pełne 64 bity daje pętla po bajcie; dopóki po każdym dopełnieniu zużywany był co najmniej jeden bit, gałąź
+// ośmiobajtowa nigdy tego stanu nie widziała, ale jej rachunek by go nie zniósł (przegląd szybkiej ścieżki,
+// ADR 0008).
+// REQ: INF-008
+func TestFillFullBuffer(t *testing.T) {
+	for nb := uint(57); nb <= 64; nb++ {
+		r := NewReader(bytes.NewReader(make([]byte, 64)))
+		if !r.more() {
+			t.Fatal("no input")
+		}
+		r.nb = nb
+		r.fill()
+		if r.ip != 0 || r.nb != nb || r.pulled != 0 {
+			t.Errorf("fill with %d bits in the buffer: ip %d, nb %d, pulled %d", nb, r.ip, r.nb, r.pulled)
+		}
+	}
+}

@@ -273,6 +273,11 @@ func (r *Reader) more() bool {
 
 // fill dopełnia bufor bitów do ponad 56 bitów, o ile wejście na to pozwala.
 func (r *Reader) fill() {
+	if r.nb > 56 {
+		// Nic do dopełnienia. Bufor może mieć 64 bity (pętla po bajcie poniżej), a wtedy rachunek gałęzi
+		// ośmiobajtowej, (63 − nb) >> 3 na liczbach bez znaku, nie miałby sensu.
+		return
+	}
 	if r.ie-r.ip >= 8 {
 		// Osiem bajtów naraz: bity ponad nb są już wartościami bajtów, które dopiero zostaną policzone, więc
 		// ponowne ich nałożenie niczego nie zmienia.
